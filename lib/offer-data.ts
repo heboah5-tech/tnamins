@@ -4,13 +4,14 @@ export const offerData = [
     name: "تكافل الراجحي",
     company_id: "c105bc29-4514-4b7d-8b69-3e3578f58ceb",
     type: "against-others",
-    main_price: "317.16",
+    main_price: "677.16",
     created_at: "2025-03-24T18:48:18.486Z",
     updated_at: "2025-03-24T18:48:18.486Z",
     company: {
       id: "c105bc29-4514-4b7d-8b69-3e3578f58ceb",
       name: "تكافل الراجحي",
-      image_url: "https://github.com/user-attachments/assets/d37d419c-08bf-4211-b20c-7c881c9086d0",
+      image_url:
+        "https://github.com/user-attachments/assets/d37d419c-08bf-4211-b20c-7c881c9086d0",
       created_at: "2025-03-24T18:48:18.390Z",
       updated_at: "2025-03-24T18:48:18.390Z",
     },
@@ -72,7 +73,8 @@ export const offerData = [
     company: {
       id: "2c529dd3-4929-4ff6-b6b7-4c37b04dfe1d",
       name: "التعاونية",
-      image_url: "https://github.com/user-attachments/assets/2341cefe-8e2c-4c2d-8ec4-3fca8699b4fb",
+      image_url:
+        "https://github.com/user-attachments/assets/2341cefe-8e2c-4c2d-8ec4-3fca8699b4fb",
       created_at: "2025-03-24T18:48:18.395Z",
       updated_at: "2025-03-24T18:48:18.395Z",
     },
@@ -134,7 +136,8 @@ export const offerData = [
     company: {
       id: "3bf907cb-c198-4091-bfa2-edade30dc64b",
       name: "سلامة",
-      image_url: "https://github.com/user-attachments/assets/207354df-0143-4207-b518-7f5bcc323a21",
+      image_url:
+        "https://github.com/user-attachments/assets/207354df-0143-4207-b518-7f5bcc323a21",
       created_at: "2025-03-24T18:48:18.385Z",
       updated_at: "2025-03-24T18:48:18.385Z",
     },
@@ -178,7 +181,8 @@ export const offerData = [
     company: {
       id: "26a9d328-9160-4c0c-a439-156d677e259c",
       name: "ليفا للتأمين",
-      image_url: "https://github.com/user-attachments/assets/f49868a4-7ec1-4636-b757-a068b00c7179",
+      image_url:
+        "https://github.com/user-attachments/assets/f49868a4-7ec1-4636-b757-a068b00c7179",
       created_at: "2025-03-24T18:48:18.373Z",
       updated_at: "2025-03-24T18:48:18.373Z",
     },
@@ -216,7 +220,8 @@ export const offerData = [
     company: {
       id: "477021e2-f080-4568-8245-7f5299d237e9",
       name: "ميدغلف",
-      image_url: "https://github.com/user-attachments/assets/b0e744e3-1d0f-4ec0-847f-3ef463aef33c",
+      image_url:
+        "https://github.com/user-attachments/assets/b0e744e3-1d0f-4ec0-847f-3ef463aef33c",
       created_at: "2025-03-24T18:48:18.379Z",
       updated_at: "2025-03-24T18:48:18.379Z",
     },
@@ -254,7 +259,8 @@ export const offerData = [
     company: {
       id: "68dcdb12-61b1-40ff-bac8-00f4d7ed6e2e",
       name: "الاتحاد الخليجي",
-      image_url: "https://github.com/user-attachments/assets/80cd683f-f79d-42ef-931d-e3eb1af5829c",
+      image_url:
+        "https://github.com/user-attachments/assets/80cd683f-f79d-42ef-931d-e3eb1af5829c",
       created_at: "2025-03-24T18:48:18.368Z",
       updated_at: "2025-03-24T18:48:18.368Z",
     },
@@ -298,7 +304,8 @@ export const offerData = [
     company: {
       id: "e328e66a-5406-4137-ba87-58ee587bee43",
       name: "الإتحاد للتأمين",
-      image_url: "https://github.com/user-attachments/assets/ab4a3bf4-3018-4002-8e41-477e0daa1356",
+      image_url:
+        "https://github.com/user-attachments/assets/ab4a3bf4-3018-4002-8e41-477e0daa1356",
       created_at: "2025-03-24T18:48:18.319Z",
       updated_at: "2025-03-24T18:48:18.319Z",
     },
@@ -342,7 +349,8 @@ export const offerData = [
     company: {
       id: "efa36a9d-b60e-4088-8fd1-81e5d3571305",
       name: "أسيج",
-      image_url: "https://github.com/user-attachments/assets/f09fe7b8-deea-4cdc-b32e-1ed68d12a4f5",
+      image_url:
+        "https://github.com/user-attachments/assets/f09fe7b8-deea-4cdc-b32e-1ed68d12a4f5",
       created_at: "2025-03-24T18:48:18.314Z",
       updated_at: "2025-03-24T18:48:18.314Z",
     },
@@ -398,7 +406,8 @@ export const offerData = [
     company: {
       id: "4d893fc5-cacd-4e07-8b6b-06409269b3ab",
       name: "الاتحاد للتأمين التعاوني",
-      image_url: "https://github.com/user-attachments/assets/0b587bdf-1dd8-48c3-9bea-37a705ff4a8f",
+      image_url:
+        "https://github.com/user-attachments/assets/0b587bdf-1dd8-48c3-9bea-37a705ff4a8f",
       created_at: "2025-03-24T18:48:18.401Z",
       updated_at: "2025-03-24T18:48:18.401Z",
     },
@@ -460,7 +469,8 @@ export const offerData = [
     company: {
       id: "5f906ee8-614a-4cd0-8d8d-d25e3befc8e6",
       name: "بروج",
-      image_url: "https://github.com/user-attachments/assets/75e4854c-72ef-4dfc-a8bd-09bc698b2cdf",
+      image_url:
+        "https://github.com/user-attachments/assets/75e4854c-72ef-4dfc-a8bd-09bc698b2cdf",
       created_at: "2025-03-24T18:48:18.350Z",
       updated_at: "2025-03-24T18:48:18.350Z",
     },
@@ -510,7 +520,8 @@ export const offerData = [
     company: {
       id: "c105bc29-4514-4b7d-8b69-3e3578f58ceb",
       name: "تكافل الراجحي",
-      image_url: "https://github.com/user-attachments/assets/d37d419c-08bf-4211-b20c-7c881c9086d0",
+      image_url:
+        "https://github.com/user-attachments/assets/d37d419c-08bf-4211-b20c-7c881c9086d0",
       created_at: "2025-03-24T18:48:18.390Z",
       updated_at: "2025-03-24T18:48:18.390Z",
     },
@@ -535,7 +546,8 @@ export const offerData = [
       },
       {
         id: "36be4f8d-8ef2-4c12-9187-c5e9ef4a6b0e",
-        content: "تغطية مطالبة واحدة فقط لمركبة المؤمن له (شامل) - قيمة التعويض لاتتعدى قيمة المركبة السوقيه",
+        content:
+          "تغطية مطالبة واحدة فقط لمركبة المؤمن له (شامل) - قيمة التعويض لاتتعدى قيمة المركبة السوقيه",
         price: 0,
         offer_id: "5903d9ca-85ce-4aef-8e39-12e036a4eedc",
       },
@@ -572,7 +584,8 @@ export const offerData = [
     company: {
       id: "2729eeac-e585-4b3e-b59a-6d17fb09e6ef",
       name: "ولاء",
-      image_url: "https://github.com/user-attachments/assets/faff16e7-ba87-416f-9d97-6fee4ac19ca5",
+      image_url:
+        "https://github.com/user-attachments/assets/faff16e7-ba87-416f-9d97-6fee4ac19ca5",
       created_at: "2025-03-24T18:48:18.405Z",
       updated_at: "2025-03-24T18:48:18.405Z",
     },
@@ -610,7 +623,8 @@ export const offerData = [
     company: {
       id: "fd3aacaa-3a31-4685-b4ca-5315938b7e6d",
       name: "جي آي جي",
-      image_url: "https://github.com/user-attachments/assets/69d7e375-514a-4843-9964-8700ca28110e",
+      image_url:
+        "https://github.com/user-attachments/assets/69d7e375-514a-4843-9964-8700ca28110e",
       created_at: "2025-03-24T18:48:18.356Z",
       updated_at: "2025-03-24T18:48:18.356Z",
     },
@@ -672,7 +686,8 @@ export const offerData = [
     company: {
       id: "ccca40af-08fc-49fc-8cf5-70e25031171f",
       name: "العربية للتأمين",
-      image_url: "https://github.com/user-attachments/assets/e9ceec87-06f4-4c57-8292-3828c9ba9618",
+      image_url:
+        "https://github.com/user-attachments/assets/e9ceec87-06f4-4c57-8292-3828c9ba9618",
       created_at: "2025-03-24T18:48:18.339Z",
       updated_at: "2025-03-24T18:48:18.339Z",
     },
@@ -722,7 +737,8 @@ export const offerData = [
     company: {
       id: "a7f58a1f-c05d-4aba-89fb-6aad6a85e5db",
       name: "الصقر للتأمين",
-      image_url: "https://github.com/user-attachments/assets/dab8c831-bde5-4fe7-bb6d-c96a53b1d0cf",
+      image_url:
+        "https://github.com/user-attachments/assets/dab8c831-bde5-4fe7-bb6d-c96a53b1d0cf",
       created_at: "2025-03-24T18:48:18.305Z",
       updated_at: "2025-03-24T18:48:18.305Z",
     },
@@ -760,7 +776,8 @@ export const offerData = [
     company: {
       id: "c105bc29-4514-4b7d-8b69-3e3578f58ceb",
       name: "تكافل الراجحي",
-      image_url: "https://github.com/user-attachments/assets/d37d419c-08bf-4211-b20c-7c881c9086d0",
+      image_url:
+        "https://github.com/user-attachments/assets/d37d419c-08bf-4211-b20c-7c881c9086d0",
       created_at: "2025-03-24T18:48:18.390Z",
       updated_at: "2025-03-24T18:48:18.390Z",
     },
@@ -828,7 +845,8 @@ export const offerData = [
     company: {
       id: "133cb307-f173-418a-b553-55000f84369e",
       name: "الدرع العربي",
-      image_url: "https://github.com/user-attachments/assets/5f64565c-1d71-422d-a498-8587aebbfd5c",
+      image_url:
+        "https://github.com/user-attachments/assets/5f64565c-1d71-422d-a498-8587aebbfd5c",
       created_at: "2025-03-24T18:48:18.345Z",
       updated_at: "2025-03-24T18:48:18.345Z",
     },
@@ -884,7 +902,8 @@ export const offerData = [
     company: {
       id: "a3639fbd-7d8b-4426-9c25-a6b60403d689",
       name: "أليانز",
-      image_url: "https://github.com/user-attachments/assets/7ec5e4b9-0491-4c83-954d-9a04fd7021e8",
+      image_url:
+        "https://github.com/user-attachments/assets/7ec5e4b9-0491-4c83-954d-9a04fd7021e8",
       created_at: "2025-03-24T18:48:18.326Z",
       updated_at: "2025-03-24T18:48:18.326Z",
     },
@@ -922,7 +941,8 @@ export const offerData = [
     company: {
       id: "18bf283a-88d5-4079-8666-14c049dfbb2e",
       name: "الخليج العامة",
-      image_url: "https://github.com/user-attachments/assets/34baf992-3d31-46bc-bcd0-7f8d0ccbc4d6",
+      image_url:
+        "https://github.com/user-attachments/assets/34baf992-3d31-46bc-bcd0-7f8d0ccbc4d6",
       created_at: "2025-03-24T18:48:18.361Z",
       updated_at: "2025-03-24T18:48:18.361Z",
     },
@@ -978,7 +998,8 @@ export const offerData = [
     company: {
       id: "2c529dd3-4929-4ff6-b6b7-4c37b04dfe1d",
       name: "التعاونية",
-      image_url: "https://github.com/user-attachments/assets/2341cefe-8e2c-4c2d-8ec4-3fca8699b4fb",
+      image_url:
+        "https://github.com/user-attachments/assets/2341cefe-8e2c-4c2d-8ec4-3fca8699b4fb",
       created_at: "2025-03-24T18:48:18.395Z",
       updated_at: "2025-03-24T18:48:18.395Z",
     },
@@ -1028,7 +1049,8 @@ export const offerData = [
     company: {
       id: "cd4b015f-e4a9-41ff-8432-a6469e42698e",
       name: "أمانة",
-      image_url: "https://github.com/user-attachments/assets/ced2698b-374c-4a3b-b284-23209d572ced",
+      image_url:
+        "https://github.com/user-attachments/assets/ced2698b-374c-4a3b-b284-23209d572ced",
       created_at: "2025-03-24T18:48:18.333Z",
       updated_at: "2025-03-24T18:48:18.333Z",
     },
@@ -1047,7 +1069,8 @@ export const offerData = [
       },
       {
         id: "7a6409a5-cef3-439b-b293-cefc39b97efb",
-        content: "الوفاة و الاصابة الجسدية والمصاريف الطبية للمؤمن له او السائق المسمى",
+        content:
+          "الوفاة و الاصابة الجسدية والمصاريف الطبية للمؤمن له او السائق المسمى",
         price: 50,
         offer_id: "8d6976ed-02cd-4ba1-ad72-9dfa54928c07",
       },
@@ -1097,7 +1120,8 @@ export const offerData = [
     company: {
       id: "18bf283a-88d5-4079-8666-14c049dfbb2e",
       name: "الخليج العامة",
-      image_url: "https://github.com/user-attachments/assets/34baf992-3d31-46bc-bcd0-7f8d0ccbc4d6",
+      image_url:
+        "https://github.com/user-attachments/assets/34baf992-3d31-46bc-bcd0-7f8d0ccbc4d6",
       created_at: "2025-03-24T18:48:18.361Z",
       updated_at: "2025-03-24T18:48:18.361Z",
     },
@@ -1153,7 +1177,8 @@ export const offerData = [
     company: {
       id: "cd4b015f-e4a9-41ff-8432-a6469e42698e",
       name: "أمانة",
-      image_url: "https://github.com/user-attachments/assets/ced2698b-374c-4a3b-b284-23209d572ced",
+      image_url:
+        "https://github.com/user-attachments/assets/ced2698b-374c-4a3b-b284-23209d572ced",
       created_at: "2025-03-24T18:48:18.333Z",
       updated_at: "2025-03-24T18:48:18.333Z",
     },
@@ -1166,7 +1191,8 @@ export const offerData = [
       },
       {
         id: "0d30e0ce-6bdc-4399-9fdb-6788d419a125",
-        content: "الوفاة و الاصابة الجسدية والمصاريف الطبية للمؤمن له او السائق المسمى",
+        content:
+          "الوفاة و الاصابة الجسدية والمصاريف الطبية للمؤمن له او السائق المسمى",
         price: 50,
         offer_id: "1b86f7b7-b55a-49da-a0d1-4cc33c970509",
       },
@@ -1203,7 +1229,8 @@ export const offerData = [
     company: {
       id: "2729eeac-e585-4b3e-b59a-6d17fb09e6ef",
       name: "ولاء",
-      image_url: "https://github.com/user-attachments/assets/faff16e7-ba87-416f-9d97-6fee4ac19ca5",
+      image_url:
+        "https://github.com/user-attachments/assets/faff16e7-ba87-416f-9d97-6fee4ac19ca5",
       created_at: "2025-03-24T18:48:18.405Z",
       updated_at: "2025-03-24T18:48:18.405Z",
     },
@@ -1265,7 +1292,8 @@ export const offerData = [
     company: {
       id: "5f906ee8-614a-4cd0-8d8d-d25e3befc8e6",
       name: "بروج",
-      image_url: "https://github.com/user-attachments/assets/75e4854c-72ef-4dfc-a8bd-09bc698b2cdf",
+      image_url:
+        "https://github.com/user-attachments/assets/75e4854c-72ef-4dfc-a8bd-09bc698b2cdf",
       created_at: "2025-03-24T18:48:18.350Z",
       updated_at: "2025-03-24T18:48:18.350Z",
     },
@@ -1336,7 +1364,8 @@ export const offerData = [
     company: {
       id: "133cb307-f173-418a-b553-55000f84369e",
       name: "الدرع العربي",
-      image_url: "https://github.com/user-attachments/assets/5f64565c-1d71-422d-a498-8587aebbfd5c",
+      image_url:
+        "https://github.com/user-attachments/assets/5f64565c-1d71-422d-a498-8587aebbfd5c",
       created_at: "2025-03-24T18:48:18.345Z",
       updated_at: "2025-03-24T18:48:18.345Z",
     },
@@ -1398,7 +1427,8 @@ export const offerData = [
     company: {
       id: "efa36a9d-b60e-4088-8fd1-81e5d3571305",
       name: "أسيج",
-      image_url: "https://github.com/user-attachments/assets/f09fe7b8-deea-4cdc-b32e-1ed68d12a4f5",
+      image_url:
+        "https://github.com/user-attachments/assets/f09fe7b8-deea-4cdc-b32e-1ed68d12a4f5",
       created_at: "2025-03-24T18:48:18.314Z",
       updated_at: "2025-03-24T18:48:18.314Z",
     },
@@ -1478,7 +1508,8 @@ export const offerData = [
     company: {
       id: "3bf907cb-c198-4091-bfa2-edade30dc64b",
       name: "سلامة",
-      image_url: "https://github.com/user-attachments/assets/207354df-0143-4207-b518-7f5bcc323a21",
+      image_url:
+        "https://github.com/user-attachments/assets/207354df-0143-4207-b518-7f5bcc323a21",
       created_at: "2025-03-24T18:48:18.385Z",
       updated_at: "2025-03-24T18:48:18.385Z",
     },
@@ -1497,13 +1528,15 @@ export const offerData = [
       },
       {
         id: "18a8871b-82b3-46e7-a656-86e51f685f36",
-        content: "الوفاة و الاصابة الجسدية والمصاريف الطبية للمؤمن له او السائق المسمى",
+        content:
+          "الوفاة و الاصابة الجسدية والمصاريف الطبية للمؤمن له او السائق المسمى",
         price: 920,
         offer_id: "7fb13f24-fb36-4900-9797-fd6cf0d38b6e",
       },
       {
         id: "8a88abba-8d15-432d-b6e1-6a7fbe763edf",
-        content: "الحوادث التي تقع خارج الحدود الاقليمية للمملكة العربية السعودية",
+        content:
+          "الحوادث التي تقع خارج الحدود الاقليمية للمملكة العربية السعودية",
         price: 920,
         offer_id: "7fb13f24-fb36-4900-9797-fd6cf0d38b6e",
       },
@@ -1546,7 +1579,8 @@ export const offerData = [
     company: {
       id: "fd3aacaa-3a31-4685-b4ca-5315938b7e6d",
       name: "جي آي جي",
-      image_url: "https://github.com/user-attachments/assets/69d7e375-514a-4843-9964-8700ca28110e",
+      image_url:
+        "https://github.com/user-attachments/assets/69d7e375-514a-4843-9964-8700ca28110e",
       created_at: "2025-03-24T18:48:18.356Z",
       updated_at: "2025-03-24T18:48:18.356Z",
     },
@@ -1614,7 +1648,8 @@ export const offerData = [
     company: {
       id: "bdceb8a8-5fed-4d66-8c75-ba6d3551b55c",
       name: "الوطنية للتأمين",
-      image_url: "https://github.com/user-attachments/assets/4897582f-e15d-4ac0-9771-83721a7ae6cb",
+      image_url:
+        "https://github.com/user-attachments/assets/4897582f-e15d-4ac0-9771-83721a7ae6cb",
       created_at: "2025-03-24T18:48:18.410Z",
       updated_at: "2025-03-24T18:48:18.410Z",
     },
@@ -1684,7 +1719,8 @@ export const offerData = [
     company: {
       id: "e328e66a-5406-4137-ba87-58ee587bee43",
       name: "الإتحاد للتأمين",
-      image_url: "https://github.com/user-attachments/assets/ab4a3bf4-3018-4002-8e41-477e0daa1356",
+      image_url:
+        "https://github.com/user-attachments/assets/ab4a3bf4-3018-4002-8e41-477e0daa1356",
       created_at: "2025-03-24T18:48:18.319Z",
       updated_at: "2025-03-24T18:48:18.319Z",
     },
@@ -1709,13 +1745,15 @@ export const offerData = [
       },
       {
         id: "b09fde63-4b2f-49c3-aaf2-2b2aeff49592",
-        content: "سيارة بديلة - الحد الأقصى للتعويض 75 ريال عن كل يوم وبحد أقصى 1500 ريال عن كامل المدة",
+        content:
+          "سيارة بديلة - الحد الأقصى للتعويض 75 ريال عن كل يوم وبحد أقصى 1500 ريال عن كامل المدة",
         price: 225,
         offer_id: "c3b9563d-cf6d-4fe7-8627-3d598739ed3c",
       },
       {
         id: "70fcac46-ea12-4312-b837-3f4340c7960f",
-        content: "سيارة بديلة - الحد الأقصى للتعويض 100 ريال عن كل يوم وبحد أقصى 2000 ريال عن كامل المدة",
+        content:
+          "سيارة بديلة - الحد الأقصى للتعويض 100 ريال عن كل يوم وبحد أقصى 2000 ريال عن كامل المدة",
         price: 293,
         offer_id: "c3b9563d-cf6d-4fe7-8627-3d598739ed3c",
       },
@@ -1752,7 +1790,8 @@ export const offerData = [
     company: {
       id: "ccca40af-08fc-49fc-8cf5-70e25031171f",
       name: "العربية للتأمين",
-      image_url: "https://github.com/user-attachments/assets/e9ceec87-06f4-4c57-8292-3828c9ba9618",
+      image_url:
+        "https://github.com/user-attachments/assets/e9ceec87-06f4-4c57-8292-3828c9ba9618",
       created_at: "2025-03-24T18:48:18.339Z",
       updated_at: "2025-03-24T18:48:18.339Z",
     },
@@ -1803,4 +1842,4 @@ export const offerData = [
       },
     ],
   },
-]
+];
