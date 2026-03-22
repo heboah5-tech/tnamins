@@ -581,7 +581,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                 icon: "/mada.jpg",
                 disabled: false,
               },
-            ].map((method) => (
+            ].map((method: { value: string; label: string; icons?: string[]; icon?: string; disabled: boolean; message?: string }) => (
               <div key={method.value}>
                 <label
                   className={`
