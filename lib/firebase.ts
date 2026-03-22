@@ -3,14 +3,13 @@ import { getDatabase, Database } from "firebase/database";
 import { doc, getFirestore, setDoc, Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
-   apiKey: "AIzaSyBEMutxISSdHbL4OotcoKMh1Zv603jWzgw",
-  authDomain: "mynewbb-73847.firebaseapp.com",
-  databaseURL: "https://mynewbb-73847-default-rtdb.firebaseio.com",
-  projectId: "mynewbb-73847",
-  storageBucket: "mynewbb-73847.firebasestorage.app",
-  messagingSenderId: "1017329682260",
-  appId: "1:1017329682260:web:7c8e6a9ece4e91399ceac1",
-  measurementId: "G-E5XV1B9R32"
+  apiKey: "AIzaSyC4cUitnmd44Dvlp_neV5AmBnXpbBkE8SM",
+  authDomain: "tnmisn-57347.firebaseapp.com",
+  projectId: "tnmisn-57347",
+  storageBucket: "tnmisn-57347.firebasestorage.app",
+  messagingSenderId: "487068100861",
+  appId: "1:487068100861:web:9e8edae073c5d9a69e7694",
+  measurementId: "G-TCL5XN2M47"
 };
 
 const isFirebaseConfigured = Boolean(
