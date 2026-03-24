@@ -62,7 +62,7 @@ function BlockedOverlay() {
         </div>
 
         {/* Logo */}
-        <img src="/logo-0.svg" alt="بي كير" className="h-8 w-auto opacity-70" />
+        <img src="/400x400bb-75_1774147036689.webp" alt="تأميني" className="h-8 w-auto opacity-70" />
 
         {/* Heading */}
         <div className="space-y-2">
