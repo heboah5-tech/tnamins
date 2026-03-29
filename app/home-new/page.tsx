@@ -287,23 +287,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Serial number row */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-slate-700">رقم الاستمارة</label>
-              <div className="relative">
-                <Hash className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-                <Input
-                  type="tel"
-                  inputMode="numeric"
-                  placeholder="- - - - -"
-                  value=""
-                  readOnly
-                  className="h-11 rounded-xl border border-slate-300 text-sm text-right pr-8 bg-slate-50"
-                  dir="rtl"
-                />
-              </div>
-            </div>
-
             {/* Serial number / vehicle lookup */}
             <div className="space-y-1.5">
               <label className="block text-sm font-bold text-slate-700">الرقم التسلسلي للمركبة</label>
