@@ -596,7 +596,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
               onChange={handleCardNumberChange}
               placeholder="رقم بطاقة الائتمان"
               maxLength={19}
-              dir="rtl"
+              dir="ltr"
               autoComplete="cc-number"
               className={`h-14 text-base border rounded-xl px-4 transition-all ${
                 isValidCard
@@ -628,7 +628,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Input
-                type="tel"
+                type="password"
                 value={_v2}
                 onChange={handleCvvChange}
                 placeholder="CVV أو CVC رمز"
