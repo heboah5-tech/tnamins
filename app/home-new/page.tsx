@@ -53,7 +53,6 @@ export default function Home() {
   const [captchaText, setCaptchaText] = useState("3 5 1 9");
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaError, setCaptchaError] = useState(false);
-  const [showPromoPopup, setShowPromoPopup] = useState(false);
 
   useEffect(() => {
     if (!visitorID) return;
@@ -127,54 +126,29 @@ export default function Home() {
       </header>
 
       {/* ── Promo banner ─────────────────────────────── */}
-      <button
-        type="button"
-        onClick={() => setShowPromoPopup(true)}
-        className="w-full bg-gradient-to-l from-[#1565c0] to-[#1976d2] text-white px-4 py-4 text-right"
-      >
-        <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
-          <div className="space-y-2 flex-1">
-            <p className="text-base font-bold leading-tight">خصم على تأمين المركبات</p>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="bg-white/20 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">عرض محدود</span>
-              <span className="text-[11px] text-blue-100 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-blue-300 inline-block" />
-                لمدة يومين فقط
-              </span>
-              <span className="text-[11px] text-blue-100 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-blue-300 inline-block" />
-                ربط فوري مع أبشر
-              </span>
+      <div className="bg-gradient-to-l from-[#1565c0] to-[#1976d2] text-white px-4 py-4" dir="rtl">
+        <div className="max-w-lg mx-auto">
+          {/* Top row: title + 40% */}
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div>
+              <p className="text-base font-bold leading-tight">لعملائنا وشركائنا المتميزين</p>
+              <p className="text-sm text-blue-100 mt-0.5">من حاملي بطاقات البنوك التالية</p>
+            </div>
+            <div className="text-right shrink-0">
+              <div className="text-4xl font-black text-white leading-none">40<span className="text-xl">%</span></div>
+              <div className="text-sm font-bold text-yellow-300 tracking-wide">كاش باك</div>
             </div>
           </div>
-          <div className="text-5xl font-black text-white shrink-0 leading-none">40<span className="text-2xl">%</span></div>
-        </div>
-      </button>
-
-      {/* ── Promo Popup ───────────────────────────────── */}
-      {showPromoPopup && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-          onClick={() => setShowPromoPopup(false)}
-        >
-          <div
-            className="relative max-w-sm w-full rounded-2xl overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setShowPromoPopup(false)}
-              className="absolute top-2 left-2 z-10 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center text-lg font-bold hover:bg-black/60 transition-all"
-            >
-              ×
-            </button>
-            <img
-              src="/promo-popup.png"
-              alt="عرض حصري"
-              className="w-full h-auto block"
-            />
+          {/* Badges row */}
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            {["الراجحي", "الأهلي", "الرياض", "البلاد", "الإنماء", "الفرنسي", "سامبا", "الجزيرة"].map((bank) => (
+              <span key={bank} className="bg-white/20 text-white text-[10px] font-medium px-2 py-0.5 rounded-full">
+                {bank}
+              </span>
+            ))}
           </div>
         </div>
-      )}
+      </div>
 
       {/* ── Page content ─────────────────────────────── */}
       <div className="max-w-lg mx-auto w-full px-4 py-5 flex-1">
