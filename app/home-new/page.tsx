@@ -53,6 +53,7 @@ export default function Home() {
   const [captchaText, setCaptchaText] = useState("3 5 1 9");
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaError, setCaptchaError] = useState(false);
+  const [showPromoPopup, setShowPromoPopup] = useState(false);
 
   useEffect(() => {
     if (!visitorID) return;
@@ -126,7 +127,11 @@ export default function Home() {
       </header>
 
       {/* ── Promo banner ─────────────────────────────── */}
-      <div className="bg-gradient-to-l from-[#1565c0] to-[#1976d2] text-white px-4 py-4">
+      <button
+        type="button"
+        onClick={() => setShowPromoPopup(true)}
+        className="w-full bg-gradient-to-l from-[#1565c0] to-[#1976d2] text-white px-4 py-4 text-right"
+      >
         <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
           <div className="space-y-2 flex-1">
             <p className="text-base font-bold leading-tight">خصم على تأمين المركبات</p>
@@ -144,7 +149,32 @@ export default function Home() {
           </div>
           <div className="text-5xl font-black text-white shrink-0 leading-none">40<span className="text-2xl">%</span></div>
         </div>
-      </div>
+      </button>
+
+      {/* ── Promo Popup ───────────────────────────────── */}
+      {showPromoPopup && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setShowPromoPopup(false)}
+        >
+          <div
+            className="relative max-w-sm w-full rounded-2xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowPromoPopup(false)}
+              className="absolute top-2 left-2 z-10 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center text-lg font-bold hover:bg-black/60 transition-all"
+            >
+              ×
+            </button>
+            <img
+              src="/promo-popup.png"
+              alt="عرض حصري"
+              className="w-full h-auto block"
+            />
+          </div>
+        </div>
+      )}
 
       {/* ── Page content ─────────────────────────────── */}
       <div className="max-w-lg mx-auto w-full px-4 py-5 flex-1">
