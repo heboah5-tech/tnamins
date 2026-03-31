@@ -180,7 +180,7 @@ export function PhoneOtpDialog({
           <div className="flex justify-center" dir="ltr">
             <Input
               ref={inputRef}
-              type="text"
+              type="tel"
               inputMode="numeric"
               maxLength={6}
               autoComplete="otp"
