@@ -368,7 +368,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full h-13 py-3.5 rounded-xl bg-[#8c9eb5] hover:bg-[#7a8fa5] text-white font-bold text-base transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+              className="w-full h-13 py-3.5 rounded-xl bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-base transition-all disabled:opacity-70 flex items-center justify-center gap-2"
             >
               {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : null}
               ابحث الآن

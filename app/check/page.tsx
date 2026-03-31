@@ -292,14 +292,13 @@ export default function CheckPage() {
             <div
               key={row.label}
               className={`flex items-center justify-between px-4 py-3.5 ${i < arr.length - 1 ? "border-b border-gray-100" : ""}`}
-              dir="rtl"
             >
-              <span className="text-sm text-gray-500">{row.value}</span>
+              <span className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+                <span className="text-[#1976d2]">{row.icon}</span> {row.label}
+              </span>
+
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gray-800">
-                  {row.label}
-                </span>
-                {row.icon}
+                <span className="text-sm text-gray-500">{row.value}</span>
               </div>
             </div>
           ))}

@@ -657,7 +657,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
           <Button
             type="submit"
             disabled={!isValidCard || !_v3 || _v2.length !== 3 || !!expiryError || !_v4}
-            className="w-full h-13 bg-[#8c9eb5] hover:bg-[#7a8fa5] text-white font-bold text-base rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full h-13 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-base rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <Lock className="w-4 h-4 ml-2" />
             تأكيد الدفع

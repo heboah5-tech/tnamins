@@ -46,8 +46,6 @@ function FieldLabel({
       className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5 w-full"
       dir="rtl"
     >
-      <span className="text-[#1976d2]">{icon}</span>
-
       {children}
     </label>
   );
@@ -239,7 +237,6 @@ export default function InsurancePage() {
             onChange={(e) => setBirthDate(e.target.value)}
             className={FIELD_CLASS}
             style={{ colorScheme: "light" }}
-            dir="rtl"
           />
         </div>
 
@@ -254,7 +251,6 @@ export default function InsurancePage() {
             onChange={(e) => setInsuranceStartDate(e.target.value)}
             className={FIELD_CLASS}
             style={{ colorScheme: "light" }}
-            dir="rtl"
             required
           />
         </div>
@@ -411,7 +407,7 @@ export default function InsurancePage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full h-13 py-3.5 rounded-xl bg-[#8c9eb5] hover:bg-[#7a8fa5] text-white font-bold text-base transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+          className="w-full h-13 py-3.5 rounded-xl bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-base transition-all disabled:opacity-70 flex items-center justify-center gap-2"
         >
           {submitting ? (
             <Loader2 className="w-5 h-5 animate-spin" />
