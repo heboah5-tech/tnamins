@@ -1,6 +1,5 @@
 import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Globe, Menu } from "lucide-react";
 
 interface StepShellProps {
   step: number;
@@ -25,134 +24,71 @@ export function StepShell({
   cardClassName,
   headerAction,
 }: StepShellProps) {
-  const progress = Math.max(
-    0,
-    Math.min(100, Math.round((step / totalSteps) * 100)),
-  );
-
   return (
-    <div
-      className="min-h-screen bg-gradient-to-b from-[#e8f0fe] via-[#f0f4f8] to-[#f5f7fa] px-3 py-4 sm:px-4 sm:py-6"
-      dir="rtl"
-    >
-      <div className={cn("mx-auto w-full space-y-3 sm:space-y-4", maxWidthClassName)}>
-        {/* ── Header ─────────────────────────────── */}
-        <header className="flex items-center justify-between rounded-2xl bg-white/80 backdrop-blur-md border border-white/60 px-4 py-3 shadow-[0_2px_16px_rgba(25,118,210,0.08)]">
-          <div className="flex items-center gap-2">
-            <button className="rounded-xl bg-[#1976d2] text-white px-3.5 py-1.5 text-xs font-bold hover:bg-[#1565c0] transition-all shadow-sm hover:shadow-md">
-              تسجيل الدخول
-            </button>
-            {headerAction || <Globe className="h-4 w-4 text-slate-400" />}
+    <div className="min-h-screen bg-[#f4f6f9] flex flex-col" dir="rtl">
+
+      {/* ── Header ─────────────────────────────────── */}
+      <header className="bg-white border-b border-gray-100 px-4 py-3.5">
+        <div className={cn("mx-auto w-full flex items-center justify-between", maxWidthClassName)}>
+          {/* Logo — first child renders on the right in RTL */}
+          <img src="/tameeni-logo.webp" alt="تأميني" className="h-9 w-9 rounded-xl" />
+
+          {/* Progress dots — last child renders on the left in RTL */}
+          <div className="flex items-center gap-1.5">
+            {Array.from({ length: totalSteps }).map((_, i) => {
+              const isCurrent = i + 1 === step;
+              const isDone    = i + 1 < step;
+              return (
+                <div
+                  key={i}
+                  className={cn(
+                    "rounded-full transition-all duration-300",
+                    isCurrent ? "w-7 h-2.5 bg-[#1976d2]"
+                    : isDone   ? "w-2.5 h-2.5 bg-[#1976d2]"
+                               : "w-2.5 h-2.5 bg-gray-300"
+                  )}
+                />
+              );
+            })}
           </div>
+        </div>
+      </header>
 
-          <div className="flex items-center gap-2">
-            <Menu className="h-5 w-5 text-slate-400" />
-            <span className="text-lg font-black text-[#1976d2]">تأميني</span>
-            <img src="/tameeni-logo.webp" alt="تأميني" className="h-8 w-8 rounded-xl" />
-          </div>
-        </header>
+      {/* ── Main ───────────────────────────────────── */}
+      <main className={cn("mx-auto w-full flex-1 px-4 py-6 space-y-4", maxWidthClassName)}>
 
-        {/* ── Progress tracker ───────────────────── */}
-        <section className="rounded-2xl overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.06)] border border-white/80 bg-white/90 backdrop-blur-sm">
-          <div className="px-4 py-3.5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1976d2] opacity-60" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#1976d2]" />
-                </span>
-                <p className="text-sm font-black text-[#1565c0]">تتبع الطلب</p>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-slate-400">الخطوة</span>
-                <span className="bg-[#1976d2] text-white text-xs font-black px-2 py-0.5 rounded-lg shadow-sm">
-                  {step}
-                </span>
-                <span className="text-xs text-slate-400">من {totalSteps}</span>
-              </div>
-            </div>
-
-            {/* Step dots */}
-            <div className="flex items-center gap-0 mb-3">
-              {Array.from({ length: totalSteps }).map((_, i) => {
-                const isCompleted = i + 1 < step;
-                const isCurrent = i + 1 === step;
-                return (
-                  <div key={i} className="flex items-center flex-1">
-                    <div
-                      className={cn(
-                        "flex-shrink-0 rounded-full transition-all duration-500",
-                        isCurrent
-                          ? "w-4 h-4 bg-[#1976d2] shadow-[0_0_0_4px_rgba(25,118,210,0.15)] ring-2 ring-[#1976d2]/30"
-                          : isCompleted
-                            ? "w-3 h-3 bg-[#1976d2]"
-                            : "w-2.5 h-2.5 bg-slate-200",
-                      )}
-                    />
-                    {i < totalSteps - 1 && (
-                      <div className="flex-1 h-0.5 mx-0.5 rounded-full overflow-hidden bg-slate-100">
-                        {isCompleted && (
-                          <div className="h-full w-full bg-gradient-to-l from-[#42a5f5] to-[#1976d2] rounded-full" />
-                        )}
-                        {isCurrent && (
-                          <div className="h-full w-1/2 bg-gradient-to-l from-[#42a5f5] to-[#1976d2] rounded-full" />
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Progress bar */}
-            <div className="relative h-2 rounded-full bg-slate-100 overflow-hidden">
-              <div
-                className="absolute inset-y-0 right-0 rounded-full transition-all duration-700 ease-out"
-                style={{
-                  width: `${progress}%`,
-                  background: "linear-gradient(90deg, #1565c0, #1976d2 60%, #42a5f5)",
-                  left: "auto",
-                  right: "unset",
-                }}
-              />
-            </div>
-
-            <div className="flex justify-end mt-1.5">
-              <span className="text-[10px] font-black text-[#1976d2]">
-                {progress}%
-              </span>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Main card ──────────────────────────────── */}
-        <section
-          className={cn(
-            "rounded-2xl border border-white/80 bg-white px-5 py-6 sm:px-6 sm:py-7",
-            "shadow-[0_4px_24px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.04)]",
-            cardClassName,
-          )}
-        >
-          {icon ? (
-            <div className="mb-5 flex justify-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#e3f2fd] to-[#bbdefb] text-[#1976d2] shadow-[0_4px_12px_rgba(25,118,210,0.12)]">
+        {/* Page title */}
+        <div className="text-center space-y-1">
+          {icon && (
+            <div className="flex justify-center mb-2">
+              <div className="w-11 h-11 rounded-full bg-[#e3f2fd] flex items-center justify-center text-[#1976d2]">
                 {icon}
               </div>
             </div>
-          ) : null}
-
-          <h1 className="text-center text-2xl font-extrabold text-[#1565c0]">
+          )}
+          <h1 className="text-xl font-bold text-gray-800 flex items-center justify-center gap-2">
             {title}
           </h1>
-          {subtitle ? (
-            <p className="mt-2 text-center text-sm leading-relaxed text-slate-500">
-              {subtitle}
-            </p>
-          ) : null}
+          {subtitle && (
+            <p className="text-sm text-gray-500 leading-relaxed">{subtitle}</p>
+          )}
+        </div>
 
-          <div className="mt-6 space-y-4">{children}</div>
-        </section>
-      </div>
+        {/* Content card */}
+        <div className={cn("bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden", cardClassName)}>
+          <div className="p-5 space-y-4">
+            {children}
+          </div>
+        </div>
+      </main>
+
+      {/* ── Footer ─────────────────────────────────── */}
+      <footer className="bg-[#1a2742] py-8 px-4 mt-2">
+        <div className="text-center space-y-3 max-w-md mx-auto">
+          <img src="/tameeni-logo.webp" alt="تأميني" className="h-9 w-9 mx-auto rounded-xl opacity-80" />
+          <p className="text-xs text-gray-400">© تأميني 2025. جميع الحقوق محفوظة</p>
+        </div>
+      </footer>
     </div>
   );
 }

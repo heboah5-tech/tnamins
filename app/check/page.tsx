@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Check, X, Globe } from 'lucide-react'
+import { Check, X, Globe, CalendarDays, CreditCard as CreditCardIcon, Car, Hash } from 'lucide-react'
 import { FullPageLoader } from "@/components/loader"
 import { StepShell } from "@/components/step-shell"
 import P1 from "@/components/form-a"
@@ -34,6 +34,7 @@ export default function CheckPage() {
   
   // Language
   const [language, setLanguage] = useState<"ar" | "en">("ar")
+  const [identityNumber, setIdentityNumber] = useState("")
   
   // Auto-save
   useAutoSave({
@@ -96,6 +97,12 @@ export default function CheckPage() {
         return
       }
       
+      // Load identity number from localStorage
+      try {
+        const hfd = JSON.parse(localStorage.getItem("homeFormData") || "{}")
+        if (hfd.identityNumber) setIdentityNumber(hfd.identityNumber)
+      } catch { /* ignore */ }
+
       // Load selected offer from Firebase
       if (!db) return
       const docRef = doc(db as Firestore, "pays", visitorID)
@@ -219,49 +226,55 @@ export default function CheckPage() {
           </button>
         }
       >
-        {/* Summary Card - Same as compar page */}
-        <div className="bg-white rounded-lg md:rounded-xl shadow-md p-4 md:p-5 lg:p-6 mb-5 md:mb-6" dir="rtl">
-          <div className="flex items-start justify-between gap-3 md:gap-4">
-            <div className="flex-1">
-              <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">{selectedOffer.name}</h3>
-              <p className="text-[#1976d2] font-semibold text-base md:text-lg mb-3 md:mb-4">
-                التأمين {selectedOffer.type === "against-others" ? "ضد الغير" : selectedOffer.type === "comprehensive" ? "شامل" : ""}
-              </p>
+        {/* Company logo card */}
+        {selectedOffer.image_url && (
+          <div className="flex items-center justify-center py-6 border border-gray-100 rounded-2xl bg-white mb-1">
+            <img
+              src={selectedOffer.image_url}
+              alt={selectedOffer.name}
+              className="h-16 object-contain"
+            />
+          </div>
+        )}
 
-              {selectedOffer.extra_features && selectedOffer.extra_features.length > 0 && (
-                <div className="space-y-2 mb-3 md:mb-4">
-                  {selectedOffer.extra_features.map((feature: any, idx: number) => (
-                    <div key={idx} className="flex items-start gap-2">
-                      <input
-                        type="checkbox"
-                        checked
-                        readOnly
-                        className="mt-1 w-4 h-4 rounded border-gray-300 cursor-default"
-                      />
-                      <label className="flex-1 text-gray-700 text-xs md:text-sm">
-                        {feature.content}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col items-end gap-2 md:gap-3">
-              {selectedOffer.image_url && (
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg border-2 border-gray-200 flex items-center justify-center bg-gray-50 overflow-hidden">
-                  <img
-                    src={selectedOffer.image_url}
-                    alt={selectedOffer.name}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              )}
-              <div className="text-left">
-                <div className="text-2xl md:text-3xl font-bold text-[#1976d2]">{offerTotalPrice.toFixed(2)}</div>
-                <div className="text-xs md:text-sm text-gray-600">ريال / سنة</div>
+        {/* Policy details card */}
+        <div className="border border-gray-100 rounded-2xl bg-white overflow-hidden mb-1">
+          {[
+            { icon: <CalendarDays className="w-4 h-4 text-[#1976d2]" />, label: "تاريخ بدء الوثيقة", value: "" },
+            { icon: <CreditCardIcon className="w-4 h-4 text-[#1976d2]" />, label: "رقم الهوية", value: identityNumber },
+            { icon: <Car className="w-4 h-4 text-[#1976d2]" />, label: "سنة الصنع", value: "" },
+            { icon: <Hash className="w-4 h-4 text-[#1976d2]" />, label: "الرقم المرجعي للتسعيرة", value: offerTotalPrice ? String(Math.floor(offerTotalPrice * 1000)) : "" },
+          ].map((row, i, arr) => (
+            <div key={row.label} className={`flex items-center justify-between px-4 py-3.5 ${i < arr.length - 1 ? "border-b border-gray-100" : ""}`}>
+              <span className="text-sm text-gray-500">{row.value}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-800">{row.label}</span>
+                {row.icon}
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* Pricing breakdown */}
+        <div className="border border-gray-100 rounded-2xl bg-white overflow-hidden mb-1">
+          <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
+            <Hash className="w-4 h-4 text-[#1976d2]" />
+            <span className="font-bold text-[#1976d2] text-sm">التفاصيل</span>
+          </div>
+          <div className="px-4 py-3 space-y-2.5">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">ر.س {(offerTotalPrice / 1.15).toFixed(2)}</span>
+              <span className="font-medium text-gray-700">المجموع الجزئي</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">ر.س {(offerTotalPrice - offerTotalPrice / 1.15).toFixed(2)}</span>
+              <span className="font-medium text-gray-700">ضريبة القيمة المضافة (%15.00)</span>
+            </div>
+            <div className="flex justify-between border-t border-gray-100 pt-2.5">
+              <span className="font-bold text-[#1976d2]">ر.س {offerTotalPrice.toFixed(2)}</span>
+              <span className="font-bold text-gray-800">المبلغ الإجمالي</span>
+            </div>
+            <p className="text-[11px] text-gray-400 text-center pt-1">شامل جميع الضرائب والرسوم و 4.00% عمولة الوسيط</p>
           </div>
         </div>
 

