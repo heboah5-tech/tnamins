@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Globe } from 'lucide-react'
+import { Globe, Plus, ShoppingCart } from 'lucide-react'
 import { FullPageLoader } from "@/components/loader"
 import { StepShell } from "@/components/step-shell"
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking"
@@ -154,87 +153,129 @@ export default function ComparisonPage() {
           return (
             <div
               key={offer.id}
-              className="bg-white rounded-2xl shadow border border-gray-100 overflow-hidden"
+              className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
               dir="rtl"
             >
-              {/* Header: logo RIGHT (first in RTL), info LEFT */}
-              <div className="flex items-center gap-3 p-4" style={{ borderBottom: "1px solid #f0f0f0" }}>
-                {/* Logo — first child = RIGHT in RTL */}
-                <div className="w-16 h-16 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+              {/* ── Section 1: Company Header ── */}
+              <div className="flex items-center justify-between px-4 py-4">
+                {/* RIGHT in RTL: name + subtitle */}
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900 leading-tight">{offer.company.name}</h3>
+                  <p className="text-sm text-gray-400 mt-0.5">{typeLabel} - تأمين معتمد</p>
+                </div>
+                {/* LEFT in RTL: logo */}
+                <div className="w-16 h-14 flex items-center justify-center flex-shrink-0">
                   <img
                     src={offer.company.image_url || "/placeholder.svg"}
                     alt={offer.company.name}
-                    className="w-full h-full object-contain p-1"
+                    className="max-w-full max-h-full object-contain"
                   />
                 </div>
-
-                {/* Company info */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-bold text-gray-900 leading-tight">{offer.company.name}</h3>
-                  <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#e3f2fd] text-[#1976d2]">
-                    {typeLabel}
-                  </span>
-                </div>
-
-                {/* Price — last child = LEFT in RTL */}
-                <div className="text-left flex-shrink-0">
-                  <div className="text-xl font-bold text-[#1976d2] leading-tight">{totalPrice.toFixed(2)}</div>
-                  <div className="text-[10px] text-gray-400 text-center">﷼ / سنة</div>
-                </div>
               </div>
 
-              {/* Select Button */}
-              <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                <Button
-                  onClick={() => handleSelectOffer(offer)}
-                  className="w-full h-10 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-sm rounded-xl shadow transition-all"
-                >
-                  اختيار
-                </Button>
-              </div>
+              <div className="border-t border-gray-100" />
 
-              {/* Optional Features */}
-              {offer.extra_features.length > 0 && (
-                <div className="px-4 py-3">
-                  <p className="text-[11px] text-gray-400 font-semibold mb-2 uppercase tracking-wide">إضافات اختيارية</p>
-                  <div className="space-y-2">
-                    {offer.extra_features.map((feature) => (
-                      <label
-                        key={feature.id}
-                        htmlFor={`${offer.id}-${feature.id}`}
-                        className="flex items-start gap-2.5 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          id={`${offer.id}-${feature.id}`}
-                          checked={selFeatures.includes(feature.id)}
-                          onChange={() => toggleFeature(offer.id, feature.id)}
-                          className="mt-0.5 w-4 h-4 accent-[#1976d2]"
-                        />
-                        <span className="flex-1 text-gray-700 text-xs leading-relaxed">
-                          {feature.content}
-                          {feature.price > 0 && (
-                            <span className="text-[#1976d2] font-semibold mr-1">(+{feature.price} ﷼)</span>
-                          )}
-                        </span>
-                      </label>
-                    ))}
+              {/* ── Section 2: Features ── */}
+              <div>
+                {/* Features header */}
+                <div className="flex items-center justify-between px-4 py-3">
+                  {/* RIGHT: title */}
+                  <span className="text-base font-bold text-gray-800">المنافع الإضافية</span>
+                  {/* LEFT: + button */}
+                  <div className="w-7 h-7 rounded-full bg-[#1976d2] flex items-center justify-center flex-shrink-0">
+                    <Plus className="w-4 h-4 text-white" strokeWidth={3} />
                   </div>
                 </div>
-              )}
 
-              {/* Extra Expenses */}
-              {offer.extra_expenses.length > 0 && (
-                <div className="px-4 pt-0 pb-3 border-t border-dashed border-gray-200 mx-4 mt-1">
-                  <p className="text-[11px] text-gray-400 font-semibold mb-1.5 mt-2">رسوم إضافية</p>
-                  {offer.extra_expenses.map((expense) => (
-                    <div key={expense.id} className="flex justify-between items-center text-xs text-gray-600 py-0.5">
-                      <span className="text-[#1976d2] font-semibold">{expense.price} ﷼</span>
-                      <span>{expense.reason}</span>
-                    </div>
-                  ))}
+                {/* Feature checkboxes */}
+                {offer.extra_features.length > 0 && (
+                  <div className="px-4 pb-3 space-y-3">
+                    {offer.extra_features.map((feature) => {
+                      const checked = selFeatures.includes(feature.id)
+                      return (
+                        <label
+                          key={feature.id}
+                          htmlFor={`${offer.id}-${feature.id}`}
+                          className="flex items-start gap-3 cursor-pointer"
+                        >
+                          {/* Text RIGHT side */}
+                          <span className="flex-1 text-sm text-gray-700 leading-relaxed">
+                            {feature.content}
+                            {feature.price > 0 && (
+                              <span className="text-[#1976d2] font-semibold mr-1">(+{feature.price} ﷼)</span>
+                            )}
+                          </span>
+                          {/* Custom checkbox LEFT side */}
+                          <div
+                            onClick={() => toggleFeature(offer.id, feature.id)}
+                            className={`mt-0.5 w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 cursor-pointer transition-all ${
+                              checked
+                                ? "bg-[#1976d2] border-[#1976d2]"
+                                : "bg-white border-gray-300"
+                            }`}
+                          >
+                            {checked && (
+                              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
+                              </svg>
+                            )}
+                          </div>
+                          <input
+                            type="checkbox"
+                            id={`${offer.id}-${feature.id}`}
+                            checked={checked}
+                            onChange={() => toggleFeature(offer.id, feature.id)}
+                            className="sr-only"
+                          />
+                        </label>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Extra expenses inside features section */}
+                {offer.extra_expenses.length > 0 && (
+                  <div className="px-4 pb-3 border-t border-dashed border-gray-200 pt-3">
+                    {offer.extra_expenses.map((expense) => (
+                      <div key={expense.id} className="flex justify-between items-center text-xs text-gray-500 py-0.5">
+                        <span className="text-[#1976d2] font-semibold">{expense.price} ﷼</span>
+                        <span>{expense.reason}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t border-gray-100" />
+
+              {/* ── Section 3: Price box + Terms ── */}
+              <div className="flex items-center gap-3 px-4 py-4">
+                {/* Price box — RIGHT side (first in RTL) */}
+                <div className="flex-1 border-2 border-[#1976d2] rounded-2xl overflow-hidden">
+                  <div className="text-center pt-3 pb-1">
+                    <p className="text-xs text-gray-500 mb-1">الإجمالي</p>
+                    <p className="text-2xl font-bold text-[#1976d2] leading-tight">
+                      {totalPrice.toFixed(2)} <span className="text-lg">ريال</span>
+                    </p>
+                  </div>
+                  <div className="p-2">
+                    <button
+                      onClick={() => handleSelectOffer(offer)}
+                      className="w-full h-11 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-base rounded-xl flex items-center justify-center gap-2 transition-all"
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                      اشتري الآن
+                    </button>
+                  </div>
                 </div>
-              )}
+
+                {/* Terms link — LEFT side (second in RTL) */}
+                <div className="flex-shrink-0">
+                  <a href="#" className="text-xs text-[#1976d2] underline underline-offset-2">
+                    الشروط والأحكام
+                  </a>
+                </div>
+              </div>
             </div>
           )
         })}
