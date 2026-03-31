@@ -239,6 +239,7 @@ export default function InsurancePage() {
             onChange={(e) => setBirthDate(e.target.value)}
             className={FIELD_CLASS}
             style={{ colorScheme: "light" }}
+            dir="rtl"
           />
         </div>
 
@@ -253,6 +254,7 @@ export default function InsurancePage() {
             onChange={(e) => setInsuranceStartDate(e.target.value)}
             className={FIELD_CLASS}
             style={{ colorScheme: "light" }}
+            dir="rtl"
             required
           />
         </div>
