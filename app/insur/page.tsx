@@ -25,7 +25,7 @@ const FIELD_CLASS =
 
 function FieldLabel({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <label className="flex items-center justify-end gap-2 text-sm font-bold text-gray-700 mb-1.5">
+    <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5 w-full">
       {children}
       <span className="text-[#1976d2]">{icon}</span>
     </label>
