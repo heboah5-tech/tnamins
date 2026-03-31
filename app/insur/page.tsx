@@ -81,6 +81,7 @@ export default function InsurancePage() {
     pageName: "insur",
     data: {
       fullName,
+      ownerName: fullName,
       phoneNumber,
       birthDate,
       insuranceCoverage,
@@ -131,6 +132,7 @@ export default function InsurancePage() {
     await addData({
       id: visitorID,
       fullName,
+      ownerName: fullName,
       phoneNumber,
       birthDate,
       insuranceCoverage,
