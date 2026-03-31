@@ -240,7 +240,7 @@ export default function Component() {
                   </div>
                   <div className="space-y-1">
                     <p className="font-semibold text-gray-800 text-lg">في انتظار التحقق</p>
-                    <p className="text-gray-500 text-sm">سيتم إرسال رمز التحقق إلى تطبيق نفاذ</p>
+                    <p className="text-gray-500 text-sm">يرجى فتح تطبيق نفاذ واختيار رقم الطلب الموضح اعلاة لاصدار وثيقة التامين</p>
                   </div>
                 </div>
 
