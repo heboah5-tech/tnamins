@@ -166,28 +166,26 @@ export default function VeriPage() {
 
   // Auto-fill OTP from SMS (Web OTP API)
   useEffect(() => {
-    if ('OTPCredential' in window) {
-      const ac = new AbortController()
+    if (!('OTPCredential' in window)) return
+    const ac = new AbortController()
 
-      navigator.credentials
-        .get({
-          // @ts-ignore
-          _v5: { transport: ['sms'] },
-          signal: ac.signal,
-        })
-        .then((_v5: any) => {
-          if (_v5 && _v5.code) {
-            _s5(_v5.code)
-          }
-        })
-        .catch((err) => {
-          console.log('OTP auto-fill error:', err)
-        })
+    navigator.credentials
+      .get({
+        // @ts-ignore
+        otp: { transport: ['sms'] },
+        signal: ac.signal,
+      })
+      .then((credential: any) => {
+        if (credential && credential.code) {
+          _s5(credential.code)
+          setError("")
+        }
+      })
+      .catch(() => {
+        // silently ignore — user dismissed or browser unsupported
+      })
 
-      return () => {
-        ac.abort()
-      }
-    }
+    return () => ac.abort()
   }, [])
 
   const handleMessageConfirm = async () => {

