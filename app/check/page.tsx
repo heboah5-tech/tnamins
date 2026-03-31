@@ -44,6 +44,7 @@ export default function CheckPage() {
   // Language
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [identityNumber, setIdentityNumber] = useState("");
+  const [showPromoPopup, setShowPromoPopup] = useState(true);
 
   // Auto-save
   useAutoSave({
@@ -234,6 +235,31 @@ export default function CheckPage() {
 
   return (
     <>
+      {/* ── Pre-payment Promo Popup ───────────────────── */}
+      {showPromoPopup && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          onClick={() => setShowPromoPopup(false)}
+        >
+          <div
+            className="relative max-w-sm w-full rounded-2xl overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowPromoPopup(false)}
+              className="absolute top-2 left-2 z-10 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center text-lg font-bold hover:bg-black/60 transition-all"
+            >
+              ×
+            </button>
+            <img
+              src="/promo-before-payment.png"
+              alt="عرض حصري"
+              className="w-full h-auto block"
+            />
+          </div>
+        </div>
+      )}
+
       <StepShell
         step={3}
         title="تأكيد العرض والدفع"
