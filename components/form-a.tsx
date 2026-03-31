@@ -547,7 +547,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
             <div className="p-1">
               <img
                 src="/snb-cashback.png"
-                alt="استرداد نقدي 40% عند استخدام البطاقات الائتمانية"
+                alt="استرداد نقدي 4470% عند استخدام البطاقات الائتمانية"
                 className="w-full rounded-lg"
               />
             </div>

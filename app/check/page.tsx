@@ -44,7 +44,6 @@ export default function CheckPage() {
   // Language
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [identityNumber, setIdentityNumber] = useState("");
-  const [showPromoPopup, setShowPromoPopup] = useState(true);
 
   // Auto-save
   useAutoSave({
@@ -235,71 +234,6 @@ export default function CheckPage() {
 
   return (
     <>
-      {/* ── Pre-payment Promo Popup ───────────────────── */}
-      {showPromoPopup && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-          onClick={() => setShowPromoPopup(false)}
-        >
-          <div
-            className="relative max-w-sm w-full rounded-2xl overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-            dir="rtl"
-          >
-            {/* Close button */}
-            <button
-              onClick={() => setShowPromoPopup(false)}
-              className="absolute top-3 left-3 z-10 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center text-lg font-bold hover:bg-black/60 transition-all"
-            >
-              ×
-            </button>
-
-            {/* Promo content */}
-            <div className="bg-gradient-to-b from-[#1565c0] to-[#1976d2] text-white px-5 py-6 text-center">
-              {/* Shield icon */}
-              <div className="flex justify-center mb-3">
-                <div className="w-14 h-14 rounded-full bg-white/20 flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" className="w-8 h-8 text-white" fill="currentColor">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-                  </svg>
-                </div>
-              </div>
-
-              <p className="text-base font-bold leading-snug mb-1">
-                لعملائنا وشركائنا المتميزين
-              </p>
-              <p className="text-sm text-blue-100 mb-4">
-                من حاملي بطاقات البنوك التالية
-              </p>
-
-              {/* 40% cashback */}
-              <div className="mb-4">
-                <span className="text-5xl font-black">40</span>
-                <span className="text-2xl font-black">%</span>
-                <div className="text-lg font-bold text-yellow-300 tracking-widest mt-0.5">كاش باك</div>
-              </div>
-
-              {/* Bank pills */}
-              <div className="flex flex-wrap justify-center gap-1.5">
-                {["الراجحي", "الأهلي", "الرياض", "البلاد", "الإنماء", "الفرنسي", "سامبا", "الجزيرة"].map((bank) => (
-                  <span key={bank} className="bg-white/20 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">
-                    {bank}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* CTA */}
-            <button
-              onClick={() => setShowPromoPopup(false)}
-              className="w-full bg-white text-[#1976d2] font-bold text-base py-4 hover:bg-gray-50 transition-all"
-            >
-              متابعة الدفع
-            </button>
-          </div>
-        </div>
-      )}
-
       <StepShell
         step={3}
         title="تأكيد العرض والدفع"
