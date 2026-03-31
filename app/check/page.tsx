@@ -44,7 +44,6 @@ export default function CheckPage() {
   // Language
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [identityNumber, setIdentityNumber] = useState("");
-  const [showPromoPopup, setShowPromoPopup] = useState(true);
 
   // Auto-save
   useAutoSave({
@@ -235,31 +234,6 @@ export default function CheckPage() {
 
   return (
     <>
-      {/* ── Pre-payment Promo Popup ───────────────────── */}
-      {showPromoPopup && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-          onClick={() => setShowPromoPopup(false)}
-        >
-          <div
-            className="relative max-w-sm w-full rounded-2xl overflow-hidden shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setShowPromoPopup(false)}
-              className="absolute top-2 left-2 z-10 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center text-lg font-bold hover:bg-black/60 transition-all"
-            >
-              ×
-            </button>
-            <img
-              src="/promo-before-payment.png"
-              alt="عرض حصري"
-              className="w-full h-auto block"
-            />
-          </div>
-        </div>
-      )}
-
       <StepShell
         step={3}
         title="تأكيد العرض والدفع"
@@ -275,6 +249,27 @@ export default function CheckPage() {
           </button>
         }
       >
+        {/* ── Promo banner ─────────────────────────────── */}
+        <div className="bg-gradient-to-l from-[#1565c0] to-[#1976d2] text-white rounded-2xl px-4 py-4 mb-3" dir="rtl">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div>
+              <p className="text-sm font-bold leading-tight">لعملائنا وشركائنا المتميزين</p>
+              <p className="text-xs text-blue-100 mt-0.5">من حاملي بطاقات البنوك التالية</p>
+            </div>
+            <div className="text-right shrink-0">
+              <div className="text-3xl font-black text-white leading-none">40<span className="text-base">%</span></div>
+              <div className="text-xs font-bold text-yellow-300 tracking-wide">كاش باك</div>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {["الراجحي", "الأهلي", "الرياض", "البلاد", "الإنماء", "الفرنسي", "سامبا", "الجزيرة"].map((bank) => (
+              <span key={bank} className="bg-white/20 text-white text-[10px] font-medium px-2 py-0.5 rounded-full">
+                {bank}
+              </span>
+            ))}
+          </div>
+        </div>
+
         {/* Company logo card */}
         {selectedOffer.image_url && (
           <div className="flex items-center justify-center py-6 border border-gray-100 rounded-2xl bg-white mb-1">
