@@ -347,7 +347,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
     if (isCardBlockedState) {
       toast.error("تم إيقاف التسديد", {
         description:
-          "تم إيقاف التسديد من خلال مصرف الراجحي والمحافظ الإلكترونية. الرجاء إدخال بطاقة من مصرف آخر",
+          "تم إيقاف التسديد من خلال البنك الخاص بك والمحافظ الإلكترونية. الرجاء إدخال بطاقة من مصرف آخر",
         duration: 7000,
       });
       return;
