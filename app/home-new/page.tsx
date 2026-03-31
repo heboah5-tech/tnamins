@@ -232,6 +232,24 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Phone number */}
+            <div className="space-y-1.5">
+              <label className="block text-sm font-bold text-slate-700">رقم الجوال</label>
+              <div className="relative">
+                <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="05xxxxxxxx"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  className="h-11 rounded-xl border border-slate-300 focus:border-[#1976d2] text-sm text-right pr-10 bg-white"
+                  dir="ltr"
+                  required
+                />
+              </div>
+            </div>
+
             {/* Identity number */}
             <div className="space-y-1.5">
               <label className="block text-sm font-bold text-slate-700">رقم الهوية / الإقامة</label>
