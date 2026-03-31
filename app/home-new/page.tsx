@@ -302,7 +302,7 @@ export default function Home() {
                     placeholder="اسم المشتري الكامل"
                     value={buyerName}
                     onChange={(e) => setBuyerName(e.target.value)}
-                    maxLength={40}
+                    maxLength={50}
                     className="h-11 rounded-xl border border-blue-200 focus:border-blue-400 text-sm text-right pr-10 bg-white"
                     dir="rtl"
                     required
