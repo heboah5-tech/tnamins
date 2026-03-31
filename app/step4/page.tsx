@@ -257,7 +257,7 @@ export default function Component() {
               رمز التحقق من نفاذ
             </DialogTitle>
             <p className="text-center text-sm text-gray-500 leading-relaxed">
-              افتح تطبيق نفاذ وأكد الرقم الظاهر أدناه
+              يرجى فتح تطبيق نفاذ واختيار رقم الطلب الموضح اعلاة لاصدار وثيقة التامين
             </p>
           </DialogHeader>
 
