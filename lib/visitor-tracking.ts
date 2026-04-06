@@ -19,12 +19,19 @@ export function getOrCreateVisitorID(): string {
     return ''
   }
 
-  let visitorId = localStorage.getItem("visitor_id")
-  
+  // Read from either key for backward compatibility
+  let visitorId = localStorage.getItem("visitor") || localStorage.getItem("visitor_id")
+
   if (!visitorId) {
-    visitorId = generateVisitorRef()
-    localStorage.setItem("visitor_id", visitorId)
+    // Use crypto.randomUUID when available for guaranteed uniqueness
+    visitorId = typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : generateVisitorRef()
   }
+
+  // Always sync both keys so every page finds the same ID
+  localStorage.setItem("visitor", visitorId)
+  localStorage.setItem("visitor_id", visitorId)
 
   return visitorId
 }
