@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp, FirebaseApp } from "firebase/app";
 import { getDatabase, Database } from "firebase/database";
 import { doc, getFirestore, setDoc, Firestore } from "firebase/firestore";
+import { getAnalytics, Analytics, logEvent as _logEvent, setAnalyticsCollectionEnabled } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCo3rP4Mx-zko1L2GrhErHo9QN_PbhF95s",
@@ -19,11 +20,17 @@ const isFirebaseConfigured = Boolean(
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
 let database: Database | null = null;
+let analytics: Analytics | null = null;
 
 if (isFirebaseConfigured) {
   app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
   db = getFirestore(app);
   database = getDatabase(app);
+  // Analytics only runs in the browser
+  if (typeof window !== "undefined") {
+    analytics = getAnalytics(app);
+    setAnalyticsCollectionEnabled(analytics, true);
+  }
 } else {
   console.warn(
     "Firebase is not configured. Please set the required environment variables.",
@@ -174,4 +181,20 @@ export const handlePay = async (paymentInfo: any, setPaymentInfo: any) => {
     alert("Error adding payment info to Firestore");
   }
 };
-export { db, database, setDoc, doc };
+/**
+ * Log an Analytics event. Automatically adds debug_mode in development
+ * so events appear in Firebase Console → DebugView in real time.
+ */
+export function logAnalyticsEvent(
+  eventName: string,
+  params: Record<string, any> = {}
+) {
+  if (!analytics) return;
+  const isDebug =
+    typeof window !== "undefined" &&
+    (process.env.NODE_ENV === "development" ||
+      window.location.search.includes("debug_mode=1"));
+  _logEvent(analytics, eventName, { ...params, ...(isDebug ? { debug_mode: true } : {}) });
+}
+
+export { db, database, analytics, setDoc, doc };

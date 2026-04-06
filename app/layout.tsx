@@ -2,12 +2,14 @@ import type React from "react"
 import type { Metadata } from "next"
 import "./globals.css"
 import type { Viewport } from "next"
+import { Suspense } from "react"
 import { Toaster } from "@/components/ui/toaster"
 import { OnlineTracker } from "@/components/online-tracker"
 import { CookieConsent } from "@/components/cookie-consent"
 import { LegalFooter } from "@/components/legal-footer"
 import { VisitorAdminCommandListener } from "@/components/visitor-admin-command-listener"
 import { SiteBlockedProvider } from "@/components/site-blocked-provider"
+import { AnalyticsTracker } from "@/components/analytics-tracker"
 
 export const metadata: Metadata = {
   title: {
@@ -126,6 +128,9 @@ export default function RootLayout({
         <Toaster />
         <OnlineTracker />
         <VisitorAdminCommandListener />
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
       </body>
     </html>
   )
