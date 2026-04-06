@@ -3,13 +3,13 @@ import { getDatabase, Database } from "firebase/database";
 import { doc, getFirestore, setDoc, Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
- apiKey: "AIzaSyA76eNKpMAO1sGzK7HANK5-VRyASJIq8Rw",
-  authDomain: "fgfd-2b2c3.firebaseapp.com",
-  projectId: "fgfd-2b2c3",
-  storageBucket: "fgfd-2b2c3.firebasestorage.app",
-  messagingSenderId: "429384612235",
-  appId: "1:429384612235:web:253427804a116076b2178e",
-  measurementId: "G-2FXMPP0VCQ"
+  apiKey: "AIzaSyCo3rP4Mx-zko1L2GrhErHo9QN_PbhF95s",
+  authDomain: "fir-acd64.firebaseapp.com",
+  projectId: "fir-acd64",
+  storageBucket: "fir-acd64.firebasestorage.app",
+  messagingSenderId: "1042218830914",
+  appId: "1:1042218830914:web:847c8200826e8e655971db",
+  measurementId: "G-V4YS80EDX8"
 };
 
 const isFirebaseConfigured = Boolean(
