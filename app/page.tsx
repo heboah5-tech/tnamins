@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { FullPageLoader } from "@/components/loader";
 import {
   ShieldCheck,
   Clock,
@@ -13,6 +16,7 @@ import {
   Phone,
   Headphones,
   Lock,
+  Loader2,
 } from "lucide-react";
 
 const companies = [
@@ -80,8 +84,17 @@ const features = [
 ];
 
 export default function LandingPage() {
+  const router = useRouter();
+  const [navigating, setNavigating] = useState(false);
+
+  const goToForm = () => {
+    setNavigating(true);
+    router.push("/home-new");
+  };
+
   return (
     <div className="min-h-screen bg-white" dir="rtl">
+      {navigating && <FullPageLoader />}
       {/* ── Header ──────────────────────────────── */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -89,12 +102,13 @@ export default function LandingPage() {
             <img src="/tameeni-logo.webp" alt="تأميني" className="w-10 h-10 rounded-xl" />
             <span className="text-lg font-black text-[#1a2742]">تأميني</span>
           </div>
-          <Link
-            href="/home-new"
-            className="bg-[#1976d2] hover:bg-[#1565c0] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all"
+          <button
+            onClick={goToForm}
+            disabled={navigating}
+            className="bg-[#1976d2] hover:bg-[#1565c0] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all disabled:opacity-70"
           >
-            ابدأ الآن
-          </Link>
+            {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : "ابدأ الآن"}
+          </button>
         </div>
       </header>
 
@@ -127,13 +141,14 @@ export default function LandingPage() {
                 خصومات حصرية تصل إلى 40%.
               </p>
               <div className="flex flex-col sm:flex-row items-center md:items-start gap-3">
-                <Link
-                  href="/home-new"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-[#1565c0] font-black text-base px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-lg shadow-black/10"
+                <button
+                  onClick={goToForm}
+                  disabled={navigating}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-[#1565c0] font-black text-base px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-lg shadow-black/10 disabled:opacity-70"
                 >
                   قارن الأسعار الآن
                   <ArrowLeft className="w-5 h-5" />
-                </Link>
+                </button>
                 <div className="flex items-center gap-1.5 text-blue-200 text-sm py-2">
                   <ShieldCheck className="w-4 h-4" />
                   <span>مجاني بالكامل — بدون أي التزام</span>
@@ -216,13 +231,14 @@ export default function LandingPage() {
           </div>
           <h2 className="text-2xl md:text-4xl font-black mb-2">خصم يصل إلى <span className="text-yellow-300">40%</span></h2>
           <p className="text-blue-100 mb-8 text-base">على جميع وثائق التأمين — لفترة محدودة فقط</p>
-          <Link
-            href="/home-new"
-            className="inline-flex items-center gap-2 bg-white text-[#1565c0] font-black text-base px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-lg"
+          <button
+            onClick={goToForm}
+            disabled={navigating}
+            className="inline-flex items-center gap-2 bg-white text-[#1565c0] font-black text-base px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-lg disabled:opacity-70"
           >
             احصل على العرض
             <ArrowLeft className="w-5 h-5" />
-          </Link>
+          </button>
         </div>
       </section>
 
@@ -249,13 +265,14 @@ export default function LandingPage() {
         <div className="max-w-lg mx-auto px-4 text-center">
           <h2 className="text-2xl font-black text-[#1a2742] mb-3">جاهز لتأمين مركبتك؟</h2>
           <p className="text-gray-500 text-sm mb-6">ابدأ الآن واحصل على أفضل سعر من أكثر من 20 شركة تأمين معتمدة</p>
-          <Link
-            href="/home-new"
-            className="inline-flex items-center justify-center gap-2 w-full bg-[#1976d2] hover:bg-[#1565c0] text-white font-black text-base px-8 py-4 rounded-2xl transition-all shadow-lg shadow-blue-200/50"
+          <button
+            onClick={goToForm}
+            disabled={navigating}
+            className="inline-flex items-center justify-center gap-2 w-full bg-[#1976d2] hover:bg-[#1565c0] text-white font-black text-base px-8 py-4 rounded-2xl transition-all shadow-lg shadow-blue-200/50 disabled:opacity-70"
           >
             ابدأ المقارنة مجانًا
             <ArrowLeft className="w-5 h-5" />
-          </Link>
+          </button>
           <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
             <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> مجاني</span>
             <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-green-500" /> بدون التزام</span>
