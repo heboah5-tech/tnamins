@@ -121,38 +121,45 @@ export default function LandingPage() {
       </header>
 
       {/* ── Hero ───────────────────────────────── */}
-      <section className="bg-[#f8fbff] border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 py-10 md:py-16">
-          <div className="flex flex-col-reverse md:flex-row items-center gap-6 md:gap-10">
+      <section className="bg-gradient-to-b from-[#f0f7ff] to-white">
+        <div className="max-w-6xl mx-auto px-4 py-12 md:py-20">
+          <div className="flex flex-col-reverse md:flex-row items-center gap-8 md:gap-4">
             {/* Image — left side in RTL */}
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 flex justify-center relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-[240px] h-[240px] md:w-[340px] md:h-[340px] rounded-3xl bg-[#e3f0fc] rotate-6" />
+              </div>
               <img
                 src="/motor-hero.webp"
                 alt="تأمين المركبات"
-                className="w-[260px] md:w-[380px]"
+                className="relative z-10 w-[260px] md:w-[380px]"
               />
             </div>
 
             {/* Text — right side in RTL */}
-            <div className="flex-1 text-center md:text-right">
-              <h1 className="text-2xl md:text-4xl font-black text-[#1a2742] leading-snug mb-3">
-                أول منصة لتأمين السيارات في<br />
-                <span className="text-[#1976d2]">السعودية</span>
+            <div className="flex-1 text-center md:text-right space-y-5">
+              <h1 className="text-[26px] md:text-[38px] font-black text-[#1a2742] leading-[1.3]">
+                أول منصة لتأمين السيارات في<br />السعودية
               </h1>
-              <p className="text-sm md:text-base text-gray-500 mb-6 leading-relaxed max-w-md">
+              <p className="text-[13px] md:text-[15px] text-[#7b8fa1] leading-relaxed max-w-[400px] md:mr-0 mx-auto">
                 نوفر لك مقارنة بطاقات التأمين — غير ملزم بالشراء، المقارنة والشراء من الجوال
               </p>
-              <button
-                onClick={goToForm}
-                disabled={navigating}
-                className="inline-flex items-center justify-center gap-2 bg-[#43a047] hover:bg-[#388e3c] text-white font-bold text-sm px-8 py-3.5 rounded-xl transition-all shadow-md disabled:opacity-70"
-              >
-                ابدأ الآن
-                <ArrowLeft className="w-4 h-4" />
-              </button>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-5">
-                {["غير ملزم بالشراء", "المقارنة والشراء من الجوال"].map((t) => (
-                  <span key={t} className="inline-flex items-center gap-1.5 text-xs text-gray-400">
+              <div>
+                <button
+                  onClick={goToForm}
+                  disabled={navigating}
+                  className="inline-flex items-center justify-center gap-2 bg-[#43a047] hover:bg-[#388e3c] text-white font-bold text-[14px] px-10 py-3.5 rounded-full transition-all shadow-md shadow-green-200/50 disabled:opacity-70"
+                >
+                  ابدأ الآن
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-1">
+                {[
+                  "غير ملزم بالشراء",
+                  "المقارنة والشراء من الجوال",
+                ].map((t) => (
+                  <span key={t} className="inline-flex items-center gap-1.5 text-[11px] text-[#94a8b8]">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#43a047]" />
                     {t}
                   </span>
