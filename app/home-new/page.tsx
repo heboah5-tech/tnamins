@@ -208,10 +208,6 @@ export default function Home() {
                 <span className="w-1 h-1 rounded-full bg-blue-300 inline-block" />
                 لمدة يومين فقط
               </span>
-              <span className="text-[11px] text-blue-100 flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-blue-300 inline-block" />
-                ربط فوري مع أبشر
-              </span>
             </div>
           </div>
           <div className="text-5xl font-black text-white shrink-0 leading-none">
