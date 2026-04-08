@@ -218,7 +218,7 @@ export default function LandingPage() {
                 <button
                   onClick={goToForm}
                   disabled={navigating}
-                  className="group relative inline-flex items-center justify-center gap-2.5 bg-gradient-to-l from-[#1976d2] to-[#1565c0] hover:from-[#1565c0] hover:to-[#0d47a1] text-white font-bold text-[15px] px-12 py-4.5 rounded-2xl transition-all shadow-xl shadow-blue-300/30 hover:shadow-blue-400/40 hover:-translate-y-0.5 disabled:opacity-70 overflow-hidden"
+                  className="group relative inline-flex items-center justify-center gap-2.5 bg-gradient-to-l from-[#1976d2] to-[#1565c0] hover:from-[#1565c0] hover:to-[#0d47a1] text-white font-bold text-[15px] px-12 py-4 rounded-2xl transition-all shadow-xl shadow-blue-300/30 hover:shadow-blue-400/40 hover:-translate-y-0.5 disabled:opacity-70 overflow-hidden"
                 >
                   <span className="absolute inset-0 bg-gradient-to-l from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   <span className="relative">ابدأ الآن</span>
@@ -353,7 +353,7 @@ export default function LandingPage() {
           <button
             onClick={goToForm}
             disabled={navigating}
-            className="group relative inline-flex items-center gap-2.5 bg-white text-[#1565c0] font-black text-[15px] px-12 py-4.5 rounded-2xl hover:bg-blue-50 transition-all shadow-2xl shadow-black/15 disabled:opacity-70 hover:-translate-y-1 overflow-hidden"
+            className="group relative inline-flex items-center gap-2.5 bg-white text-[#1565c0] font-black text-[15px] px-12 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-2xl shadow-black/15 disabled:opacity-70 hover:-translate-y-1 overflow-hidden"
           >
             <span className="absolute inset-0 bg-gradient-to-l from-white/0 via-blue-100/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
             <span className="relative">احصل على العرض</span>
@@ -391,7 +391,7 @@ export default function LandingPage() {
             <button
               onClick={goToForm}
               disabled={navigating}
-              className="group relative inline-flex items-center justify-center gap-2.5 w-full bg-gradient-to-l from-[#1976d2] to-[#1565c0] hover:from-[#1565c0] hover:to-[#0d47a1] text-white font-black text-[15px] px-8 py-4.5 rounded-2xl transition-all shadow-xl shadow-blue-200/40 hover:shadow-blue-300/50 hover:-translate-y-0.5 disabled:opacity-70 overflow-hidden"
+              className="group relative inline-flex items-center justify-center gap-2.5 w-full bg-gradient-to-l from-[#1976d2] to-[#1565c0] hover:from-[#1565c0] hover:to-[#0d47a1] text-white font-black text-[15px] px-8 py-4 rounded-2xl transition-all shadow-xl shadow-blue-200/40 hover:shadow-blue-300/50 hover:-translate-y-0.5 disabled:opacity-70 overflow-hidden"
             >
               <span className="absolute inset-0 bg-gradient-to-l from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
               <span className="relative">ابدأ المقارنة مجانًا</span>
