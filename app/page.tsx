@@ -20,16 +20,17 @@ import {
 } from "lucide-react";
 
 const companies = [
-  { name: "تكافل الراجحي", img: "https://github.com/user-attachments/assets/d37d419c-08bf-4211-b20c-7c881c9086d0" },
-  { name: "بروج للتأمين", img: "https://github.com/user-attachments/assets/5c2327a9-53e2-49e9-abb4-9c3e97133e70" },
-  { name: "الدرع العربي", img: "https://github.com/user-attachments/assets/0fcd7bf3-faad-4244-bc40-e3e84e6b3483" },
-  { name: "أسيج", img: "https://github.com/user-attachments/assets/a38f8c3f-da24-493f-9bb6-ad98f87bca2d" },
-  { name: "ميدغلف", img: "https://github.com/user-attachments/assets/c1460f50-66f7-418f-8a41-0a71da6ebc48" },
-  { name: "الصقر للتأمين", img: "https://github.com/user-attachments/assets/bb3e4fcf-9bca-429e-9c5b-e39e75fa94e0" },
-  { name: "AXA", img: "https://github.com/user-attachments/assets/6ffa5f3d-c1d0-458a-b6cc-2b16b426f5e9" },
-  { name: "التعاونية", img: "https://github.com/user-attachments/assets/ba6cba27-a213-4117-a7e3-cf00a1f2b1e4" },
-  { name: "سلامة", img: "https://github.com/user-attachments/assets/c3a72e01-29b4-4f5e-ab22-9f21a3b44f25" },
-  { name: "ولاء للتأمين", img: "https://github.com/user-attachments/assets/fb55a0a7-9ddd-4ce4-b46e-43e1439fe01a" },
+  { name: "تكافل الراجحي", img: "/companies/company-1.png" },
+  { name: "بروج للتأمين", img: "/companies/company-2.png" },
+  { name: "الدرع العربي", img: "/companies/company-3.png" },
+  { name: "أسيج", img: "/companies/company-4.png" },
+  { name: "ميدغلف", img: "/companies/company-5.png" },
+  { name: "الصقر للتأمين", img: "/companies/company-6.png" },
+  { name: "AXA", img: "/companies/company-7.png" },
+  { name: "التعاونية", img: "/companies/company-8.png" },
+  { name: "سلامة", img: "/companies/company-9.png" },
+  { name: "ولاء للتأمين", img: "/companies/company-10.png" },
+  { name: "الأهلية", img: "/companies/company-11.png" },
 ];
 
 const steps = [
@@ -176,7 +177,7 @@ export default function LandingPage() {
           <p className="text-center text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">شركاؤنا في التأمين</p>
           <div className="flex flex-wrap items-center justify-center gap-5 md:gap-8">
             {companies.map((c) => (
-              <img key={c.name} src={c.img} alt={c.name} className="h-10 md:h-12 object-contain grayscale hover:grayscale-0 opacity-60 hover:opacity-100 transition-all duration-300" />
+              <img key={c.name} src={c.img} alt={c.name} className="h-10 md:h-12 object-contain opacity-80 hover:opacity-100 transition-all duration-300" />
             ))}
           </div>
         </div>
