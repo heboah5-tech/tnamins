@@ -277,29 +277,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      {/* ── Footer ──────────────────────────────── */}
-      <footer className="bg-[#1a2742] text-white py-10">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2.5">
-              <img src="/tameeni-logo.webp" alt="تأميني" className="w-9 h-9 rounded-xl" />
-              <div>
-                <span className="text-base font-black">تأميني</span>
-                <p className="text-xs text-gray-400">منصة مقارنة التأمين الأولى في السعودية</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <img src="/mada.jpg" alt="مدى" className="h-6 rounded opacity-70" />
-              <img src="/visa.svg" alt="فيزا" className="h-5 opacity-70" />
-              <img src="/mas.svg" alt="ماستركارد" className="h-6 opacity-70" />
-            </div>
-          </div>
-          <div className="mt-6 pt-6 border-t border-white/10 text-center">
-            <p className="text-xs text-gray-500">© {new Date().getFullYear()} تأميني — جميع الحقوق محفوظة</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
