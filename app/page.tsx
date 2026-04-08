@@ -115,7 +115,7 @@ const features = [
 const stats = [
   { icon: <Users className="w-5 h-5" />, val: "+20", label: "شركة تأمين معتمدة", suffix: "" },
   { icon: <BadgeCheck className="w-5 h-5" />, val: "100", label: "وثيقة تم إصدارها", suffix: "K+" },
-  { icon: <TrendingUp className="w-5 h-5" />, val: "40", label: "خصم يصل إلى", suffix: "%" },
+  { icon: <TrendingUp className="w-5 h-5" />, val: "40", label: "كاش باك يصل إلى", suffix: "%" },
 ];
 
 export default function LandingPage() {
@@ -194,8 +194,8 @@ export default function LandingPage() {
                     <TrendingUp className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-400 font-medium">وفّر</p>
-                    <p className="text-[11px] font-black text-[#1976d2]">40% خصم</p>
+                    <p className="text-[10px] text-gray-400 font-medium">كاش باك</p>
+                    <p className="text-[11px] font-black text-[#1976d2]">40% استرجاع</p>
                   </div>
                 </div>
               </div>
@@ -351,12 +351,12 @@ export default function LandingPage() {
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-6 py-2 mb-8 border border-white/10">
             <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-            <span className="text-yellow-200/90 font-bold text-[12px] tracking-wide">عرض محدود</span>
+            <span className="text-yellow-200/90 font-bold text-[12px] tracking-wide">كاش باك</span>
           </div>
           <h2 className="text-[28px] md:text-[44px] font-black text-white mb-4 leading-tight">
-            خصم يصل إلى <span className="text-yellow-300">40%</span>
+            كاش باك يصل إلى <span className="text-yellow-300">40%</span>
           </h2>
-          <p className="text-blue-100/70 mb-12 text-[15px] max-w-md mx-auto leading-relaxed">على جميع وثائق التأمين — لفترة محدودة فقط</p>
+          <p className="text-blue-100/70 mb-12 text-[15px] max-w-md mx-auto leading-relaxed">على جميع وثائق تأمين المركبات — استرجع جزء من مبلغ التأمين فورًا</p>
           <button
             onClick={goToForm}
             disabled={navigating}
