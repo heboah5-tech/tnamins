@@ -103,13 +103,6 @@ const features = [
     gradient: "from-cyan-500 to-teal-500",
     light: "bg-cyan-50",
   },
-  {
-    icon: <Zap className="w-5 h-5" />,
-    title: "ربط مباشر مع أبشر",
-    desc: "تحقق فوري من بيانات المركبة والمالك",
-    gradient: "from-violet-500 to-purple-500",
-    light: "bg-violet-50",
-  },
 ];
 
 const stats = [
