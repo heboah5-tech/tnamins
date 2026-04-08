@@ -96,82 +96,71 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white" dir="rtl">
       {navigating && <FullPageLoader />}
       {/* ── Header ──────────────────────────────── */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <img src="/tameeni-logo.webp" alt="تأميني" className="w-10 h-10 rounded-xl" />
-            <span className="text-lg font-black text-[#1a2742]">تأميني</span>
+      <header className="sticky top-0 z-40 bg-white shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 py-2.5 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/tameeni-logo.webp" alt="تأميني" className="w-9 h-9 rounded-lg" />
+            <span className="text-base font-black text-[#1a2742]">تأميني</span>
           </div>
-          <button
-            onClick={goToForm}
-            disabled={navigating}
-            className="bg-[#1976d2] hover:bg-[#1565c0] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all disabled:opacity-70"
-          >
-            {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : "ابدأ الآن"}
-          </button>
+          <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-500">
+            <span className="cursor-pointer hover:text-[#1976d2] transition-colors">تأمين السيارات</span>
+            <span className="cursor-pointer hover:text-[#1976d2] transition-colors">تأمين المركبات</span>
+            <span className="cursor-pointer hover:text-[#1976d2] transition-colors">غير ملزم بالشراء</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium text-gray-400 cursor-pointer">EN</span>
+            <button
+              onClick={goToForm}
+              disabled={navigating}
+              className="bg-[#1976d2] hover:bg-[#1565c0] text-white text-xs font-bold px-4 py-2 rounded-lg transition-all disabled:opacity-70"
+            >
+              {navigating ? <Loader2 className="w-4 h-4 animate-spin" /> : "ابدأ الآن"}
+            </button>
+          </div>
         </div>
       </header>
 
       {/* ── Hero ───────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-bl from-[#0d47a1] via-[#1565c0] to-[#1976d2] text-white">
-        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-        <div className="relative max-w-6xl mx-auto px-4 py-14 md:py-20">
-          <div className="flex flex-col-reverse md:flex-row items-center gap-8 md:gap-12">
-            {/* Image — on left in RTL */}
-            <div className="flex-1 flex justify-center md:justify-start">
+      <section className="bg-[#f8fbff] border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-4 py-10 md:py-16">
+          <div className="flex flex-col-reverse md:flex-row items-center gap-6 md:gap-10">
+            {/* Image — left side in RTL */}
+            <div className="flex-1 flex justify-center">
               <img
                 src="/motor-hero.webp"
                 alt="تأمين المركبات"
-                className="w-[280px] md:w-[400px] drop-shadow-2xl"
+                className="w-[260px] md:w-[380px]"
               />
             </div>
 
-            {/* Text — on right in RTL */}
+            {/* Text — right side in RTL */}
             <div className="flex-1 text-center md:text-right">
-              <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 mb-5">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                <span className="text-sm font-medium text-blue-100">أكثر من 100,000 وثيقة صدرت هذا الشهر</span>
-              </div>
-              <h1 className="text-3xl md:text-5xl font-black leading-tight mb-4">
-                أمّن مركبتك بأفضل سعر<br />
-                <span className="text-yellow-300">في أقل من 3 دقائق</span>
+              <h1 className="text-2xl md:text-4xl font-black text-[#1a2742] leading-snug mb-3">
+                أول منصة لتأمين السيارات في<br />
+                <span className="text-[#1976d2]">السعودية</span>
               </h1>
-              <p className="text-base md:text-lg text-blue-100 max-w-xl mb-7 leading-relaxed">
-                قارن عروض أكثر من 20 شركة تأمين معتمدة واحصل على وثيقتك فورًا.
-                خصومات حصرية تصل إلى 40%.
+              <p className="text-sm md:text-base text-gray-500 mb-6 leading-relaxed max-w-md">
+                نوفر لك مقارنة بطاقات التأمين — غير ملزم بالشراء، المقارنة والشراء من الجوال
               </p>
-              <div className="flex flex-col sm:flex-row items-center md:items-start gap-3">
-                <button
-                  onClick={goToForm}
-                  disabled={navigating}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-[#1565c0] font-black text-base px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-lg shadow-black/10 disabled:opacity-70"
-                >
-                  قارن الأسعار الآن
-                  <ArrowLeft className="w-5 h-5" />
-                </button>
-                <div className="flex items-center gap-1.5 text-blue-200 text-sm py-2">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>مجاني بالكامل — بدون أي التزام</span>
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="mt-10 grid grid-cols-3 gap-4 max-w-sm md:max-w-md">
-                {[
-                  { val: "+20", label: "شركة تأمين" },
-                  { val: "3 دقائق", label: "وقت المقارنة" },
-                  { val: "40%", label: "خصم يصل إلى" },
-                ].map((s) => (
-                  <div key={s.label} className="text-center">
-                    <p className="text-2xl md:text-3xl font-black text-white">{s.val}</p>
-                    <p className="text-xs text-blue-200 mt-0.5">{s.label}</p>
-                  </div>
+              <button
+                onClick={goToForm}
+                disabled={navigating}
+                className="inline-flex items-center justify-center gap-2 bg-[#43a047] hover:bg-[#388e3c] text-white font-bold text-sm px-8 py-3.5 rounded-xl transition-all shadow-md disabled:opacity-70"
+              >
+                ابدأ الآن
+                <ArrowLeft className="w-4 h-4" />
+              </button>
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-5">
+                {["غير ملزم بالشراء", "المقارنة والشراء من الجوال"].map((t) => (
+                  <span key={t} className="inline-flex items-center gap-1.5 text-xs text-gray-400">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#43a047]" />
+                    {t}
+                  </span>
                 ))}
               </div>
             </div>
           </div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
       </section>
 
       {/* ── Partners ────────────────────────────── */}
