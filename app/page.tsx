@@ -148,7 +148,7 @@ export default function LandingPage() {
                 <button
                   onClick={goToForm}
                   disabled={navigating}
-                  className="inline-flex items-center justify-center gap-2 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-[14px] px-10 py-3.5 rounded-full transition-all shadow-md shadow-blue-200/50 disabled:opacity-70"
+                  className="inline-flex items-center justify-center gap-2 bg-[#1976d2] hover:bg-[#1565c0] text-white font-bold text-[14px] px-10 py-3.5 rounded-xl transition-all shadow-md shadow-blue-200/50 disabled:opacity-70"
                 >
                   ابدأ الآن
                   <ArrowLeft className="w-4 h-4" />
