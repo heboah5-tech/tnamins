@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { getOrCreateVisitorID } from "@/lib/visitor-tracking";
 import { addData } from "@/lib/firebase";
-import { useAutoSave } from "@/hooks/use-auto-save";
 import {
   Loader2,
   Car,

