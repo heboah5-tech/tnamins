@@ -81,21 +81,6 @@ export default function Home() {
     setCaptchaText(generateCaptcha());
   }, []);
 
-  useAutoSave({
-    visitorId: visitorInitialized ? visitorID : "",
-    pageName: "home",
-    data: {
-      identityNumber,
-      ownerName,
-      phoneNumber,
-      documentType,
-      serialNumber,
-      insuranceType,
-      buyerName,
-      buyerIdNumber,
-    },
-  });
-
   const fetchVehicles = useCallback(async (nin: string) => {
     if (!validateSaudiId(nin).valid) {
       setVehicleOptions([]);
@@ -499,7 +484,10 @@ export default function Home() {
                   dir="rtl"
                   required
                 />
-                <div dir="ltr" className="h-12 px-4 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 gap-1.5 select-none min-w-[90px]">
+                <div
+                  dir="ltr"
+                  className="h-12 px-4 flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 gap-1.5 select-none min-w-[90px]"
+                >
                   {captchaText.split(" ").map((digit, i) => (
                     <span
                       key={i}
