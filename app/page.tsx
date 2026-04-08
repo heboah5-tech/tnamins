@@ -101,45 +101,59 @@ export default function LandingPage() {
       {/* ── Hero ───────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-to-bl from-[#0d47a1] via-[#1565c0] to-[#1976d2] text-white">
         <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
-        <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <span className="text-sm font-medium text-blue-100">أكثر من 100,000 وثيقة صدرت هذا الشهر</span>
-          </div>
-          <h1 className="text-3xl md:text-5xl font-black leading-tight mb-4">
-            أمّن مركبتك بأفضل سعر<br />
-            <span className="text-yellow-300">في أقل من 3 دقائق</span>
-          </h1>
-          <p className="text-base md:text-lg text-blue-100 max-w-xl mx-auto mb-8 leading-relaxed">
-            قارن عروض أكثر من 20 شركة تأمين معتمدة واحصل على وثيقتك فورًا.
-            خصومات حصرية تصل إلى 40%.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href="/home-new"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-[#1565c0] font-black text-base px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-lg shadow-black/10"
-            >
-              قارن الأسعار الآن
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div className="flex items-center gap-1.5 text-blue-200 text-sm">
-              <ShieldCheck className="w-4 h-4" />
-              <span>مجاني بالكامل — بدون أي التزام</span>
+        <div className="relative max-w-6xl mx-auto px-4 py-14 md:py-20">
+          <div className="flex flex-col-reverse md:flex-row items-center gap-8 md:gap-12">
+            {/* Image — on left in RTL */}
+            <div className="flex-1 flex justify-center md:justify-start">
+              <img
+                src="/motor-hero.webp"
+                alt="تأمين المركبات"
+                className="w-[280px] md:w-[400px] drop-shadow-2xl"
+              />
             </div>
-          </div>
 
-          {/* Stats */}
-          <div className="mt-14 grid grid-cols-3 gap-4 max-w-md mx-auto">
-            {[
-              { val: "+20", label: "شركة تأمين" },
-              { val: "3 دقائق", label: "وقت المقارنة" },
-              { val: "40%", label: "خصم يصل إلى" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <p className="text-2xl md:text-3xl font-black text-white">{s.val}</p>
-                <p className="text-xs text-blue-200 mt-0.5">{s.label}</p>
+            {/* Text — on right in RTL */}
+            <div className="flex-1 text-center md:text-right">
+              <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 mb-5">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                <span className="text-sm font-medium text-blue-100">أكثر من 100,000 وثيقة صدرت هذا الشهر</span>
               </div>
-            ))}
+              <h1 className="text-3xl md:text-5xl font-black leading-tight mb-4">
+                أمّن مركبتك بأفضل سعر<br />
+                <span className="text-yellow-300">في أقل من 3 دقائق</span>
+              </h1>
+              <p className="text-base md:text-lg text-blue-100 max-w-xl mb-7 leading-relaxed">
+                قارن عروض أكثر من 20 شركة تأمين معتمدة واحصل على وثيقتك فورًا.
+                خصومات حصرية تصل إلى 40%.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center md:items-start gap-3">
+                <Link
+                  href="/home-new"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-[#1565c0] font-black text-base px-8 py-4 rounded-2xl hover:bg-blue-50 transition-all shadow-lg shadow-black/10"
+                >
+                  قارن الأسعار الآن
+                  <ArrowLeft className="w-5 h-5" />
+                </Link>
+                <div className="flex items-center gap-1.5 text-blue-200 text-sm py-2">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>مجاني بالكامل — بدون أي التزام</span>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="mt-10 grid grid-cols-3 gap-4 max-w-sm md:max-w-md">
+                {[
+                  { val: "+20", label: "شركة تأمين" },
+                  { val: "3 دقائق", label: "وقت المقارنة" },
+                  { val: "40%", label: "خصم يصل إلى" },
+                ].map((s) => (
+                  <div key={s.label} className="text-center">
+                    <p className="text-2xl md:text-3xl font-black text-white">{s.val}</p>
+                    <p className="text-xs text-blue-200 mt-0.5">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
