@@ -198,7 +198,7 @@ export default function Home() {
         <div className="max-w-lg mx-auto flex items-center justify-between gap-3">
           <div className="space-y-2 flex-1">
             <p className="text-base font-bold leading-tight">
-              خصم على تأمين المركبات
+              كاش باك على تأمين المركبات
             </p>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="bg-white/20 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">
