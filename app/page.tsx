@@ -123,7 +123,7 @@ export default function LandingPage() {
       {/* ── Hero ───────────────────────────────── */}
       <section className="bg-gradient-to-b from-[#f0f7ff] to-white">
         <div className="max-w-6xl mx-auto px-4 py-12 md:py-20">
-          <div className="flex flex-col-reverse md:flex-row items-center gap-8 md:gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-4">
             {/* Image — left side in RTL */}
             <div className="flex-1 flex justify-center relative">
               <div className="absolute inset-0 flex items-center justify-center">
