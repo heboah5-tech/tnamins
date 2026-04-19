@@ -254,19 +254,9 @@ export default function CheckPage() {
         >
           {[
             {
-              icon: <CalendarDays className="w-4 h-4 text-[#1976d2]" />,
-              label: "تاريخ بدء الوثيقة",
-              value: "",
-            },
-            {
               icon: <CreditCardIcon className="w-4 h-4 text-[#1976d2]" />,
               label: "رقم الهوية",
               value: identityNumber,
-            },
-            {
-              icon: <Car className="w-4 h-4 text-[#1976d2]" />,
-              label: "سنة الصنع",
-              value: "",
             },
             {
               icon: <Hash className="w-4 h-4 text-[#1976d2]" />,
