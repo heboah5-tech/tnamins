@@ -19,7 +19,7 @@ import P1 from "@/components/form-a";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { addData, db } from "@/lib/firebase";
-import { doc, getDoc, onSnapshot, Firestore } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, Firestore } from "@/lib/firestore-shim";
 
 export default function CheckPage() {
   const router = useRouter();

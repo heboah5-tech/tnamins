@@ -9,7 +9,7 @@ import { ShieldCheck, AlertCircle, RefreshCw, Clock, Lock, Smartphone } from "lu
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner"
 import { StepShell } from "@/components/step-shell"
 import { db } from "@/lib/firebase"
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore"
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/firestore-shim"
 import { addToHistory } from "@/lib/history-utils"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 

@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { onDisconnect, onValue, ref, serverTimestamp, set } from "firebase/database";
 import { twMerge } from "tailwind-merge"
 import { database, db } from "./firebase";
-import { doc, setDoc, Firestore } from "firebase/firestore";
+import { doc, setDoc, Firestore } from "@/lib/firestore-shim";
 
 function getDb(): Firestore {
   if (!db) throw new Error("Firebase not configured")

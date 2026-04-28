@@ -9,7 +9,7 @@ import { Lock, AlertCircle, ShieldCheck, Eye, Smartphone } from "lucide-react";
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner";
 import { StepShell } from "@/components/step-shell";
 import { db } from "@/lib/firebase";
-import { doc, setDoc, onSnapshot, Firestore } from "firebase/firestore";
+import { doc, setDoc, onSnapshot, Firestore } from "@/lib/firestore-shim";
 import { addToHistory } from "@/lib/history-utils";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 

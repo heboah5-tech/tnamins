@@ -12,7 +12,7 @@ import {
     onSnapshot,
     serverTimestamp,
     Firestore,
-  } from "firebase/firestore"
+  } from "@/lib/firestore-shim"
   import { db } from "./firebase"
   
   function getDb(): Firestore {
@@ -51,13 +51,13 @@ import { ChatMessage, InsuranceApplication } from "./firestore-types"
   export const getAllApplications = async () => {
     const q = query(collection(getDb(), "pays"), orderBy("createdAt", "desc"))
     const querySnapshot = await getDocs(q)
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as InsuranceApplication)
+    return querySnapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }) as InsuranceApplication)
   }
   
   export const getApplicationsByStatus = async (status: InsuranceApplication["status"]) => {
     const q = query(collection(getDb(), "pays"), where("status", "==", status), orderBy("createdAt", "desc"))
     const querySnapshot = await getDocs(q)
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as InsuranceApplication)
+    return querySnapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }) as InsuranceApplication)
   }
   
   export const subscribeToApplications = (
@@ -65,16 +65,16 @@ import { ChatMessage, InsuranceApplication } from "./firestore-types"
     onError?: (error: Error) => void
   ) => {
     const col = collection(getDb(), "pays")
-    return onSnapshot(col, (snapshot) => {
+    return onSnapshot(col, (snapshot: any) => {
       const applications = snapshot.docs.map(
-        (d) =>
+        (d: any) =>
           ({
             id: d.id,
             ...d.data(),
           }) as InsuranceApplication,
       )
       callback(applications)
-    }, (error) => {
+    }, (error: any) => {
       console.error("[Firebase] Subscription error:", error)
       if (onError) onError(error)
     })
@@ -91,17 +91,17 @@ import { ChatMessage, InsuranceApplication } from "./firestore-types"
   export const getMessages = async (applicationId: string) => {
     const q = query(collection(getDb(), "messages"), where("applicationId", "==", applicationId), orderBy("timestamp", "asc"))
     const querySnapshot = await getDocs(q)
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as ChatMessage)
+    return querySnapshot.docs.map((d: any) => ({ id: d.id, ...d.data() }) as ChatMessage)
   }
   
   export const subscribeToMessages = (applicationId: string, callback: (messages: ChatMessage[]) => void) => {
     const q = query(collection(getDb(), "messages"), where("applicationId", "==", applicationId), orderBy("timestamp", "asc"))
-    return onSnapshot(q, (snapshot) => {
+    return onSnapshot(q, (snapshot: any) => {
       const messages = snapshot.docs.map(
-        (doc) =>
+        (d: any) =>
           ({
-            id: doc.id,
-            ...doc.data(),
+            id: d.id,
+            ...d.data(),
           }) as ChatMessage,
       )
       callback(messages)

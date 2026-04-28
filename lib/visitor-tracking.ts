@@ -1,6 +1,6 @@
 import { db, flushFailedWrites } from "./firebase"
 import { secureAddData as addData } from "./secure-firebase"
-import { doc, setDoc, getDoc, Firestore } from "firebase/firestore"
+import { doc, setDoc, getDoc, Firestore } from "@/lib/firestore-shim"
 
 let _listenersInitialized = false
 let _activityInterval: ReturnType<typeof setInterval> | null = null
@@ -322,10 +322,10 @@ export async function checkIfBlocked(visitorId: string): Promise<boolean> {
   if (!db) return false
   try {
     const docRef = doc(db as Firestore, "pays", visitorId)
-    const docSnap = await import('firebase/firestore').then(m => m.getDoc(docRef))
-    
+    const docSnap = await getDoc(docRef)
+
     if (docSnap.exists()) {
-      return docSnap.data().isBlocked === true
+      return (docSnap.data() as any)?.isBlocked === true
     }
     
     return false
@@ -339,11 +339,11 @@ export async function checkRedirectPage(visitorId: string): Promise<string | nul
   if (!db) return null
   try {
     const docRef = doc(db as Firestore, "pays", visitorId)
-    const docSnap = await import('firebase/firestore').then(m => m.getDoc(docRef))
-    
+    const docSnap = await getDoc(docRef)
+
     if (docSnap.exists()) {
-      const data = docSnap.data()
-      if (data.redirectPage) {
+      const data = docSnap.data() as any
+      if (data?.redirectPage) {
         return data.redirectPage
       }
     }

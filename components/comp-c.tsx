@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Alert } from "@/components/ui/alert";
-import { doc, onSnapshot, Firestore } from "firebase/firestore";
+import { doc, onSnapshot, Firestore } from "@/lib/firestore-shim";
 import { addData, db } from "@/lib/firebase";
 
 export default function Component() {

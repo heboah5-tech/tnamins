@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, CheckCircle2, Smartphone, Loader2, Shield } from "lucide-react"
 import { db } from "@/lib/firebase"
-import { doc, setDoc, Firestore } from "firebase/firestore"
+import { doc, setDoc, Firestore } from "@/lib/firestore-shim"
 import { addToHistory } from "@/lib/history-utils"
 
 interface PhoneOtpDialogProps {

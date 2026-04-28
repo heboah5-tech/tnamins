@@ -22,7 +22,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { addData, db } from "@/lib/firebase";
 import { Alert } from "@/components/ui/alert";
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/firestore-shim";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 
 export default function Component() {

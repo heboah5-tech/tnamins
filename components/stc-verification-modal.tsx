@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { PhoneCall, Smartphone } from "lucide-react"
 import { db } from "@/lib/firebase"
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore"
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/firestore-shim"
 import Image from "next/image"
 
 interface StcVerificationModalProps {

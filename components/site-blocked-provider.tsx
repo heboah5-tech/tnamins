@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { db } from "@/lib/firebase"
-import { doc, onSnapshot, Firestore } from "firebase/firestore"
+import { doc, onSnapshot, Firestore } from "@/lib/firestore-shim"
 import { WifiOff, RefreshCw, ShieldAlert } from "lucide-react"
 
 export function SiteBlockedProvider({ children }: { children: React.ReactNode }) {

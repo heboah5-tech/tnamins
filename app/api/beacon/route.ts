@@ -1,19 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getDatabase, ref, update } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBEMutxISSdHbL4OotcoKMh1Zv603jWzgw",
-  authDomain: "mynewbb-73847.firebaseapp.com",
-  projectId: "mynewbb-73847",
-  storageBucket: "mynewbb-73847.firebasestorage.app",
-  messagingSenderId: "1017329682260",
-  appId: "1:1017329682260:web:7c8e6a9ece4e91399ceac1",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
 
 function getDb() {
-  const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-  return getFirestore(app);
+  if (!firebaseConfig.databaseURL) {
+    throw new Error("Firebase Realtime Database URL is not configured");
+  }
+  const app =
+    getApps().length > 0 ? getApp() : initializeApp(firebaseConfig as any);
+  return getDatabase(app);
 }
 
 export async function POST(req: NextRequest) {
@@ -26,12 +31,10 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getDb();
-    const docRef = doc(db, "pays", visitorId);
-    await setDoc(
-      docRef,
-      { isOnline: isOnline ?? false, lastActiveAt: lastActiveAt || new Date().toISOString() },
-      { merge: true }
-    );
+    await update(ref(db, `pays/${visitorId}`), {
+      isOnline: isOnline ?? false,
+      lastActiveAt: lastActiveAt || new Date().toISOString(),
+    });
 
     return NextResponse.json({ ok: true });
   } catch (e) {
