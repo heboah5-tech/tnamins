@@ -1,24 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getDatabase, ref, update } from "firebase/database";
+import { createClient } from "@supabase/supabase-js";
 
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-};
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-function getDb() {
-  if (!firebaseConfig.databaseURL) {
-    throw new Error("Firebase Realtime Database URL is not configured");
+function getClient() {
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase is not configured");
   }
-  const app =
-    getApps().length > 0 ? getApp() : initializeApp(firebaseConfig as any);
-  return getDatabase(app);
+  return createClient(supabaseUrl, supabaseKey);
 }
 
 export async function POST(req: NextRequest) {
@@ -30,11 +22,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
 
-    const db = getDb();
-    await update(ref(db, `pays/${visitorId}`), {
+    const supabase = getClient();
+
+    // Merge online status into the existing document's jsonb data.
+    const { data: existing } = await supabase
+      .from("pays")
+      .select("data")
+      .eq("id", visitorId)
+      .maybeSingle();
+
+    const merged = {
+      ...((existing as any)?.data ?? {}),
       isOnline: isOnline ?? false,
       lastActiveAt: lastActiveAt || new Date().toISOString(),
-    });
+    };
+
+    const { error } = await supabase
+      .from("pays")
+      .upsert({ id: visitorId, data: merged }, { onConflict: "id" });
+
+    if (error) throw error;
 
     return NextResponse.json({ ok: true });
   } catch (e) {

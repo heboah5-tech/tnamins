@@ -1,5 +1,4 @@
 import { getApp, getApps, initializeApp, FirebaseApp } from "firebase/app";
-import { getDatabase, Database } from "firebase/database";
 import {
   getAnalytics,
   Analytics,
@@ -8,6 +7,7 @@ import {
 } from "firebase/analytics";
 
 import { doc, setDoc, getDoc, type Firestore } from "@/lib/firestore-shim";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,37 +16,32 @@ const firebaseConfig = {
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
 
 const isFirebaseConfigured = Boolean(
-  firebaseConfig.apiKey &&
-    firebaseConfig.projectId &&
-    firebaseConfig.databaseURL,
+  firebaseConfig.apiKey && firebaseConfig.projectId,
 );
 
 let app: FirebaseApp | null = null;
-let database: Database | null = null;
-// `db` is now an alias for the Realtime Database instance.
-// The Firestore-compatible shim works against this Database.
-let db: Database | null = null;
+// `db` is now the Supabase client. The Firestore-compatible shim works
+// against this client (Postgres + Realtime).
+let db = isSupabaseConfigured ? supabase : null;
 let analytics: Analytics | null = null;
 
-if (isFirebaseConfigured) {
-  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig as any);
-  database = getDatabase(app);
-  db = database;
-  if (typeof window !== "undefined") {
-    try {
-      analytics = getAnalytics(app);
-      setAnalyticsCollectionEnabled(analytics, true);
-    } catch {
-      // Analytics may not be available in all environments
-    }
+// Firebase is kept only for optional Analytics; all data lives in Supabase.
+if (isFirebaseConfigured && typeof window !== "undefined") {
+  try {
+    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig as any);
+    analytics = getAnalytics(app);
+    setAnalyticsCollectionEnabled(analytics, true);
+  } catch {
+    // Analytics may not be available in all environments
   }
-} else {
+}
+
+if (!isSupabaseConfigured) {
   console.warn(
-    "Firebase is not configured. Please set the required environment variables (including NEXT_PUBLIC_FIREBASE_DATABASE_URL).",
+    "Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.",
   );
 }
 
@@ -224,5 +219,5 @@ export function logAnalyticsEvent(
   });
 }
 
-export { db, database, analytics, setDoc, doc };
+export { db, analytics, setDoc, doc };
 export type { Firestore };

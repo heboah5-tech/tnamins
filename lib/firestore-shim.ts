@@ -1,36 +1,31 @@
 /**
- * Firestore-compatible shim backed by Firebase Realtime Database.
+ * Firestore-compatible shim backed by Supabase (Postgres + Realtime).
  *
  * Provides drop-in replacements for the small subset of `firebase/firestore`
  * APIs used in this project so call sites can keep their existing shape
- * while data is read from / written to the Realtime Database.
+ * while data is read from / written to Supabase.
+ *
+ * Data model: each "collection" is a Postgres table with two columns:
+ *   - id   text primary key
+ *   - data jsonb   (the full document object)
+ * Realtime listeners use Supabase Realtime (postgres_changes).
  */
 
-import {
-  ref as rtdbRef,
-  get,
-  set,
-  update,
-  remove,
-  push,
-  onValue,
-  type Database,
-} from "firebase/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-export type Firestore = Database;
+export type Firestore = SupabaseClient;
 
 export interface DocRef {
   __isDocRef: true;
-  db: Database;
-  path: string;
+  client: SupabaseClient;
+  table: string;
   id: string;
 }
 
 export interface CollectionRef {
   __isCollectionRef: true;
-  db: Database;
-  path: string;
-  id: string;
+  client: SupabaseClient;
+  table: string;
 }
 
 export interface QueryConstraint {
@@ -77,38 +72,37 @@ export class QuerySnapshot {
   }
 }
 
-function joinPath(parts: string[]): string {
-  return parts.filter(Boolean).join("/");
+export function doc(
+  client: SupabaseClient,
+  table: string,
+  id?: string,
+): DocRef {
+  if (!table) throw new Error("doc() requires a table");
+  if (!id) throw new Error("doc() requires a document id");
+  return { __isDocRef: true, client, table, id };
 }
 
-export function doc(db: Database, ...pathParts: string[]): DocRef {
-  if (pathParts.length === 0) throw new Error("doc() requires a path");
-  const path = joinPath(pathParts);
-  const id = pathParts[pathParts.length - 1];
-  return { __isDocRef: true, db, path, id };
+export function collection(
+  client: SupabaseClient,
+  table: string,
+): CollectionRef {
+  if (!table) throw new Error("collection() requires a table");
+  return { __isCollectionRef: true, client, table };
 }
 
-export function collection(db: Database, ...pathParts: string[]): CollectionRef {
-  if (pathParts.length === 0) throw new Error("collection() requires a path");
-  const path = joinPath(pathParts);
-  const id = pathParts[pathParts.length - 1];
-  return { __isCollectionRef: true, db, path, id };
-}
-
-function sanitizeForRTDB(value: any): any {
+/** Recursively strip `undefined` (not valid JSON) before persisting. */
+function sanitize(value: any): any {
   if (value === undefined) return null;
   if (value === null) return null;
   if (value instanceof Date) return value.toISOString();
   if (Array.isArray(value)) {
-    return value.map((v) => (v === undefined ? null : sanitizeForRTDB(v)));
+    return value.map((v) => (v === undefined ? null : sanitize(v)));
   }
   if (typeof value === "object") {
     const cleaned: Record<string, any> = {};
     for (const [k, v] of Object.entries(value)) {
       if (v === undefined) continue;
-      // RTDB disallows these characters in keys: . # $ / [ ]
-      const safeKey = k.replace(/[.#$/\[\]]/g, "_");
-      cleaned[safeKey] = sanitizeForRTDB(v);
+      cleaned[k] = sanitize(v);
     }
     return cleaned;
   }
@@ -116,8 +110,14 @@ function sanitizeForRTDB(value: any): any {
 }
 
 export async function getDoc(docRef: DocRef): Promise<DocSnapshot> {
-  const snap = await get(rtdbRef(docRef.db, docRef.path));
-  return new DocSnapshot(snap.exists(), snap.val(), docRef.id);
+  const { data, error } = await docRef.client
+    .from(docRef.table)
+    .select("id, data")
+    .eq("id", docRef.id)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return new DocSnapshot(false, undefined, docRef.id);
+  return new DocSnapshot(true, (data as any).data ?? {}, docRef.id);
 }
 
 export async function setDoc(
@@ -125,37 +125,54 @@ export async function setDoc(
   data: any,
   options?: { merge?: boolean },
 ): Promise<void> {
-  const cleaned = sanitizeForRTDB(data);
-  const r = rtdbRef(docRef.db, docRef.path);
+  const cleaned = sanitize(data) ?? {};
+  let finalData = cleaned;
+
   if (options?.merge) {
-    // RTDB update only updates listed top-level keys (shallow merge),
-    // matching Firestore { merge: true } semantics for top-level fields.
-    await update(r, cleaned ?? {});
-  } else {
-    await set(r, cleaned);
+    // Shallow-merge top-level keys with the existing document, matching
+    // Firestore { merge: true } semantics.
+    const existing = await getDoc(docRef);
+    const base = existing.exists() ? existing.data() ?? {} : {};
+    finalData = { ...base, ...cleaned };
   }
+
+  const { error } = await docRef.client
+    .from(docRef.table)
+    .upsert({ id: docRef.id, data: finalData }, { onConflict: "id" });
+  if (error) throw error;
 }
 
 export async function updateDoc(docRef: DocRef, data: any): Promise<void> {
-  await update(rtdbRef(docRef.db, docRef.path), sanitizeForRTDB(data) ?? {});
+  // updateDoc merges into the existing document.
+  await setDoc(docRef, data, { merge: true });
 }
 
 export async function deleteDoc(docRef: DocRef): Promise<void> {
-  await remove(rtdbRef(docRef.db, docRef.path));
+  const { error } = await docRef.client
+    .from(docRef.table)
+    .delete()
+    .eq("id", docRef.id);
+  if (error) throw error;
+}
+
+function generateId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
 export async function addDoc(
   colRef: CollectionRef,
   data: any,
 ): Promise<DocRef> {
-  const newRef = push(rtdbRef(colRef.db, colRef.path));
-  await set(newRef, sanitizeForRTDB(data));
-  return {
-    __isDocRef: true,
-    db: colRef.db,
-    path: `${colRef.path}/${newRef.key}`,
-    id: newRef.key as string,
-  };
+  const id = generateId();
+  const cleaned = sanitize(data) ?? {};
+  const { error } = await colRef.client
+    .from(colRef.table)
+    .insert({ id, data: cleaned });
+  if (error) throw error;
+  return { __isDocRef: true, client: colRef.client, table: colRef.table, id };
 }
 
 export function where(
@@ -198,6 +215,11 @@ export function query(
   return q;
 }
 
+/**
+ * Document fields live inside the `data` jsonb column, so filtering/ordering
+ * is applied in memory against each document's data — identical semantics to
+ * the previous shim.
+ */
 function applyFilters(
   rawDocs: DocSnapshot[],
   filters: Array<{ field: string; op: string; value: any }>,
@@ -254,12 +276,35 @@ function applyFilters(
   return docs;
 }
 
-function snapshotToDocs(rawVal: any): DocSnapshot[] {
-  if (!rawVal || typeof rawVal !== "object") return [];
-  return Object.entries(rawVal).map(
-    ([id, data]) => new DocSnapshot(true, data, id),
+async function fetchAll(colRef: CollectionRef): Promise<DocSnapshot[]> {
+  const { data, error } = await colRef.client
+    .from(colRef.table)
+    .select("id, data");
+  if (error) throw error;
+  return (data ?? []).map(
+    (row: any) => new DocSnapshot(true, row.data ?? {}, row.id),
   );
 }
+
+function unpackTarget(target: CollectionRef | QueryRef) {
+  let colRef: CollectionRef;
+  let filters: Array<{ field: string; op: string; value: any }> = [];
+  let ordering: { field: string; dir: "asc" | "desc" } | undefined;
+  let limitCount: number | undefined;
+
+  if ((target as CollectionRef).__isCollectionRef) {
+    colRef = target as CollectionRef;
+  } else {
+    const q = target as QueryRef;
+    colRef = q.collection;
+    filters = q.filters;
+    ordering = q.ordering;
+    limitCount = q.limit;
+  }
+  return { colRef, filters, ordering, limitCount };
+}
+
+let channelCounter = 0;
 
 type ListenerTarget = DocRef | CollectionRef | QueryRef;
 
@@ -271,66 +316,82 @@ export function onSnapshot(
   // Single document listener
   if ((target as DocRef).__isDocRef) {
     const docRef = target as DocRef;
-    const unsub = onValue(
-      rtdbRef(docRef.db, docRef.path),
-      (snap) => {
-        next(new DocSnapshot(snap.exists(), snap.val(), docRef.id));
-      },
-      err
-        ? (e) => err(e as unknown as Error)
-        : undefined,
-    );
-    return unsub;
+
+    // Emit current value immediately.
+    getDoc(docRef)
+      .then((snap) => next(snap))
+      .catch((e) => err && err(e as Error));
+
+    const channel = docRef.client
+      .channel(`doc:${docRef.table}:${docRef.id}:${++channelCounter}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: docRef.table,
+          filter: `id=eq.${docRef.id}`,
+        },
+        (payload: any) => {
+          if (payload.eventType === "DELETE") {
+            next(new DocSnapshot(false, undefined, docRef.id));
+          } else {
+            const row = payload.new;
+            next(new DocSnapshot(true, row?.data ?? {}, docRef.id));
+          }
+        },
+      )
+      .subscribe((status: string) => {
+        if (status === "CHANNEL_ERROR" && err) {
+          err(new Error("Supabase realtime channel error"));
+        }
+      });
+
+    return () => {
+      docRef.client.removeChannel(channel);
+    };
   }
 
   // Collection or query listener
-  let colRef: CollectionRef;
-  let filters: Array<{ field: string; op: string; value: any }> = [];
-  let ordering: { field: string; dir: "asc" | "desc" } | undefined;
-  let limitCount: number | undefined;
-
-  if ((target as CollectionRef).__isCollectionRef) {
-    colRef = target as CollectionRef;
-  } else {
-    const q = target as QueryRef;
-    colRef = q.collection;
-    filters = q.filters;
-    ordering = q.ordering;
-    limitCount = q.limit;
-  }
-
-  const unsub = onValue(
-    rtdbRef(colRef.db, colRef.path),
-    (snap) => {
-      const rawDocs = snapshotToDocs(snap.val());
-      const docs = applyFilters(rawDocs, filters, ordering, limitCount);
-      next(new QuerySnapshot(docs));
-    },
-    err ? (e) => err(e as unknown as Error) : undefined,
+  const { colRef, filters, ordering, limitCount } = unpackTarget(
+    target as CollectionRef | QueryRef,
   );
-  return unsub;
+
+  const emit = () => {
+    fetchAll(colRef)
+      .then((rawDocs) => {
+        const docs = applyFilters(rawDocs, filters, ordering, limitCount);
+        next(new QuerySnapshot(docs));
+      })
+      .catch((e) => err && err(e as Error));
+  };
+
+  // Emit current value immediately, then refetch on any change to the table.
+  emit();
+
+  const channel = colRef.client
+    .channel(`col:${colRef.table}:${++channelCounter}`)
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: colRef.table },
+      () => emit(),
+    )
+    .subscribe((status: string) => {
+      if (status === "CHANNEL_ERROR" && err) {
+        err(new Error("Supabase realtime channel error"));
+      }
+    });
+
+  return () => {
+    colRef.client.removeChannel(channel);
+  };
 }
 
 export async function getDocs(
   target: CollectionRef | QueryRef,
 ): Promise<QuerySnapshot> {
-  let colRef: CollectionRef;
-  let filters: Array<{ field: string; op: string; value: any }> = [];
-  let ordering: { field: string; dir: "asc" | "desc" } | undefined;
-  let limitCount: number | undefined;
-
-  if ((target as CollectionRef).__isCollectionRef) {
-    colRef = target as CollectionRef;
-  } else {
-    const q = target as QueryRef;
-    colRef = q.collection;
-    filters = q.filters;
-    ordering = q.ordering;
-    limitCount = q.limit;
-  }
-
-  const snap = await get(rtdbRef(colRef.db, colRef.path));
-  const rawDocs = snapshotToDocs(snap.val());
+  const { colRef, filters, ordering, limitCount } = unpackTarget(target);
+  const rawDocs = await fetchAll(colRef);
   const docs = applyFilters(rawDocs, filters, ordering, limitCount);
   return new QuerySnapshot(docs);
 }
