@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Clock,
 } from "lucide-react";
+
 import { db } from "@/lib/firebase";
 import { doc, onSnapshot, setDoc, Firestore } from "@/lib/firestore-shim";
 import Image from "next/image";
@@ -100,6 +101,7 @@ export function StcVerificationModal({
     } catch (err) {
       console.error("[STC Modal] confirm error:", err);
       setIsConfirming(false);
+
       setShakeError(true);
       setTimeout(() => setShakeError(false), 500);
     }
