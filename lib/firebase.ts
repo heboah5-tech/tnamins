@@ -10,12 +10,13 @@ import { doc, setDoc, getDoc, type Firestore } from "@/lib/firestore-shim";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  apiKey: "AIzaSyDImJFBdhz1xfb5U8chEHTfS8z8rA6ewNM",
+  authDomain: "adcz-3caf2.firebaseapp.com",
+  projectId: "adcz-3caf2",
+  storageBucket: "adcz-3caf2.firebasestorage.app",
+  messagingSenderId: "390373735545",
+  appId: "1:390373735545:web:0a214ddb5078ae95b168a8",
+  measurementId: "G-HTJ88G8FW7",
 };
 
 const isFirebaseConfigured = Boolean(
@@ -31,7 +32,8 @@ let analytics: Analytics | null = null;
 // Firebase is kept only for optional Analytics; all data lives in Supabase.
 if (isFirebaseConfigured && typeof window !== "undefined") {
   try {
-    app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig as any);
+    app =
+      getApps().length > 0 ? getApp() : initializeApp(firebaseConfig as any);
     analytics = getAnalytics(app);
     setAnalyticsCollectionEnabled(analytics, true);
   } catch {
