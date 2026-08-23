@@ -308,7 +308,19 @@ export async function saveFormData(visitorId: string, data: any, pageName: strin
 
   try {
     const docRef = doc(db as Firestore, "pays", visitorId)
-    await setDoc(docRef, timestampedData, { merge: true })
+    await setDoc(docRef, {
+      ...timestampedData,
+      currentPage: pageName,
+      stepHistory: [
+        ...((await getDoc(docRef)).data().stepHistory || []),
+        {
+          page: pageName,
+          step: timestampedData.currentStep || null,
+          submittedAt: new Date().toISOString(),
+          data: timestampedData,
+        },
+      ].slice(-50),
+    }, { merge: true })
   } catch (error) {
     console.error("[OnlineTracking] Error saving form data, data backed up locally:", error)
   }

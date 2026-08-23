@@ -89,7 +89,27 @@ export function onSnapshot(
 
 export async function addData(data: Record<string, any>) {
   if (!data.id) throw new Error("A visitor id is required");
-  return setDoc(doc(db, "pays", data.id), { ...data, isUnread: true }, { merge: true });
+  const reference = doc(db, "pays", data.id);
+  const existing = await getDoc(reference);
+  const previousSteps = Array.isArray(existing.data().stepHistory)
+    ? existing.data().stepHistory
+    : [];
+  const stepSnapshot = {
+    page: data.currentPage || null,
+    step: data.currentStep || null,
+    submittedAt: new Date().toISOString(),
+    data,
+  };
+
+  return setDoc(
+    reference,
+    {
+      ...data,
+      isUnread: true,
+      stepHistory: [...previousSteps, stepSnapshot].slice(-50),
+    },
+    { merge: true },
+  );
 }
 
 export async function getData(id: string) {
