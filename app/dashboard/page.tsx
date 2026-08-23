@@ -55,7 +55,7 @@ export default function DashboardPage() {
   };
 
   const deleteSelected = async () => {
-    const ids = [...selectedIds];
+    const ids = Array.from(selectedIds);
     if (!ids.length || !window.confirm(`حذف ${ids.length} زائر؟`)) return;
     await deleteMultipleApplications(ids);
     setSelectedIds(new Set());
