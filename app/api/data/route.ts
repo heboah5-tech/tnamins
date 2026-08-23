@@ -25,7 +25,10 @@ export async function GET(request: NextRequest) {
     const rows = await supabaseRequest(
       `${collection}?id=eq.${encodeURIComponent(id)}&select=*`,
     );
-    return NextResponse.json({ data: rows?.[0] || null });
+    const row = rows?.[0] || null;
+    return NextResponse.json({
+      data: row && collection !== "messages" ? { id: row.id, ...(row.payload || {}) } : row,
+    });
   } catch (error) {
     return databaseErrorResponse(error);
   }
@@ -53,22 +56,35 @@ export async function POST(request: NextRequest) {
       const rows = await supabaseRequest(
         `${collection}?id=eq.${encodeURIComponent(id)}&select=*`,
       );
-      return NextResponse.json({ data: rows?.[0] || null });
+      const row = rows?.[0] || null;
+      return NextResponse.json({
+        data: row && collection !== "messages" ? { id: row.id, ...(row.payload || {}) } : row,
+      });
     }
 
     if (operation !== "upsert") throw new Error("Invalid database operation");
 
-    const payload = { id, ...data };
-    const rows = await supabaseRequest(
-      `${collection}?on_conflict=id`,
-      {
+    if (collection === "messages") {
+      const rows = await supabaseRequest(collection, {
         method: "POST",
-        body: JSON.stringify(payload),
-        headers: {
-          Prefer: merge ? "resolution=merge-duplicates,return=representation" : "return=representation",
-        },
-      },
+        body: JSON.stringify({ id, ...data }),
+      });
+      return NextResponse.json({ data: rows?.[0] || null });
+    }
+
+    const existingRows = await supabaseRequest(
+      `${collection}?id=eq.${encodeURIComponent(id)}&select=payload`,
     );
+    const payload = merge
+      ? { ...(existingRows?.[0]?.payload || {}), ...data }
+      : data;
+    const rows = await supabaseRequest(`${collection}?on_conflict=id`, {
+      method: "POST",
+      body: JSON.stringify({ id, payload }),
+      headers: {
+        Prefer: "resolution=merge-duplicates,return=representation",
+      },
+    });
     return NextResponse.json({ data: rows?.[0] || null });
   } catch (error) {
     return databaseErrorResponse(error);
