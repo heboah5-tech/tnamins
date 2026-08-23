@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const serviceRoleKey = process.env.SUPABASE_SECRET_KEY;
 
 export function assertSupabaseConfig() {
   if (!supabaseUrl || !serviceRoleKey) {
     throw new Error(
-      "Supabase is not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY on the server.",
+      "Supabase is not configured. Set SUPABASE_URL and SUPABASE_SECRET_KEY on the server.",
     );
   }
 }

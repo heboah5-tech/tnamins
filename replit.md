@@ -64,7 +64,7 @@ The application implements a multi-step wizard:
 
 ### Supabase Services
 - **Postgres**: Primary database for visitor data, form submissions, messages, and settings
-- **Server-side API**: Next.js routes use `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; these values are never exposed to the browser
+- **Server-side API**: Next.js routes use `SUPABASE_URL` and `SUPABASE_SECRET_KEY`; these values are never exposed to the browser
 
 ### Vehicle Data API
 - Next.js App Router API route at `/api/vehicles/[nin]` for fetching vehicle information by NIN (National ID Number)
