@@ -49,6 +49,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ data: rows?.[0] || null });
     }
 
+    if (operation === "get") {
+      const rows = await supabaseRequest(
+        `${collection}?id=eq.${encodeURIComponent(id)}&select=*`,
+      );
+      return NextResponse.json({ data: rows?.[0] || null });
+    }
+
     if (operation !== "upsert") throw new Error("Invalid database operation");
 
     const payload = { id, ...data };

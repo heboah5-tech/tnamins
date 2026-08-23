@@ -1,6 +1,6 @@
 /**
  * Hook to monitor redirect requests from admin dashboard
- * Checks Firebase for redirectPage field and navigates accordingly
+ * Checks Supabase for redirectPage field and navigates accordingly
  */
 
 import { useEffect } from "react";

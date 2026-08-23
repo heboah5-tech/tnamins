@@ -7,7 +7,7 @@ import { FullPageLoader } from "@/components/loader";
 import { StepShell } from "@/components/step-shell";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
-import { addData } from "@/lib/firebase";
+import { addData } from "@/lib/supabase-client";
 import { offerData } from "@/lib/offer-data";
 
 export default function ComparisonPage() {

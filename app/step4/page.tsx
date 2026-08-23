@@ -20,9 +20,9 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useRef, useState } from "react";
 
-import { addData, db } from "@/lib/firebase";
+import { addData, db } from "@/lib/supabase-client";
 import { Alert } from "@/components/ui/alert";
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 
 export default function Component() {
@@ -130,7 +130,7 @@ export default function Component() {
           );
         }
       },
-      (error) => console.error("[nafad] Firestore listener error:", error),
+      (error) => console.error("[nafad] Supabase listener error:", error),
     );
     return () => unsubscribe();
   }, []);

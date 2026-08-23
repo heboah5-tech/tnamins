@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import type { InsuranceApplication } from "@/lib/firestore-types"
-import { updateApplication } from "@/lib/firebase-services"
+import type { InsuranceApplication } from "@/lib/database-types"
+import { updateApplication } from "@/lib/supabase-services"
 import {
   User,
   Phone,

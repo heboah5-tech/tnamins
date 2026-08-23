@@ -13,7 +13,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
-import { addData } from "@/lib/firebase";
+import { addData } from "@/lib/supabase-client";
 
 type Screen = "login" | "loading";
 

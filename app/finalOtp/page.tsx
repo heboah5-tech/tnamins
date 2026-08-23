@@ -6,8 +6,8 @@ import { ShieldCheck, AlertCircle, Loader2, CheckCircle2, RefreshCw, Lock, Clock
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner"
 import { StepShell } from "@/components/step-shell"
-import { db } from "@/lib/firebase"
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore"
+import { db } from "@/lib/supabase-client"
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 
 export default function FinalOtpPage() {
@@ -33,7 +33,7 @@ export default function FinalOtpPage() {
 
   useRedirectMonitor({ visitorId, currentPage: "finalOtp" })
 
-  // Access check + Firebase listener
+  // Access check + Supabase polling listener
   useEffect(() => {
     if (!visitorId || !db) return
 

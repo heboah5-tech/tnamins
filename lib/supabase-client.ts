@@ -1,5 +1,4 @@
 export type DocumentReference = { collection: string; id: string };
-export type Firestore = typeof db;
 
 export type DocumentSnapshot = {
   id: string;
@@ -8,6 +7,7 @@ export type DocumentSnapshot = {
 };
 
 export const db = { provider: "supabase" };
+export type Firestore = typeof db;
 
 export function doc(_database: unknown, collection: string, id: string): DocumentReference {
   return { collection, id };
@@ -51,7 +51,7 @@ export async function updateDoc(
 }
 
 export async function getDoc(reference: DocumentReference): Promise<DocumentSnapshot> {
-  const result = await request("GET", {
+  const result = await request("POST", {
     operation: "get",
     collection: reference.collection,
     id: reference.id,

@@ -1,6 +1,6 @@
 "use client"
 
-import type { InsuranceApplication } from "@/lib/firestore-types"
+import type { InsuranceApplication } from "@/lib/database-types"
 import { Search, Trash2, CheckSquare, Square, CreditCard, Users } from "lucide-react"
 
 interface VisitorSidebarProps {

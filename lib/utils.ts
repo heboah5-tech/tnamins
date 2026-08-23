@@ -1,12 +1,10 @@
 import { clsx, type ClassValue } from "clsx"
-import { onDisconnect, onValue, ref, serverTimestamp, set } from "firebase/database";
 import { twMerge } from "tailwind-merge"
 import { db } from "./supabase-client";
 import { doc, setDoc, Firestore } from "./supabase-client";
-const database = db;
 
 function getDb(): Firestore {
-  if (!db) throw new Error("Firebase not configured")
+  if (!db) throw new Error("Supabase client is not configured")
   return db as Firestore
 }
 
@@ -20,58 +18,21 @@ export const onlyNumbers = (value: string) => {
 
 
 export const setupOnlineStatus = (userId: string) => {
-  if (!userId || !db || !database) return;
-
-  const userStatusRef = ref(database, `/status/${userId}`);
-
-  const userDocRef = doc(getDb(), "pays", userId);
-
-  onDisconnect(userStatusRef)
-    .set({
-      state: "offline",
-      lastChanged: serverTimestamp(),
-    })
-    .then(() => {
-      set(userStatusRef, {
-        state: "online",
-        lastChanged: serverTimestamp(),
-      });
-
-      setDoc(userDocRef, {
-        online: true,
-        lastSeen: serverTimestamp(),
-      }).catch((error) =>
-        console.error("Error updating Firestore document:", error)
-      );
-    })
-    .catch((error) => console.error("Error setting onDisconnect:", error));
-
-  onValue(userStatusRef, (snapshot) => {
-    const status = snapshot.val();
-    if (status?.state === "offline") {
-      setDoc(userDocRef, {
-        online: false,
-        lastSeen: serverTimestamp(),
-      }).catch((error) =>
-        console.error("Error updating Firestore document:", error)
-      );
-    }
-  });
+  if (!userId || !db) return;
+  void setDoc(doc(getDb(), "pays", userId), {
+    isOnline: true,
+    lastActiveAt: new Date().toISOString(),
+  }).catch((error) => console.error("Error updating Supabase record:", error));
 };
 
 export const setUserOffline = async (userId: string) => {
-  if (!userId || !db || !database) return;
+  if (!userId || !db) return;
 
   try {
     await setDoc(doc(getDb(), "pays", userId), {
-      online: false,
-      lastSeen: serverTimestamp(),
+      isOnline: false,
+      lastActiveAt: new Date().toISOString(),
     }, { merge: true });
-
-    await set(ref(database, `/status/${userId}`), {
-      state: "offline",
-      lastChanged: serverTimestamp(),
-    });
   } catch (error) {
     console.error("Error setting user offline:", error);
   }

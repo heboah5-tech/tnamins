@@ -1,5 +1,5 @@
-import { db } from "@/lib/firebase"
-import { doc, onSnapshot } from "firebase/firestore"
+import { db } from "@/lib/supabase-client"
+import { doc, onSnapshot } from "@/lib/supabase-client"
 import { useEffect } from "react"
 
 export const Traker = ({ setCurrentStep }: any) => {

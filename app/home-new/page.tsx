@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { getOrCreateVisitorID } from "@/lib/visitor-tracking";
-import { addData } from "@/lib/firebase";
+import { addData } from "@/lib/supabase-client";
 import {
   Loader2,
   Car,

@@ -11,8 +11,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Alert } from "@/components/ui/alert";
-import { doc, onSnapshot, Firestore } from "firebase/firestore";
-import { addData, db } from "@/lib/firebase";
+import { doc, onSnapshot, Firestore } from "@/lib/supabase-client";
+import { addData, db } from "@/lib/supabase-client";
 
 export default function Component() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);

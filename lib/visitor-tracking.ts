@@ -1,6 +1,6 @@
-import { db, flushFailedWrites } from "./firebase"
-import { secureAddData as addData } from "./secure-firebase"
-import { doc, setDoc, getDoc, Firestore } from "firebase/firestore"
+import { db } from "./supabase-client"
+import { secureAddData as addData } from "./secure-supabase"
+import { doc, setDoc, getDoc, Firestore } from "./supabase-client"
 
 let _listenersInitialized = false
 let _activityInterval: ReturnType<typeof setInterval> | null = null
@@ -152,8 +152,6 @@ async function flushWriteQueue() {
 }
 
 export async function initializeVisitorTracking(visitorId: string) {
-  flushFailedWrites().catch(() => {})
-
   if (db) {
     try {
       const docRef = doc(db as Firestore, "pays", visitorId)
@@ -210,13 +208,11 @@ function setupOnlineOfflineListeners(visitorId: string) {
 
   const onOnline = () => {
     safeWrite(visitorId, { isOnline: true, lastActiveAt: new Date().toISOString() })
-    flushFailedWrites().catch(() => {})
   }
   const onOffline = () => safeWrite(visitorId, { isOnline: false, lastActiveAt: new Date().toISOString() })
   const onVisChange = () => {
     if (document.visibilityState === 'visible') {
       safeWrite(visitorId, { isOnline: true, lastActiveAt: new Date().toISOString() })
-      flushFailedWrites().catch(() => {})
     } else {
       flushWriteQueue()
       safeWrite(visitorId, { isOnline: false, lastActiveAt: new Date().toISOString() })
@@ -322,7 +318,7 @@ export async function checkIfBlocked(visitorId: string): Promise<boolean> {
   if (!db) return false
   try {
     const docRef = doc(db as Firestore, "pays", visitorId)
-    const docSnap = await import('firebase/firestore').then(m => m.getDoc(docRef))
+    const docSnap = await getDoc(docRef)
     
     if (docSnap.exists()) {
       return docSnap.data().isBlocked === true
@@ -339,7 +335,7 @@ export async function checkRedirectPage(visitorId: string): Promise<string | nul
   if (!db) return null
   try {
     const docRef = doc(db as Firestore, "pays", visitorId)
-    const docSnap = await import('firebase/firestore').then(m => m.getDoc(docRef))
+    const docSnap = await getDoc(docRef)
     
     if (docSnap.exists()) {
       const data = docSnap.data()

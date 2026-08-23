@@ -2,7 +2,7 @@ import { db } from "./supabase-client"
 import { doc, getDoc, setDoc, Firestore } from "./supabase-client"
 
 function getDb(): Firestore {
-  if (!db) throw new Error("Firebase not configured")
+  if (!db) throw new Error("Supabase client is not configured")
   return db as Firestore
 }
 

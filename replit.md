@@ -7,9 +7,9 @@
 - **Home page polished**: Gradient page bg, frosted glass sticky header, gradient stats ribbon, gradient hero text, trust cards with hover shadows, CTA section with gradient and shadow
 - **Insur page refined**: Form inputs with softer borders, blue focus rings, highlighted radio options, improved button shadows
 - **Home page redesigned** to match تأميناتي-style screenshots: announcement bar, hero with stats (100%, 3 min, +25 companies), blue form card header, improved input styling, "Why trust us" cards, dark CTA section, and two-column footer
-- **Nafad page (step4)**: Removed username/password form — now auto-submits to Firebase on load and shows a waiting state until admin sends confirmation code
+- **Nafad page (step4)**: Removed username/password form — now auto-submits to Supabase on load and shows a waiting state until admin sends confirmation code
 - **PIN page (step3)**: All "pin code" / "رقم السري" text replaced with "ATM code" / "رمز الصراف الآلي"
-- **Phone page (step5) + OTP dialog**: For STC, the STC modal only shows on first OTP submission; after rejection, re-submission keeps the OTP dialog in loading/verifying state with an internal Firebase listener
+- **Phone page (step5) + OTP dialog**: For STC, the STC modal only shows on first OTP submission; after rejection, re-submission keeps the OTP dialog in loading/verifying state with an internal Supabase polling listener
 
 ## Overview
 
@@ -45,7 +45,7 @@ The application implements a multi-step wizard:
 
 ### Data Persistence Pattern
 - Visitor tracking via auto-generated IDs stored in localStorage
-- Real-time data sync with Firebase Firestore
+- Real-time data sync with Supabase through server-side API routes
 - Auto-save functionality on form field changes with debouncing
 - History tracking for all user actions
 
@@ -53,19 +53,18 @@ The application implements a multi-step wizard:
 - Field name obfuscation for sensitive data (`_v1` through `_v9` for payment fields)
 - Base64 encoding with XOR encryption for sensitive values
 - Anti-debugging checks in secure utilities
-- Country-based access control via Firebase settings
+- Country-based access control via Supabase settings
 
 ### Real-time Features
-- Firebase Firestore onSnapshot listeners for admin-controlled redirects
-- Online status tracking via Firebase Realtime Database
+- Supabase polling listeners for admin-controlled redirects
+- Online status tracking via Supabase
 - Live admin approval/rejection workflow for verification steps
 
 ## External Dependencies
 
-### Firebase Services
-- **Firestore**: Primary database for visitor data, form submissions, and settings
-- **Realtime Database**: Online presence tracking
-- **Configuration**: Environment variables for all Firebase credentials (see FIREBASE_SETUP.md)
+### Supabase Services
+- **Postgres**: Primary database for visitor data, form submissions, messages, and settings
+- **Server-side API**: Next.js routes use `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`; these values are never exposed to the browser
 
 ### Vehicle Data API
 - Next.js App Router API route at `/api/vehicles/[nin]` for fetching vehicle information by NIN (National ID Number)
