@@ -1,5 +1,5 @@
-import { db } from "@/lib/firebase"
-import { doc, getDoc, setDoc, Firestore } from "firebase/firestore"
+import { db } from "@/lib/supabase-client"
+import { doc, getDoc, setDoc, Firestore } from "@/lib/supabase-client"
 
 function getDb(): Firestore {
   if (!db) throw new Error("Firebase not configured")

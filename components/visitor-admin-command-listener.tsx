@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { doc, onSnapshot, setDoc, Firestore } from "firebase/firestore"
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client"
 import { toast } from "sonner"
-import { db } from "@/lib/firebase"
+import { db } from "@/lib/supabase-client"
 
 interface VisitorAdminCommand {
   id?: string

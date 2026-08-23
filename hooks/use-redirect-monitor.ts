@@ -6,8 +6,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { checkRedirectPage, clearRedirectPage } from "@/lib/visitor-tracking";
-import { db } from "@/lib/firebase";
-import { doc, onSnapshot, Firestore } from "firebase/firestore";
+import { db } from "@/lib/supabase-client";
+import { doc, onSnapshot, Firestore } from "@/lib/supabase-client";
 
 interface UseRedirectMonitorProps {
   visitorId: string;

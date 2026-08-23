@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
-import { logAnalyticsEvent } from "@/lib/firebase";
+import { logAnalyticsEvent } from "@/lib/supabase-client";
 
 export function AnalyticsTracker() {
   const pathname = usePathname();

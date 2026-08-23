@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react"
 import { Send, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { subscribeToMessages, sendMessage } from "@/lib/firebase-services"
+import { subscribeToMessages, sendMessage } from "@/lib/supabase-services"
 import type { ChatMessage } from "@/lib/firestore-types"
 
 interface ChatPanelProps {
