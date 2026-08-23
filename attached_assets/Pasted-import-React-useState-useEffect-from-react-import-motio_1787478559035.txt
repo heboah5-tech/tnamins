@@ -1,0 +1,178 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { TopBar, LeftNav } from './components/Navigation';
+import { Sidebar } from './components/Sidebar';
+import { MainContent } from './components/MainContent';
+import { Conversation, Transaction } from './types';
+import { subscribeToConversations, subscribeToTransaction } from './lib/firestore';
+import { db } from './lib/firebase';
+import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
+
+// Mock Data for Seeding
+const SEED_CONVERSATIONS: Conversation[] = [
+  { id: '1', userName: 'عبدالله عايض الكدري', timestamp: '2 ساعات', paymentMethod: 'الدفع ببطاقة الائتمان', unreadCount: 1, status: 'pending' },
+  { id: '2', userName: 'Abeer Ezzat Mohamed H...', timestamp: '2 ساعات', paymentMethod: 'الدفع ببطاقة الائتمان', status: 'pending' },
+  { id: '3', userName: 'شاكر سعود صالح النفيعي', timestamp: '2 ساعات', paymentMethod: 'الدفع ببطاقة الائتمان', status: 'pending' },
+  { id: '4', userName: 'محمد الفوزان', timestamp: '2 ساعات', paymentMethod: 'الدفع ببطاقة الائتمان', unreadCount: 1, status: 'pending' },
+  { id: '5', userName: 'عبدالرحمن هزاع محمد ال...', timestamp: '2 ساعات', paymentMethod: 'الدفع ببطاقة الائتمان', unreadCount: 1, status: 'pending' },
+  { id: '6', userName: 'على عبدالرحمن العيسى', timestamp: '2 ساعات', paymentMethod: 'الدفع ببطاقة الائتمان', status: 'pending' },
+  { id: '7', userName: 'حميدمطلق القرشي', timestamp: '3 ساعات', paymentMethod: 'رمز التحقق (OTP)', status: 'completed' },
+  { id: '8', userName: 'ياسر على على محمد حسن', timestamp: '3 ساعات', paymentMethod: 'الدفع ببطاقة الائتمان', status: 'pending' },
+  { id: '9', userName: 'سارة العتيبي', timestamp: '4 ساعات', paymentMethod: 'الدفع ببطاقة الائتمان', status: 'rejected' },
+  { id: '10', userName: 'خالد العنزي', timestamp: '5 ساعات', paymentMethod: 'رمز التحقق (OTP)', status: 'pending' }
+];
+
+const SEED_TRANSACTIONS: Transaction[] = [
+  {
+    id: 't1',
+    conversationId: '1',
+    serviceTime: '08:30 ص',
+    serviceFee: 150,
+    vat: 22.5,
+    total: 172.5,
+    userPhone: '0567891234',
+    userIdNumber: '1023456789',
+    location: 'مواطن سعودي',
+    cardDetails: {
+      holderName: 'عبدالله عايض الكدري',
+      bank: 'Al Rajhi Bank',
+      last4: '1234',
+      expiry: '05/28',
+      type: 'DEBIT VISA'
+    }
+  },
+  {
+    id: 't2',
+    conversationId: '2',
+    serviceTime: '10:15 ص',
+    serviceFee: 200,
+    vat: 30,
+    total: 230,
+    userPhone: '0555123456',
+    userIdNumber: '1034567890',
+    location: 'مقيم',
+    cardDetails: {
+      holderName: 'Abeer Ezzat Mohamed',
+      bank: 'SNB',
+      last4: '5678',
+      expiry: '12/26',
+      type: 'CREDIT MASTERCARD'
+    }
+  },
+  {
+    id: 't3',
+    conversationId: '3',
+    serviceTime: '02:45 م',
+    serviceFee: 75,
+    vat: 11.25,
+    total: 86.25,
+    userPhone: '0501234567',
+    userIdNumber: '1045678901',
+    location: 'مواطن سعودي',
+    cardDetails: {
+      holderName: 'شاكر سعود صالح النفيعي',
+      bank: 'Riyad Bank',
+      last4: '9012',
+      expiry: '08/29',
+      type: 'DEBIT VISA'
+    }
+  },
+  {
+    id: 't7',
+    conversationId: '7',
+    serviceTime: '06:00 م',
+    serviceFee: 100,
+    vat: 15,
+    total: 115,
+    userPhone: '0505713514',
+    userIdNumber: '1012648364',
+    location: 'مواطن سعودي',
+    cardDetails: {
+      holderName: 'حميدمطلق القرشي',
+      bank: 'SABB',
+      last4: '7785',
+      expiry: '02/30',
+      type: 'DEBIT VISA'
+    }
+  }
+];
+
+export default function App() {
+  const [selectedConversationId, setSelectedConversationId] = useState<string>('7');
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Seeding Logic
+  useEffect(() => {
+    async function seedData() {
+      const batch = writeBatch(db);
+      SEED_CONVERSATIONS.forEach(c => {
+        batch.set(doc(db, 'conversations', c.id), c);
+      });
+      SEED_TRANSACTIONS.forEach(t => {
+        batch.set(doc(db, 'transactions', t.id), t);
+      });
+      await batch.commit();
+    }
+    seedData();
+  }, []);
+
+  // Real-time Subscriptions
+  useEffect(() => {
+    const unsub = subscribeToConversations((data) => {
+      setConversations(data);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
+    if (selectedConversationId) {
+      const unsub = subscribeToTransaction(selectedConversationId, (data) => {
+        setSelectedTransaction(data);
+      });
+      return () => unsub();
+    }
+  }, [selectedConversationId]);
+
+  if (loading && conversations.length === 0) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-6">
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+            className="w-12 h-12 border-[3px] border-blue-500/20 border-t-blue-600 rounded-full shadow-lg shadow-blue-100" 
+          />
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-slate-800 font-black text-sm tracking-tight">LEO Panel</p>
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest animate-pulse">Initializing Interface...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-white text-gray-900 font-sans selection:bg-blue-100">
+      <TopBar title="صندوق الوارد" />
+      
+      <div className="flex flex-1 overflow-hidden" dir="ltr">
+        <LeftNav />
+        
+        <div className="flex flex-1 overflow-hidden" dir="rtl">
+          <Sidebar 
+            conversations={conversations} 
+            selectedId={selectedConversationId}
+            onSelect={setSelectedConversationId}
+          />
+          
+          <MainContent 
+            transaction={selectedTransaction} 
+          />
+        </div>
+      </div>
+    </div>
+  );
+}

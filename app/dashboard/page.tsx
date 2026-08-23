@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import { Archive, BarChart3, Inbox, Settings, Users } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { VisitorSidebar } from "@/components/visitor-sidebar";
 import { VisitorDetails } from "@/components/visitor-details";
@@ -195,6 +196,31 @@ export default function DashboardPage() {
             </button>
           )}
         </section>
+        <aside className="hidden md:flex w-16 shrink-0 bg-slate-950 text-slate-400 flex-col items-center py-4 gap-3" dir="ltr">
+          <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-900/30">
+            <Inbox size={17} />
+          </div>
+          <div className="w-8 h-px bg-slate-800 my-1" />
+          {[
+            { icon: Users, label: "الزوار", active: true },
+            { icon: BarChart3, label: "الإحصائيات" },
+            { icon: Archive, label: "الأرشيف" },
+          ].map(({ icon: Icon, label, active }) => (
+            <button
+              key={label}
+              title={label}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                active ? "bg-white/10 text-blue-400" : "hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <Icon size={17} />
+            </button>
+          ))}
+          <div className="flex-1" />
+          <button title="الإعدادات" className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-white/10 hover:text-white transition-colors">
+            <Settings size={17} />
+          </button>
+        </aside>
       </div>
     </main>
   );
