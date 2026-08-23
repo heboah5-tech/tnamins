@@ -1,0 +1,179 @@
+ray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 91ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 168ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 231ms
+ POST /api/data 200 in 374ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 72ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 86ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 76ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 71ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 72ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 68ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 88ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 109ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 102ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 108ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 105ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 86ms
+ POST /api/data 200 in 672ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 114ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 91ms
+[Supabase] Error: Invalid database payload
+    at POST (app/api/data/route.ts:44:13)
+  42 |     validateId(id);
+  43 |     if (!data || typeof data !== "object" || Array.isArray(data)) {
+> 44 |       throw new Error("Invalid database payload");
+     |             ^
+  45 |     }
+  46 |
+  47 |     if (operation === "insert") {
+ POST /api/data 500 in 76ms

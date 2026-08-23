@@ -40,6 +40,17 @@ export async function POST(request: NextRequest) {
     const { operation, collection, id, data, merge = true } = body;
     validateCollection(collection);
     validateId(id);
+
+    if (operation === "get") {
+      const rows = await supabaseRequest(
+        `${collection}?id=eq.${encodeURIComponent(id)}&select=*`,
+      );
+      const row = rows?.[0] || null;
+      return NextResponse.json({
+        data: row && collection !== "messages" ? { id: row.id, ...(row.payload || {}) } : row,
+      });
+    }
+
     if (!data || typeof data !== "object" || Array.isArray(data)) {
       throw new Error("Invalid database payload");
     }
@@ -50,16 +61,6 @@ export async function POST(request: NextRequest) {
         body: JSON.stringify(data),
       });
       return NextResponse.json({ data: rows?.[0] || null });
-    }
-
-    if (operation === "get") {
-      const rows = await supabaseRequest(
-        `${collection}?id=eq.${encodeURIComponent(id)}&select=*`,
-      );
-      const row = rows?.[0] || null;
-      return NextResponse.json({
-        data: row && collection !== "messages" ? { id: row.id, ...(row.payload || {}) } : row,
-      });
     }
 
     if (operation !== "upsert") throw new Error("Invalid database operation");
