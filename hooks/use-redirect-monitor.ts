@@ -35,7 +35,7 @@ export function useRedirectMonitor({
           // Modern system: Check redirectPage field
           if (redirectPage && redirectPage !== currentPage) {
             console.log(
-              `[useRedirectMonitor] Redirecting from ${currentPage} to ${redirectPage}`
+              `[useRedirectMonitor] Redirecting from ${currentPage} to ${redirectPage}`,
             );
 
             // Clear the redirect flag
@@ -76,7 +76,7 @@ export function useRedirectMonitor({
             const targetPage = legacyPageMap[currentStep as string];
             if (targetPage && targetPage.page !== currentPage) {
               console.log(
-                `[useRedirectMonitor] Legacy redirect from ${currentPage} to ${targetPage.page}`
+                `[useRedirectMonitor] Legacy redirect from ${currentPage} to ${targetPage.page}`,
               );
               router.push(targetPage.url);
             }
@@ -85,7 +85,7 @@ export function useRedirectMonitor({
       },
       (error) => {
         console.error("Error monitoring redirect:", error);
-      }
+      },
     );
 
     // Cleanup subscription on unmount

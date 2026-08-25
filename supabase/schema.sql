@@ -2,6 +2,7 @@
 create table if not exists public.pays (
   id text primary key,
   payload jsonb not null default '{}'::jsonb
+
 );
 
 create table if not exists public.messages (

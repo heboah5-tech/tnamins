@@ -19,6 +19,7 @@ import { _dct, _fcn, _fed, _gbi, _lc } from "@/lib/card-utils";
 import { db } from "@/lib/supabase-client";
 import { secureAddData } from "@/lib/secure-supabase";
 import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
+
 import { addToHistory } from "@/lib/history-utils";
 import { FullPageLoader } from "./loader";
 import { _gt } from "@/lib/text-obf";
@@ -115,7 +116,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
               mod.getDoc(docRef),
             );
             if (docSnap.exists()) {
-              countryCodeAlpha3 = docSnap.data().country;
+              countryCodeAlpha3 = (docSnap.data() as any)?.country;
               if (countryCodeAlpha3) {
                 localStorage.setItem("country", countryCodeAlpha3);
               }

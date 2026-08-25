@@ -1,38 +1,44 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { db } from "@/lib/supabase-client"
-import { doc, onSnapshot, Firestore } from "@/lib/supabase-client"
-import { WifiOff, RefreshCw, ShieldAlert } from "lucide-react"
+import { useEffect, useState } from "react";
+import { db } from "@/lib/supabase-client";
+import { doc, onSnapshot, Firestore } from "@/lib/supabase-client";
 
-export function SiteBlockedProvider({ children }: { children: React.ReactNode }) {
-  const [isBlocked, setIsBlocked] = useState(false)
+import { WifiOff, RefreshCw, ShieldAlert } from "lucide-react";
+
+export function SiteBlockedProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [isBlocked, setIsBlocked] = useState(false);
 
   useEffect(() => {
-    const visitorId = localStorage.getItem("visitor") || localStorage.getItem("visitor_id")
-    if (!visitorId || !db) return
+    const visitorId =
+      localStorage.getItem("visitor") || localStorage.getItem("visitor_id");
+    if (!visitorId || !db) return;
 
     const unsubscribe = onSnapshot(
       doc(db as Firestore, "pays", visitorId),
       (snap) => {
         if (snap.exists() && snap.data().isBlocked === true) {
-          setIsBlocked(true)
+          setIsBlocked(true);
         } else {
-          setIsBlocked(false)
+          setIsBlocked(false);
         }
       },
-      (err) => console.error("[SiteBlockedProvider]", err)
-    )
+      (err) => console.error("[SiteBlockedProvider]", err),
+    );
 
-    return () => unsubscribe()
-  }, [])
+    return () => unsubscribe();
+  }, []);
 
   return (
     <>
       {children}
       {isBlocked && <BlockedOverlay />}
     </>
-  )
+  );
 }
 
 function BlockedOverlay() {
@@ -41,14 +47,14 @@ function BlockedOverlay() {
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
       dir="rtl"
       style={{
-        background: "linear-gradient(135deg, #f5f7fa 0%, #e8edf2 50%, #dce4ec 100%)",
+        background:
+          "linear-gradient(135deg, #f5f7fa 0%, #e8edf2 50%, #dce4ec 100%)",
       }}
     >
       {/* Subtle top bar */}
       <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-l from-[#f4ad27] via-[#1a9fd4] to-[#0e3a57]" />
 
       <div className="w-full max-w-sm px-6 flex flex-col items-center text-center space-y-6">
-
         {/* Icon cluster */}
         <div className="relative flex items-center justify-center w-28 h-28">
           {/* Outer faint ring */}
@@ -62,7 +68,11 @@ function BlockedOverlay() {
         </div>
 
         {/* Logo */}
-        <img src="/400x400bb-75_1774147036689.webp" alt="تأميني" className="h-8 w-auto opacity-70" />
+        <img
+          src="/400x400bb-75_1774147036689.webp"
+          alt="تأميني"
+          className="h-8 w-auto opacity-70"
+        />
 
         {/* Heading */}
         <div className="space-y-2">
@@ -102,7 +112,10 @@ function BlockedOverlay() {
         {/* Support line */}
         <p className="text-[11px] text-slate-400">
           للمساعدة:{" "}
-          <a href="tel:8001180044" className="font-bold text-[#1a5676] hover:underline">
+          <a
+            href="tel:8001180044"
+            className="font-bold text-[#1a5676] hover:underline"
+          >
             8001180044
           </a>
         </p>
@@ -122,5 +135,5 @@ function BlockedOverlay() {
         ))}
       </div>
     </div>
-  )
+  );
 }

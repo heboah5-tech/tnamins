@@ -10,16 +10,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false }, { status: 400 });
     }
 
-    await supabaseRequest(
-      `pays?id=eq.${encodeURIComponent(visitorId)}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({
-          isOnline: isOnline ?? false,
-          lastActiveAt: lastActiveAt || new Date().toISOString(),
-        }),
-      },
-    );
+    await supabaseRequest(`pays?id=eq.${encodeURIComponent(visitorId)}`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        isOnline: isOnline ?? false,
+        lastActiveAt: lastActiveAt || new Date().toISOString(),
+      }),
+    });
 
     return NextResponse.json({ ok: true });
   } catch (e) {

