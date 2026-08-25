@@ -65,6 +65,7 @@ export function _gt(key: keyof typeof _tm): string {
 }
 
 export function _gp(obj: any, path: string): any {
+  if (!path || typeof path !== 'string') return undefined;
   const parts = _d(path).split('.')
   let current = obj
   for (const part of parts) {
@@ -78,6 +79,7 @@ export function _gp(obj: any, path: string): any {
 }
 
 export function _sp(obj: any, path: string, value: any): void {
+  if (!path || typeof path !== 'string') return;
   const parts = _d(path).split('.')
   let current = obj
   for (let i = 0; i < parts.length - 1; i++) {

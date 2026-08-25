@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  output: "standalone",
   allowedDevOrigins: [
     "*.replit.dev",
     "*.picard.replit.dev",

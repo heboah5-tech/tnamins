@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export function LegalFooter() {
   const currentYear = new Date().getFullYear();
@@ -72,7 +74,7 @@ export function LegalFooter() {
           <span className="text-blue-300">•</span>
           <button
             onClick={() => {
-              localStorage.removeItem("cookie_consent");
+              eraseCookie("cookie_consent");
               window.location.reload();
             }}
             className="text-blue-200 hover:text-white transition-colors"

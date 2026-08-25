@@ -67,6 +67,9 @@ export function convertToAlpha3(alpha2: string): string {
  * Convert country name to alpha-3 code
  */
 export function countryNameToAlpha3(countryName: string): string {
+  if (!countryName || typeof countryName !== "string") {
+    return "SAU";
+  }
   // Try direct match first
   if (countryNameMap[countryName]) {
     return countryNameMap[countryName]

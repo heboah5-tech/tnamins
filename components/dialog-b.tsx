@@ -21,6 +21,8 @@ import { db } from "@/lib/supabase-client";
 import { doc, setDoc, Firestore } from "@/lib/supabase-client";
 
 import { addToHistory } from "@/lib/history-utils";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 interface PhoneOtpDialogProps {
   open: boolean;
@@ -81,7 +83,7 @@ export function PhoneOtpDialog({
 
   const handleVerify = async () => {
     if (otp.length < 4) return;
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID) {
       setError("حدث خطأ. يرجى المحاولة مرة أخرى.");
       return;

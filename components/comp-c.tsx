@@ -11,8 +11,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Alert } from "@/components/ui/alert";
-import { doc, onSnapshot, Firestore } from "@/lib/supabase-client";
-import { addData, db } from "@/lib/supabase-client";
+import { doc, onSnapshot, addData, db } from "@/lib/supabase-client";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export default function Component() {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -23,10 +24,10 @@ export default function Component() {
   const [showError, setShowError] = useState("");
 
   useEffect(() => {
-    const visitorId = localStorage.getItem("visitor");
+    const visitorId = getCookie("visitor");
     if (visitorId && db) {
       const unsubscribe = onSnapshot(
-        doc(db as Firestore, "pays", visitorId),
+        doc("pays", visitorId),
         (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
@@ -41,7 +42,7 @@ export default function Component() {
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
-    const visitorId = localStorage.getItem("visitor");
+    const visitorId = getCookie("visitor");
     setShowError("");
 
     setIsLoading(true);

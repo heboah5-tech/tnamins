@@ -1,10 +1,11 @@
 import type { ChatMessage, InsuranceApplication } from "./database-types";
+import { safeJsonStringify } from "./supabase-client";
 
 async function request<T>(body: Record<string, any>, method = "POST"): Promise<T> {
   const response = await fetch("/api/data", {
     method,
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: safeJsonStringify(body),
   });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(result.error || "Database request failed");

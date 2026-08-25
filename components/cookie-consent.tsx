@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { Cookie, X, Settings } from "lucide-react"
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false)
@@ -14,7 +16,7 @@ export function CookieConsent() {
   })
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie_consent")
+    const consent = getCookie("cookie_consent")
     if (!consent) {
       setTimeout(() => setShowBanner(true), 1000)
     } else {
@@ -48,7 +50,7 @@ export function CookieConsent() {
   }
 
   const savePreferences = (prefs: typeof preferences) => {
-    localStorage.setItem("cookie_consent", JSON.stringify(prefs))
+    setCookie("cookie_consent", JSON.stringify(prefs))
     setPreferences(prefs)
     setShowBanner(false)
     setShowSettings(false)

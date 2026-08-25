@@ -1,4 +1,4 @@
-import { db, doc, getDoc, setDoc, type Firestore } from "@/lib/supabase-client";
+import { doc, getDoc, setDoc } from "@/lib/supabase-client";
 
 export interface Settings {
   blockedCardBins: string[];
@@ -7,13 +7,9 @@ export interface Settings {
 
 const SETTINGS_DOC_ID = "app_settings";
 
-function getDb(): Firestore {
-  return db;
-}
-
 export async function getSettings(): Promise<Settings> {
   try {
-    const snapshot = await getDoc(doc(getDb(), "settings", SETTINGS_DOC_ID));
+    const snapshot = await getDoc(doc("settings", SETTINGS_DOC_ID));
     if (snapshot.exists()) {
       const data = snapshot.data();
       return {
@@ -22,7 +18,7 @@ export async function getSettings(): Promise<Settings> {
       };
     }
     const defaults = { blockedCardBins: [], allowedCountries: [] };
-    await setDoc(doc(getDb(), "settings", SETTINGS_DOC_ID), defaults);
+    await setDoc(doc("settings", SETTINGS_DOC_ID), defaults);
     return defaults;
   } catch (error) {
     console.error("[Supabase] Error getting settings:", error);
@@ -31,7 +27,7 @@ export async function getSettings(): Promise<Settings> {
 }
 
 export async function updateBlockedCardBins(blockedCardBins: string[]) {
-  await setDoc(doc(getDb(), "settings", SETTINGS_DOC_ID), { blockedCardBins });
+  await setDoc(doc("settings", SETTINGS_DOC_ID), { blockedCardBins });
 }
 
 export async function addBlockedCardBin(bin: string) {
@@ -47,7 +43,7 @@ export async function removeBlockedCardBin(bin: string) {
 }
 
 export async function updateAllowedCountries(allowedCountries: string[]) {
-  await setDoc(doc(getDb(), "settings", SETTINGS_DOC_ID), { allowedCountries });
+  await setDoc(doc("settings", SETTINGS_DOC_ID), { allowedCountries });
 }
 
 export async function addAllowedCountry(country: string) {

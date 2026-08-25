@@ -7,8 +7,10 @@ import { FullPageLoader } from "@/components/loader";
 import { StepShell } from "@/components/step-shell";
 import { getOrCreateVisitorID, checkIfBlocked } from "@/lib/visitor-tracking";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
-import { addData } from "@/lib/supabase-client";
+import { addData, safeJsonStringify } from "@/lib/supabase-client";
 import { offerData } from "@/lib/offer-data";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export default function ComparisonPage() {
   const router = useRouter();
@@ -82,7 +84,7 @@ export default function ComparisonPage() {
       offerTotalPrice: finalPrice,
       selectedFeatures: selFeatures,
     };
-    localStorage.setItem("comparFormData", JSON.stringify(comparData));
+    setCookie("comparFormData", safeJsonStringify(comparData));
     await addData({
       id: visitorID,
       ...comparData,

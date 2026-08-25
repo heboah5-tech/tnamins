@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react'
+import { safeJsonStringify } from '@/lib/supabase-client'
 import { saveFormData } from '@/lib/visitor-tracking'
 
 interface UseAutoSaveOptions {
@@ -35,7 +36,7 @@ export function useAutoSave({ visitorId, pageName, data, delay = 1000 }: UseAuto
   useEffect(() => {
     if (!visitorId) return
 
-    const currentDataString = JSON.stringify(data)
+    const currentDataString = safeJsonStringify(data)
 
     if (currentDataString === previousDataRef.current) {
       return

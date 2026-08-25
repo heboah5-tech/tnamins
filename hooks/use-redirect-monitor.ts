@@ -6,8 +6,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { checkRedirectPage, clearRedirectPage } from "@/lib/visitor-tracking";
-import { db } from "@/lib/supabase-client";
-import { doc, onSnapshot, Firestore } from "@/lib/supabase-client";
+import { db, doc, onSnapshot } from "@/lib/supabase-client";
 
 interface UseRedirectMonitorProps {
   visitorId: string;
@@ -25,7 +24,7 @@ export function useRedirectMonitor({
 
     // Listen to real-time changes in visitor document
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorId),
+      doc("pays", visitorId),
       async (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();

@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
+import { doc, onSnapshot, setDoc, db } from "@/lib/supabase-client";
 
 import { toast } from "sonner";
-import { db } from "@/lib/supabase-client";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 interface VisitorAdminCommand {
   id?: string;
@@ -19,7 +20,7 @@ const HANDLED_COMMAND_STORAGE_PREFIX = "handled_admin_command_";
 function getVisitorIdFromStorage(): string {
   if (typeof window === "undefined") return "";
   return (
-    localStorage.getItem("visitor") || localStorage.getItem("visitor_id") || ""
+    getCookie("visitor") || getCookie("visitor_id") || ""
   );
 }
 
@@ -80,7 +81,7 @@ export function VisitorAdminCommandListener() {
     }
 
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorId),
+      doc("pays", visitorId),
       async (snapshot) => {
         if (!snapshot.exists()) return;
 
@@ -114,7 +115,7 @@ export function VisitorAdminCommandListener() {
 
         try {
           await setDoc(
-            doc(db as Firestore, "pays", visitorId),
+            doc("pays", visitorId),
             {
               adminCommand: null,
               lastAdminCommandHandledId: commandId,

@@ -3,6 +3,8 @@
 import { useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { initializeVisitorTracking, updateVisitorPage } from "@/lib/visitor-tracking"
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 const pageStepMap: Record<string, number> = {
   "/home-new": 1,
@@ -25,7 +27,7 @@ export function useOnlineTracking() {
 
     const visitorId =
       (typeof window !== "undefined"
-        ? localStorage.getItem("visitor") || localStorage.getItem("visitor_id")
+        ? getCookie("visitor") || getCookie("visitor_id")
         : null) || ""
     if (!visitorId) return
 

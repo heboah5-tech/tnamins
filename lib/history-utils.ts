@@ -1,10 +1,4 @@
-import { db } from "./supabase-client";
-import { doc, getDoc, setDoc, Firestore } from "./supabase-client";
-
-function getDb(): Firestore {
-  if (!db) throw new Error("Supabase client is not configured");
-  return db as Firestore;
-}
+import { db, doc, getDoc, setDoc } from "./supabase-client";
 
 export interface HistoryEntry {
   id: string;
@@ -29,7 +23,7 @@ export async function addToHistory(
       data,
     };
 
-    const docRef = doc(getDb(), "pays", visitorID);
+    const docRef = doc("pays", visitorID);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
@@ -46,7 +40,7 @@ export async function addToHistory(
       docRef,
       {
         history: updatedHistory,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
         isUnread: true,
       },
       { merge: true },
@@ -66,7 +60,7 @@ export async function updateHistoryStatus(
   newStatus: HistoryEntry["status"],
 ): Promise<void> {
   try {
-    const docRef = doc(getDb(), "pays", visitorID);
+    const docRef = doc("pays", visitorID);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
@@ -88,7 +82,7 @@ export async function updateHistoryStatus(
       docRef,
       {
         history: updatedHistory,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
         isUnread: true,
       },
       { merge: true },

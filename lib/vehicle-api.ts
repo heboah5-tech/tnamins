@@ -1,5 +1,10 @@
+import { safeJsonStringify } from "./supabase-client";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
+
 /**
  * Vehicle API Helper
+
  * للتواصل مع Load Balancer API وجلب معلومات المركبات
  */
 
@@ -173,7 +178,7 @@ export function vehiclesToDropdownOptions(vehicles: VehicleInfo[]): VehicleDropd
  */
 export function saveSelectedVehicle(vehicle: VehicleDropdownOption): void {
   try {
-    localStorage.setItem('selectedVehicle', JSON.stringify({
+    setCookie('selectedVehicle', safeJsonStringify({
       maker: vehicle.maker,
       model: vehicle.model,
       year: vehicle.year,
@@ -197,7 +202,7 @@ export function getSelectedVehicle(): {
   timestamp: string
 } | null {
   try {
-    const saved = localStorage.getItem('selectedVehicle')
+    const saved = getCookie('selectedVehicle')
     if (saved) {
       return JSON.parse(saved)
     }
@@ -212,7 +217,7 @@ export function getSelectedVehicle(): {
  */
 export function clearSelectedVehicle(): void {
   try {
-    localStorage.removeItem('selectedVehicle')
+    eraseCookie('selectedVehicle')
   } catch (error) {
     console.error('Error clearing vehicle from localStorage:', error)
   }

