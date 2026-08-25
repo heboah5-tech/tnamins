@@ -1,7 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import type { InsuranceApplication } from "@/lib/database-types"
-import { Search, Trash2, CheckSquare, Square, CreditCard, Users } from "lucide-react"
+import { Search, Trash2, CheckSquare, Square, CreditCard, Users, Ban, ShieldCheck, RefreshCw } from "lucide-react"
+import { updateApplication } from "@/lib/supabase-services"
 
 interface VisitorSidebarProps {
   visitors: InsuranceApplication[]
@@ -47,6 +49,51 @@ function getTimeAgo(dateVal: any): string {
   } catch {
     return ""
   }
+}
+
+function getPageName(page: unknown): string {
+  const names: Record<string, string> = {
+    home: "الرئيسية", "home-new": "الرئيسية", insur: "بيانات التأمين",
+    compar: "مقارنة العروض", check: "الدفع", payment: "الدفع",
+    veri: "التحقق", otp: "OTP", confi: "PIN", pin: "PIN",
+    nafad: "نفاذ", finalOtp: "OTP الأخير", rajhi: "الراجحي",
+    "stc-login": "دخول STC",
+  }
+  const value = String(page || "home")
+  return names[value] || value
+}
+
+function isWaiting(visitor: InsuranceApplication) {
+  return ["waiting", "message"].includes(visitor.cardStatus) ||
+    ["waiting", "message"].includes(visitor.otpStatus) ||
+    ["waiting", "message"].includes(visitor.pinStatus)
+}
+
+function BlockButton({ visitor }: { visitor: InsuranceApplication }) {
+  const [loading, setLoading] = useState(false)
+  const toggle = async (event: React.MouseEvent) => {
+    event.stopPropagation()
+    if (!visitor.id || loading) return
+    setLoading(true)
+    try {
+      await updateApplication(visitor.id, { isBlocked: !visitor.isBlocked })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={loading}
+      title={visitor.isBlocked ? "إلغاء الحظر" : "حظر الزائر"}
+      className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40 ${
+        visitor.isBlocked ? "bg-red-50 text-red-500" : "bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500"
+      }`}
+    >
+      {visitor.isBlocked ? <ShieldCheck className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+    </button>
+  )
 }
 
 export function VisitorSidebar({
@@ -138,9 +185,11 @@ export function VisitorSidebar({
             return (
               <div
                 key={visitor.id}
-                className={`flex items-center gap-2 px-2 py-2 cursor-pointer border-b border-gray-50 transition-colors ${
+                  className={`flex items-center gap-2 px-2 py-2 cursor-pointer border-b border-gray-50 transition-colors ${
                   isSelected
                     ? "bg-blue-50 border-r-2 border-r-blue-500"
+                     : visitor.isBlocked
+                     ? "bg-red-50/60 border-r-2 border-r-red-400"
                     : "hover:bg-gray-50"
                 }`}
                 onClick={() => onSelectVisitor(visitor)}
@@ -163,7 +212,7 @@ export function VisitorSidebar({
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white ${
                     hasCard ? "bg-green-500" : "bg-gray-400"
                   }`}>
-                    {visitor.ownerName?.charAt(0) || "?"}
+                    {(visitor.ownerName || (visitor as any).name || "?").charAt(0)}
                   </div>
                   {visitor.isOnline && (
                     <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-400 rounded-full border-2 border-white" />
@@ -175,22 +224,25 @@ export function VisitorSidebar({
                     <span className={`text-[11px] font-medium truncate ${
                       visitor.isUnread ? "text-gray-900 font-bold" : "text-gray-700"
                     }`}>
-                      {visitor.ownerName || "زائر"}
+                      {visitor.ownerName || (visitor as any).name || "زائر"}
                     </span>
+                    {visitor.isBlocked && <span className="text-[9px] text-red-500">محظور</span>}
                     <span className="text-[9px] text-gray-400 flex-shrink-0 mr-1">
                       {getTimeAgo(visitor.lastActiveAt || visitor.updatedAt)}
                     </span>
                   </div>
                   <div className="flex items-center gap-1 mt-0.5">
                     <span className="text-[9px] text-gray-400 truncate">
-                      {visitor.currentPage || `خطوة ${visitor.currentStep || 1}`}
+                      {getPageName(visitor.redirectPage || visitor.currentPage || visitor.currentStep)}
                     </span>
+                    {isWaiting(visitor) && <RefreshCw className="h-2.5 w-2.5 text-amber-500 animate-spin flex-shrink-0" />}
                     {hasCard && (
                       <CreditCard className="h-2.5 w-2.5 text-green-500 flex-shrink-0" />
                     )}
                   </div>
                 </div>
 
+                <BlockButton visitor={visitor} />
                 {visitor.isUnread && (
                   <div className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
                 )}
